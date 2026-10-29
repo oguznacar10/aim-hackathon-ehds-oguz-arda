@@ -18,6 +18,10 @@ def test_expected_answer_key():
 
 def test_patients_csv_counts():
     with open(CHALLENGE / "data" / "patients.csv", encoding="utf-8", newline="") as f:
-        rows = list(csv.DictReader(f))
-    assert len(rows) == 20000
-    assert sum(r["opted_out"] == "true" for r in rows) == 839
+        # Plain ints only: pytest prints the operands of a failing assert, and rows must never reach test output.
+        total = opted_out = 0
+        for row in csv.DictReader(f):
+            total += 1
+            opted_out += row["opted_out"] == "true"
+    assert total == 20000
+    assert opted_out == 839
