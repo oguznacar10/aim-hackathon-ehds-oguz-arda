@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    # Hand-bumped: dependabot does not touch env pins. Bump both values together.
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # gitleaks scans history. The default shallow clone would show it one commit.
+          fetch-depth: 0
+      - name: Scan history for secrets
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/gitleaks.tar.gz" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
+          tar xzf "$RUNNER_TEMP/gitleaks.tar.gz" gitleaks
+          ./gitleaks git . --redact --verbose --exit-code 1
+
+  em-dash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the guard diffs against the base branch
+      - name: Em dash guard
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            git fetch --no-tags origin "$BASE_REF"
+            bash scripts/em-dash-guard.sh "origin/$BASE_REF"
+          else
+            bash scripts/em-dash-guard.sh HEAD~1
+          fi
+
+  shell:
+    runs-on: ubuntu-latest
+    # Hand-bumped: dependabot does not touch env pins. Bump both values together.
+    env:
+      SHELLCHECK_VERSION: 0.11.0
+      SHELLCHECK_SHA256: 8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
+    steps:
+      - uses: actions/checkout@v7
+      - name: Shell syntax
+        run: git ls-files '*.sh' | xargs -r -n1 bash -n
+      - name: Shellcheck
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/shellcheck.tar.xz" \
+            "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz"
+          echo "${SHELLCHECK_SHA256}  $RUNNER_TEMP/shellcheck.tar.xz" | sha256sum -c -
+          tar xJf "$RUNNER_TEMP/shellcheck.tar.xz" -C "$RUNNER_TEMP" --strip-components=1 "shellcheck-v${SHELLCHECK_VERSION}/shellcheck"
+          git ls-files -z '*.sh' | xargs -0 -r "$RUNNER_TEMP/shellcheck" -S warning
+      - name: Em dash guard self-test
+        run: bash scripts/em-dash-guard.test.sh
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-ci.txt
+      - run: ruff check .
+      - run: pytest -q
+
+  node:
+    runs-on: ubuntu-latest
+    # hashFiles() is not available in a job-level if, so every step checks for package.json itself.
+    steps:
+      - uses: actions/checkout@v7
+      - if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - if: hashFiles('package.json') != ''
+        run: npm ci
+      - if: hashFiles('package.json') != ''
+        run: npm test --if-present
+      - if: hashFiles('package.json') != ''
+        run: npm run lint --if-present
+
+  # The one required status check for branch protection.
+  ci-green:
+    needs: [secrets, em-dash, shell, python, node]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every job passed
+        env:
+          SECRETS: ${{ needs.secrets.result }}
+          EM_DASH: ${{ needs.em-dash.result }}
+          SHELL_JOB: ${{ needs.shell.result }}
+          PYTHON: ${{ needs.python.result }}
+          NODE: ${{ needs.node.result }}
+        run: |
+          echo "secrets=$SECRETS em-dash=$EM_DASH shell=$SHELL_JOB python=$PYTHON node=$NODE"
+          for r in "$SECRETS" "$EM_DASH" "$SHELL_JOB" "$PYTHON"; do
+            [ "$r" = success ] || exit 1
+          done
+          [ "$NODE" = success ] || [ "$NODE" = skipped ]

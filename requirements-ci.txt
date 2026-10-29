@@ -1,0 +1,3 @@
+# Dependabot bumps these; ruff's version here is the one CI enforces (see ruff.toml).
+pytest==9.1.1
+ruff==0.17.0
