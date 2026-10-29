@@ -1,0 +1,29 @@
+# Map
+
+Where everything is. Read top to bottom once, then jump.
+
+| You need | Open |
+|---|---|
+| The rules for working here | `AGENTS.md` (agents) and `CONTRIBUTING.md` (humans and PR flow) |
+| What to build, decision order, small-cell rule, metrics, judging | `challenge/README.md` |
+| Data dictionary (columns, 31 Dec 2025 reference date, LOINC codes, opt-out flag) | `challenge/data/README.md` |
+| The 10 test requests and the answer key | `challenge/requests/R01.json` to `R10.json`, `challenge/requests/expected.json` |
+| The synthetic data (20,000 patients, 5 CSVs) | `challenge/data/*.csv` |
+| What an EHDS article actually says, verbatim | `docs/challenge/ehds-articles/art-<N>.md` (53, 54, 61, 66, 67, 68, 69, 71, 73) |
+| Which article backs which decision, what the brief leaves implicit, hard rules for the build | `docs/challenge/README.md` |
+| Team, deadline, submission form, jury, tools and credits (Exoscale, Devin, Lovable, Bob) | `docs/challenge/hackathon-notes.md` |
+| What has been decided (stack, schema, interpretations) | `docs/decisions/log.md`, read from the bottom |
+| Where the last session stopped | newest file in `docs/handoffs/` |
+| Implementation plans | `docs/plans/` |
+| Coding rules CI enforces or a reviewer judges | `CODING_STANDARDS.md` |
+| CI definition | `.github/workflows/ci.yml` |
+| Em-dash guard used by CI | `scripts/em-dash-guard.sh` |
+| Fixture sanity tests | `tests/` |
+| Application code | not yet; the stack decision lands in `docs/decisions/log.md` first, then `src/` appears |
+
+## Facts that must not drift
+
+- Team: Oguz Nacar and Arda Sarikaya, two people.
+- Deadline: Friday 30 October 2026, 15:00, one Google Form submission: video max 2 min, public repo with architecture README, metric results on the 10 requests.
+- The repo goes public at submission. Nothing in it may be something we would not publish.
+- Articles list tolerance: only Art. 67 or 71 may be added. Everything else is reason text.

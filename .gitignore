@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environments and secrets
+.venv/
+venv/
+.env*
+
+# Build and caches
+node_modules/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# Runtime output
+spe/
+*.log
