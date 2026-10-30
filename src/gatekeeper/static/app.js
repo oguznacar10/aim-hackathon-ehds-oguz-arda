@@ -408,3 +408,14 @@ async function openCase(id) {
 }
 
 loadExamples();
+
+async function loadHospitals() {
+  const res = await api("/api/hospitals");
+  if (!res.ok) return;
+  const n = (v) => v.toLocaleString("en-GB");
+  $("#hospital-list").replaceChildren(...res.body.map((h) => el("div", { class: "hosp" },
+    el("span", { class: "hosp-name", text: h.hospital }),
+    el("span", { class: "hosp-fig", text: `${n(h.patients)} patients · ${n(h.records)} records` }),
+    el("span", { class: "hosp-fig", text: `${n(h.opted_out_excluded)} opted out, excluded` }))));
+}
+loadHospitals();

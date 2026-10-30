@@ -37,3 +37,11 @@ def test_spe_cohort_is_collected_from_every_hospital():
     manifest = spe.create("R05", planner.rule_spe_spec(request))
     assert set(manifest["hospitals"]) == set(data.holders())
     assert sum(manifest["hospitals"].values()) == manifest["cohort_size"] == 1152
+
+
+def test_hospital_summary_adds_up():
+    rows = data.summary()
+    assert [r["hospital"] for r in rows] == list(data.holders())
+    assert sum(r["patients"] for r in rows) == 19161
+    assert sum(r["opted_out_excluded"] for r in rows) == 839
+    assert all(r["records"] > 0 for r in rows)

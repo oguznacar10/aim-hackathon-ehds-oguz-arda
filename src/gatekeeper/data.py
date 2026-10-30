@@ -82,6 +82,20 @@ def nodes():
     return {h: _load(h) for h in holders()}
 
 
+def summary():
+    """Per hospital database: totals only, for the staff view."""
+    opted = {}
+    for r in _rows("patients"):
+        if r["opted_out"] == "true":
+            opted[r["data_holder"]] = opted.get(r["data_holder"], 0) + 1
+    out = []
+    for h, db in nodes().items():
+        n = {t: db.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in SCHEMA}
+        out.append({"hospital": h, "patients": n.pop("patients"), "opted_out_excluded": opted.get(h, 0),
+                    "records": sum(n.values())})
+    return out
+
+
 def _union(sql):
     return sorted({r[0] for db in nodes().values() for r in db.execute(sql)})
 
