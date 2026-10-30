@@ -1,13 +1,20 @@
 """Minimal JSON chat client for OpenAI, Anthropic and OpenRouter. Only request text is ever sent."""
+import base64
 import json
 import os
+import subprocess
 import time
 import urllib.error
 import urllib.request
 
 DEFAULT_MODELS = {"openai": "gpt-4o-mini", "anthropic": "claude-3-5-haiku-latest",
                   "openrouter": "openai/gpt-4o"}
-KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "openrouter": "OPENROUTER_API_KEY"}
+KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "openrouter": "OPENROUTER_API_KEY",
+           "typesafe": "TYPESAFE_API_KEY"}
+# <KEY_ENV>_SECRET names a Google Secret Manager resource (projects/<id>/secrets/<name>);
+# the key is fetched inside this process with Application Default Credentials and never printed.
+KEY_SECRET_ENV = {p: env + "_SECRET" for p, env in KEY_ENV.items()}
+_keys = {}
 OPENAI_STYLE_URLS = {"openai": "https://api.openai.com/v1/chat/completions",
                      "openrouter": "https://openrouter.ai/api/v1/chat/completions"}
 
@@ -23,11 +30,38 @@ class LLMUnavailable(RuntimeError):
 
 
 def available_providers():
-    return [p for p, env in KEY_ENV.items() if os.environ.get(env)]
+    """Chat providers with a key; typesafe is a decision-model backend, not a chat provider."""
+    return [p for p in KEY_ENV if p != "typesafe"
+            and (os.environ.get(KEY_ENV[p]) or os.environ.get(KEY_SECRET_ENV[p]))]
+
+
+def key_for(provider):
+    return _key(provider)
+
+
+def _key(provider):
+    if provider not in _keys:
+        _keys[provider] = (os.environ.get(KEY_ENV[provider])
+                           or _from_secret_manager(os.environ.get(KEY_SECRET_ENV[provider])))
+    return _keys[provider]
+
+
+def _from_secret_manager(resource):
+    if not resource:
+        return None
+    token = subprocess.run(["gcloud", "auth", "application-default", "print-access-token"],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    project = resource.split("/")[1]
+    req = urllib.request.Request(
+        f"https://secretmanager.googleapis.com/v1/{resource}/versions/latest:access",
+        headers={"Authorization": f"Bearer {token}", "x-goog-user-project": project})
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        payload = json.load(resp)["payload"]["data"]
+    return base64.b64decode(payload).decode().strip()
 
 
 def chat_json(prompt, provider, model=None, temperature=0.0, timeout=45):
-    key = os.environ.get(KEY_ENV[provider])
+    key = _key(provider)
     if not key:
         raise LLMUnavailable(f"{KEY_ENV[provider]} is not set")
     model = model or DEFAULT_MODELS[provider]

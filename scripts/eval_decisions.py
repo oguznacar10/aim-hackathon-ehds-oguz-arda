@@ -2,6 +2,12 @@
 
     python scripts/eval_decisions.py                  # 10 challenge requests, 3 runs
     python scripts/eval_decisions.py --set holdout    # red-team exam set (redteam/holdout)
+    python scripts/eval_decisions.py --mode all --no-cache --runs N   # ablation, live LLM calls
+
+Modes: rules = keyword reader + rules (offline); hybrid = LLM reads, rules decide (shipped path);
+llm = the model decides end to end; nimble = local decision model (Ollama) reads, rules decide;
+jev = hosted decision model (TypeSafe) reads, rules decide; vote = LLM reads, Nimble as second
+opinion, disagreement escalates; all = rules, hybrid, llm, nimble, vote side by side.
 """
 import argparse
 import json
@@ -12,9 +18,49 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 
-from gatekeeper import reader, rules  # noqa: E402
+from gatekeeper import decision, direct, llm, reader, rules  # noqa: E402
 
 EXTRA_OK = {"67", "71"}
+MODES = ("rules", "hybrid", "llm", "nimble", "jev", "vote")
+ALL = ("rules", "hybrid", "llm", "nimble", "vote")
+RELEASE = {"REJECT": 0, "APPROVE_STATISTICAL": 1, "APPROVE_SPE": 2}
+
+
+def error_kind(expected, got):
+    """None when right; 'dangerous' releases more data than the law allows, 'restrictive' less,
+    'invalid' is no usable decision at all."""
+    if got == expected:
+        return None
+    if got not in RELEASE:
+        return "invalid"
+    return "dangerous" if RELEASE[got] > RELEASE[expected] else "restrictive"
+
+
+def percentile(values, pct):
+    values = sorted(values)
+    return values[min(len(values) - 1, int(round(pct / 100 * (len(values) - 1))))]
+
+
+def decide(req, mode, cache, provider=None):
+    """rules: keywords + rules. hybrid: LLM reads, rules decide. llm: model decides alone.
+    nimble / jev: a decision model answers the two typed questions, rules decide.
+    vote: LLM reads with the local decision model as second opinion; disagreement escalates."""
+    if mode == "llm":
+        return direct.decide(req, provider=provider, cache=cache)
+    if mode in ("nimble", "jev"):
+        reading = decision.decision_reading(req, backend=mode, cache=cache)
+    elif mode == "vote":
+        ai = reader.read(req, provider=provider, cache=cache)
+        dm = decision.decision_reading(req, backend="nimble", cache=cache)
+        disagree = ai["prohibited"] != dm["prohibited"] or (
+            not ai["prohibited"] and req["requested_as"] == rules.APPLICATION
+            and ai["justifies_records"] != dm["justifies_records"])
+        reading = {**ai, "needs_staff_review": ai["needs_staff_review"] or disagree,
+                   "second_opinion": dm, "source": f"{ai['source']}+nimble"}
+    else:
+        reading = reader.read(req, provider=provider, mode="keywords" if mode == "rules" else "auto",
+                              cache=cache)
+    return {**rules.decide(req, reading), "source": reading["source"]}
 
 
 def articles_ok(ours, expected):
@@ -39,35 +85,71 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", default="challenge", help="challenge, tuning or holdout")
     ap.add_argument("--runs", type=int, default=3)
+    ap.add_argument("--mode", default="hybrid", choices=MODES + ("all",))
+    ap.add_argument("--provider", choices=sorted(llm.KEY_ENV),
+                    help="which configured key to use; default: the first one found")
+    ap.add_argument("--no-cache", action="store_true",
+                    help="call the LLM every run instead of reusing cached readings")
     args = ap.parse_args()
 
     cases = load(args.set)
     if not cases:
         raise SystemExit(f"no cases in set '{args.set}'")
-    runs, slowest = [], 0.0
+    modes = ALL if args.mode == "all" else (args.mode,)
+    summary = {mode: run_mode(mode, cases, args) for mode in modes}
+    if len(modes) > 1:
+        print(f"{'mode':<8} {'correct':<8} {'consistent':<11} {'danger/unflagged':<17} "
+              f"{'restrictive':<12} {'escalated':<10} {'p95 s':<7} max s")
+        for mode, m in summary.items():
+            print(f"{mode:<8} {m['correct']:>2}/{len(cases):<5} {m['consistent']:>2}/{len(cases):<8} "
+                  f"{m['dangerous']:>3} / {m['unflagged']:<9} {m['restrictive']:<12} "
+                  f"{m['escalated']:<10} {m['p95']:<7.2f} {m['max']:.2f}")
+    return 0 if all(m["correct"] == len(cases) and m["unflagged"] == 0 for m in summary.values()) else 1
+
+
+def run_mode(mode, cases, args):
+    runs, timings, kinds = [], [], {"dangerous": 0, "restrictive": 0, "invalid": 0}
+    unflagged = escalated = 0
     for _ in range(args.runs):
         outcome = {}
         for req, exp_decision, exp_articles in cases:
             t0 = time.perf_counter()
-            result = rules.decide(req, reader.read(req))
-            slowest = max(slowest, time.perf_counter() - t0)
+            result = decide(req, mode, cache=not args.no_cache, provider=args.provider)
+            timings.append(time.perf_counter() - t0)
             ok = result["decision"] == exp_decision and (
                 exp_articles is None or articles_ok(result["articles"], exp_articles))
-            outcome[req["id"]] = (result["decision"], result["articles"], ok, result["needs_staff_review"])
+            kind = error_kind(exp_decision, result["decision"])
+            review = bool(result["needs_staff_review"])
+            escalated += review
+            if kind:
+                kinds[kind] += 1
+                unflagged += kind != "restrictive" and not review
+            outcome[req["id"]] = (result["decision"], result["articles"], ok, review, result["source"], kind)
         runs.append(outcome)
 
     first = runs[0]
-    source = reader.read(cases[0][0])["source"]
-    print(f"set={args.set} cases={len(cases)} runs={args.runs} reader={source}")
-    for rid, (decision, arts, ok, review) in first.items():
+    total = len(cases) * args.runs
+    source = next(iter(first.values()))[4]
+    print(f"mode={mode} set={args.set} cases={len(cases)} runs={args.runs} source={source} "
+          f"cache={'off' if args.no_cache else 'on'}")
+    for rid, (verdict_name, arts, ok, review, _, kind) in first.items():
         flag = " [staff review]" if review else ""
-        print(f"  {rid:<10} {decision:<20} {','.join(arts):<14} {'ok' if ok else 'WRONG'}{flag}")
-    correct = sum(ok for _, _, ok, _ in first.values())
+        verdict = "ok" if ok else f"WRONG ({kind or 'articles'})"
+        print(f"  {rid:<10} {verdict_name:<20} {','.join(arts):<14} {verdict}{flag}")
+    correct = sum(ok for _, _, ok, _, _, _ in first.values())
     consistent = sum(len({json.dumps(r[rid][:2]) for r in runs}) == 1 for rid in first)
     print(f"correct decisions: {correct}/{len(cases)}")
     print(f"consistent over {args.runs} runs: {consistent}/{len(cases)}")
-    print(f"slowest decision: {slowest:.2f} s")
-    return 0 if correct == len(cases) else 1
+    print(f"over all {total} decisions: dangerous (more data than the law allows) {kinds['dangerous']}, "
+          f"invalid {kinds['invalid']}, of those not flagged for staff {unflagged}; "
+          f"restrictive (less than allowed) {kinds['restrictive']}; escalated to staff {escalated}")
+    print(f"latency: p50 {percentile(timings, 50):.2f} s, p95 {percentile(timings, 95):.2f} s, "
+          f"max {max(timings):.2f} s")
+    print(f"with {total} decisions and 0 observed failures the true failure rate can still be "
+          f"up to {3 / total:.1%} (rule of three, 95% confidence)")
+    return {"correct": correct, "consistent": consistent, "dangerous": kinds["dangerous"] + kinds["invalid"],
+            "unflagged": unflagged, "restrictive": kinds["restrictive"], "escalated": escalated,
+            "p95": percentile(timings, 95), "max": max(timings)}
 
 
 if __name__ == "__main__":
