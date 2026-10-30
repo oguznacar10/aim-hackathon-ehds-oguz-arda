@@ -97,7 +97,11 @@ def read(request, provider=None, model=None, mode="auto", cache=True):
     provider = provider or (providers[0] if providers else None)
     if provider is None or mode == "keywords":
         return {**kw, "source": "keywords", "needs_staff_review": False}
-    ai = llm_reading(request, provider, model, cache)
+    try:
+        ai = llm_reading(request, provider, model, cache)
+    except (llm.LLMUnavailable, ValueError, OSError) as e:
+        return {**kw, "source": "keywords", "needs_staff_review": True,
+                "llm_error": f"{provider} unavailable, keyword reading used: {e}"[:300]}
     disagree = ai["prohibited"] != kw["prohibited"] or (
         not ai["prohibited"] and request["requested_as"] == rules.APPLICATION
         and ai["justifies_records"] != kw["justifies_records"])

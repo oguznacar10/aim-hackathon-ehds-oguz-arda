@@ -66,3 +66,41 @@ def test_disagreement_between_readers_flags_review(monkeypatch):
 def test_invalid_request_is_refused(broken):
     with pytest.raises(rules.InvalidRequest):
         rules.decide(broken, reading())
+
+
+def test_llm_outage_falls_back_to_keywords_and_flags_review(monkeypatch):
+    def down(*_args, **_kwargs):
+        raise OSError("HTTP Error 429: Too Many Requests")
+    monkeypatch.setattr(reader.llm, "available_providers", lambda: ["openrouter"])
+    monkeypatch.setattr(reader, "llm_reading", down)
+    reading = reader.read(load("R02"))
+    assert reading["source"] == "keywords"
+    assert reading["needs_staff_review"] is True
+    assert "429" in reading["llm_error"]
+    assert rules.decide(load("R02"), reading)["decision"] == "REJECT"
+
+
+def test_llm_client_retries_rate_limits(monkeypatch):
+    import io
+    import urllib.error
+
+    from gatekeeper import llm
+    calls = []
+
+    class Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    def urlopen(req, timeout):
+        calls.append(1)
+        if len(calls) < 3:
+            raise urllib.error.HTTPError(req.full_url, 429, "Too Many Requests", {}, None)
+        return Resp(b'{"choices": [{"message": {"content": "{\\"ok\\": true}"}}]}')
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test")
+    monkeypatch.setattr(llm, "BACKOFF_S", 0)
+    monkeypatch.setattr(llm.urllib.request, "urlopen", urlopen)
+    assert llm.chat_json("json please", "openrouter") == {"ok": True}
+    assert len(calls) == 3

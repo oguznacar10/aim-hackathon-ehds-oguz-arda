@@ -40,3 +40,25 @@ Append-only. Newest at the bottom. Every entry: date, title, who, PROPOSED or DE
 
 ## 2026-10-30 - Applicants no longer choose statistics or records - PROPOSED
 Oguz asked that the system, not the researcher, decides between anonymised statistics and pseudonymised records. The web form no longer shows the "requested form" choice. A loaded sample request keeps the form from its JSON file, so R01-R10 still get the exact articles the brief expects. A new request typed into the form is sent as a health data access application, so rule 3 or 4 decides: records in an SPE only if the text explains why statistics are not enough, otherwise statistics.
+
+## 2026-10-30 - Generated requests must pass a data-dictionary validator before they count (Arda, PROPOSED)
+
+- Review of the 12 red-team requests on `oguz/statistics-spe` (file `redteam/REVIEW.md`): JSON shape right, labels mostly defensible, content unrealistic. Two of the last two cite codes that do not exist in `challenge/data` (ICD-10 G89; "LOINC codes related to nutritional products" when the data has four LOINC codes), both have two vague definitions where the originals have four to six, and `requested_format` uses free wording. The judge also rejected two requests for who the applicant is, which the brief does not allow.
+- Change: the attacker prompt now receives the real vocabulary read from the CSVs (13 ICD-10, 16 ATC, 4 LOINC codes with names, 9 regions, 3 hospitals, the 31 December 2025 reference date), two examples (R03 statistics, R05 records) instead of one, and explicit realism rules. Every generated request goes through `redteam.validate_generated()` before the judge sees it; failures land in `redteam/invalid/` with the reasons. The validator accepts all 10 originals and rejects `Gde652cfe`.
+- Why: a training set or a live demo built on requests the data cannot answer would embarrass us in front of the access-body jurors, and free `requested_format` wording would teach a classifier a spurious signal.
+- Still a human call: the Art. 66(3) borderline (one-sentence "individual-level data is crucial" justifications). The same judge accepted it in `Gde652cfe` and refused the same pattern in `Ga9a3dfc0`; settle the rule once in this log before generating more.
+- Open: whether a trained model may decide at all. The 2026-10-30 "LLM reads, rules decide" entry says no; Arda's plan to train on generated requests needs its own entry (model as second opinion versus model as decider).
+
+
+## 2026-10-30 - An LLM outage never stops a request (Oguz via Devin, PROPOSED)
+
+- A fresh run without the cache hit HTTP 429 from OpenRouter and crashed the pipeline. Now `llm.chat_json` retries 429 and 5xx up to 3 times (1 s, 2 s, 4 s), and if the reader still gets no answer the keyword reader decides and the case is flagged `needs_staff_review` with the error text. The planner already fell back to the rule plan.
+
+
+## 2026-10-30 - Federated: one database per hospital, totals added centrally (Oguz via Devin, PROPOSED)
+
+- `data.py` loads one in-memory SQLite database per data holder (Klinikum Nord, Süd, West), each with only that hospital's patients and their records. Every encounter in the data belongs to its patient's hospital, so the split is clean. Opted-out patients are still dropped while loading.
+- A query plan runs in each hospital database. Only raw totals come back (counts, numerator/denominator, value sum and n for means); the access body adds them up and applies the small-cell rule once, on the totals. Suppressing per hospital first would hide counts that are safe in total.
+- The SPE collects the cohort and its records from every hospital into one workspace; the manifest shows how many patients came from each.
+- `data.connection()` (all hospitals in one database) stays only so tests can check that federated answers equal central ones.
+- Verified: all five metrics unchanged (10/10, 6/6, 0 leaks, 10/10), with and without the LLM.

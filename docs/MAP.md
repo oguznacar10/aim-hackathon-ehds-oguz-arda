@@ -21,6 +21,7 @@ Where everything is. Read top to bottom once, then jump.
 | Fixture sanity tests | `tests/` |
 | Decision engine (LLM reading + rules), red-team loop | `src/gatekeeper/` (`reader.py`, `rules.py`, `redteam.py`) |
 | One request end to end (decide, then statistics or SPE) | `src/gatekeeper/pipeline.py` |
+| Federated: one database per hospital, totals added centrally | `src/gatekeeper/data.py` (`nodes()`), `query.py` (`run`), `spe.py` (`create`) |
 | Data access without opted-out patients, query plans, small-cell rule, SPE | `src/gatekeeper/data.py`, `query.py`, `smallcell.py`, `spe.py` |
 | Definitions to query plan (rules and LLM) | `src/gatekeeper/planner.py` |
 | Decision scoring on the 10 requests or a red-team set | `scripts/eval_decisions.py` |
