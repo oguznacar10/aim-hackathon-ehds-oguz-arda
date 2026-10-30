@@ -1,6 +1,8 @@
 """Minimal JSON chat client for OpenAI, Anthropic and OpenRouter. Only request text is ever sent."""
 import json
 import os
+import time
+import urllib.error
 import urllib.request
 
 DEFAULT_MODELS = {"openai": "gpt-4o-mini", "anthropic": "claude-3-5-haiku-latest",
@@ -10,6 +12,9 @@ OPENAI_STYLE_URLS = {"openai": "https://api.openai.com/v1/chat/completions",
                      "openrouter": "https://openrouter.ai/api/v1/chat/completions"}
 
 
+RETRY_CODES = {429, 500, 502, 503, 504}
+RETRIES = 3
+BACKOFF_S = 1.0
 JSON_ONLY = "Answer with one JSON object only, no prose, no code fences."
 
 
@@ -41,11 +46,21 @@ def chat_json(prompt, provider, model=None, temperature=0.0, timeout=45):
                 "messages": [{"role": "user", "content": prompt}]}
     req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                  headers={**headers, "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        data = json.load(resp)
+    data = _send(req, timeout)
     text = (data["choices"][0]["message"]["content"] if provider in OPENAI_STYLE_URLS
             else data["content"][0]["text"])
     return json.loads(_strip_fences(text))
+
+
+def _send(req, timeout, retries=RETRIES):
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as e:
+            if e.code not in RETRY_CODES or attempt == retries:
+                raise
+            time.sleep(BACKOFF_S * 2 ** attempt)
 
 
 def _strip_fences(text):

@@ -40,3 +40,7 @@ Append-only. Newest at the bottom. Every entry: date, title, who, PROPOSED or DE
 
 ## 2026-10-30 - Applicants no longer choose statistics or records - PROPOSED
 Oguz asked that the system, not the researcher, decides between anonymised statistics and pseudonymised records. The web form no longer shows the "requested form" choice. A loaded sample request keeps the form from its JSON file, so R01-R10 still get the exact articles the brief expects. A new request typed into the form is sent as a health data access application, so rule 3 or 4 decides: records in an SPE only if the text explains why statistics are not enough, otherwise statistics.
+
+## 2026-10-30 - An LLM outage never stops a request (Oguz via Devin, PROPOSED)
+
+- A fresh run without the cache hit HTTP 429 from OpenRouter and crashed the pipeline. Now `llm.chat_json` retries 429 and 5xx up to 3 times (1 s, 2 s, 4 s), and if the reader still gets no answer the keyword reader decides and the case is flagged `needs_staff_review` with the error text. The planner already fell back to the rule plan.
