@@ -65,7 +65,8 @@ pytest -q                               # regression tests, never call an LLM
         +-- APPROVE_STATISTICAL
         |     planner.py  definitions -> JSON query plan (LLM, rule plan as cross-check)
         |     query.py    validates the plan, compiles parameterised SQL
-        |     data.py     in-memory SQLite, opted-out patients dropped at load
+        |     data.py     one SQLite database per hospital, opted-out patients dropped at load;
+        |                 the query runs in each, only totals come back and are added up
         |     smallcell.py  every value leaves through one function (<10, suppressed, rounding)
         |
         +-- APPROVE_SPE
@@ -83,7 +84,7 @@ pytest -q                               # regression tests, never call an LLM
 | Decision rules | `src/gatekeeper/rules.py` | Deterministic: Art. 54 purpose → reject; health data request → statistics; access application that explains why statistics are not enough → SPE; otherwise statistics. Attaches the articles. The LLM never decides. |
 | Planner | `src/gatekeeper/planner.py` | Turns the plain-English definitions into a JSON query plan or SPE spec. The LLM sees only question, definitions and the code list (ICD-10, ATC, LOINC labels), never patient rows. A rule planner writes the same plan; different numbers flag staff review. |
 | Query engine | `src/gatekeeper/query.py` | A plan never contains SQL. Every field is validated, then compiled to parameterised SQL. Staff see plan and SQL. |
-| Data access | `src/gatekeeper/data.py` | The only door to the CSVs. Loads them into in-memory SQLite and drops opted-out patients (Art. 71) and all their rows. |
+| Data access | `src/gatekeeper/data.py` | The only door to the CSVs. Loads one in-memory SQLite database per hospital and drops opted-out patients (Art. 71) and all their rows. |
 | Small-cell rule | `src/gatekeeper/smallcell.py` | Counts below 10 → `<10`; percentages and means on fewer than 10 → `suppressed`; every requested group shown; halves rounded up. |
 | SPE | `src/gatekeeper/spe.py` | Copies the cohort and only the record types the question names into `spe/<id>/workspace.sqlite`. Downloads are refused server-side and logged. |
 | Pipeline | `src/gatekeeper/pipeline.py` | `handle(request)`: read, decide, then statistics or SPE. |
@@ -92,7 +93,7 @@ pytest -q                               # regression tests, never call an LLM
 
 **Models and services.** One OpenRouter key (`OPENROUTER_API_KEY`). Reader and planner use `openai/gpt-4o` at temperature 0; answers are cached by prompt version, model and request text, so the same request gets the same answer. For the red team, `openai/gpt-4o` writes and `anthropic/claude-haiku-4.5` judges. We picked gpt-4o after comparing planners on the 6 approved requests: gpt-4o 6/6, gpt-4.1-mini 4/6, gpt-4o-mini 2/6. OpenAI and Anthropic keys also work (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). Only request text is ever sent to an LLM.
 
-**Federated or central.** One central in-memory database, filled from the three hospitals' records (`data_holder`: Klinikum Nord, Süd, West).
+**Federated, one database per hospital.** Each hospital (`data_holder`: Klinikum Nord, Süd, West) has its own database with only its own patients. A query runs in each hospital and only totals come back: counts, numerators and denominators, value sums. The access body adds them up and applies the small-cell rule once, on the totals. Suppressing per hospital first would hide counts that are safe in total. An SPE collects its cohort from every hospital. In this prototype the three databases run in one process; in production each would sit behind its own service. (Requires https://github.com/oguznacar10/aim-hackathon-ehds-oguz-arda/pull/9.)
 
 ## Metric results on the 10 requests
 
