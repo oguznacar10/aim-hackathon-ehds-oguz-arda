@@ -19,8 +19,12 @@ Where everything is. Read top to bottom once, then jump.
 | CI definition | `.github/workflows/ci.yml` |
 | Em-dash guard used by CI | `scripts/em-dash-guard.sh` |
 | Fixture sanity tests | `tests/` |
-| Decision engine (LLM reading + rules), red-team loop | `src/gatekeeper/` |
+| Decision engine (LLM reading + rules), red-team loop | `src/gatekeeper/` (`reader.py`, `rules.py`, `redteam.py`) |
+| One request end to end (decide, then statistics or SPE) | `src/gatekeeper/pipeline.py` |
+| Data access without opted-out patients, query plans, small-cell rule, SPE | `src/gatekeeper/data.py`, `query.py`, `smallcell.py`, `spe.py` |
+| Definitions to query plan (rules and LLM) | `src/gatekeeper/planner.py` |
 | Decision scoring on the 10 requests or a red-team set | `scripts/eval_decisions.py` |
+| All five challenge metrics on the 10 requests | `scripts/eval_metrics.py` |
 | Red-team test sets (tuning, held-out exam, disputed) | `redteam/` once generated |
 
 ## Facts that must not drift
