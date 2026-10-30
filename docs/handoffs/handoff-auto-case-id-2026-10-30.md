@@ -2,7 +2,7 @@
 
 ## What changed
 - No "Case number" box. `web.decide` gives a request without an `id` the next free `C-NNN`; samples keep R01 to R10.
-- Applicant name, Organisation and Country stay as editable fields. A "Signed in as" line was tried and dropped again at Oguz's request.
+- Applicant name, Organisation and Country stay as editable fields: name on its own row, organisation next to a narrow country box. A "Signed in as" line was tried and dropped again at Oguz's request.
 - Small light "i" tooltips on each label (CSS only, `aria-describedby`).
 
 ## Verified
