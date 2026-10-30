@@ -71,3 +71,9 @@ Oguz asked that the system, not the researcher, decides between anonymised stati
 - Eval modes: rules (keywords + rules), hybrid (LLM reads, rules decide, the shipped path), llm (ablation only), nimble and jev (decision model reads, rules decide), vote (LLM reads, Nimble as second opinion, disagreement escalates to staff). Errors are split into dangerous (more data than the law allows) and restrictive (less), with unflagged dangerous errors, escalations and latency p95 reported.
 - Why: the 2026-10-30 "LLM reads, rules decide" entry stands. This entry records that a decision model is allowed in the reader seat, which that entry did not cover, and that a model in the decider seat is for measurement only. A trained model as decider needs its own entry, which is not proposed here.
 - Open: live numbers for every mode except rules. Those runs start from Arda's terminal; see PR #5.
+
+## 2026-10-30 - The rule planner refuses a measure it cannot fully explain (Oguz via Devin, PROPOSED)
+
+- Without an LLM, the request "Report per hospital: patients with type 2 diabetes." (no definition for type 2 diabetes) returned every patient per hospital. The rule planner ignored words it did not know and counted the whole population.
+- Now every measure in the "Report per ...:" line may only use defined terms plus filler words (with, patients, how many, share, %, ...). Any other word stops planning with "'<measure>' uses words no definition explains: ...". The web app shows that as "the numbers could not be planned". With an LLM key the LLM plan is still tried first; this only changes the fallback.
+- Why: a wrong number is worse than no number for an access body. All 10 sample requests still plan the same (10/10, 6/6 offline).

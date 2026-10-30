@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from gatekeeper import data, pipeline, query, smallcell, spe
+from gatekeeper import data, pipeline, planner, query, smallcell, spe
 
 CHALLENGE = Path(__file__).resolve().parent.parent / "challenge"
 EXPECTED = json.loads((CHALLENGE / "requests" / "expected.json").read_text(encoding="utf-8"))
@@ -160,3 +160,13 @@ def test_unseen_patients_by_hospital_with_age_and_condition():
             truth[p["data_holder"]] += 1
     assert {h: flat(v) for h, v in out["answer"].items()} == {
         h: [smallcell.format_value("count", n)] for h, n in truth.items()}
+
+
+def test_rule_planner_refuses_a_measure_no_definition_explains():
+    req = new_request("T03", "How many patients with type 2 diabetes are there, by hospital?", [
+        "Report per hospital: patients with type 2 diabetes.",
+    ])
+    with pytest.raises(planner.PlanningFailed, match="type, 2, diabetes"):
+        planner.rule_statistics_plan(req)
+    with pytest.raises(planner.PlanningFailed):
+        pipeline.handle(req)
