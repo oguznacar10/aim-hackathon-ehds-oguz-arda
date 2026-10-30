@@ -38,7 +38,7 @@ def examples():
 
 def _next_case_id():
     with _lock:
-        while (cid := f"C-{next(_seq):03d}") in _cases:
+        while (cid := f"C-{next(_seq):03d}") in _cases or (spe.ROOT / cid).exists():
             pass
         return cid
 

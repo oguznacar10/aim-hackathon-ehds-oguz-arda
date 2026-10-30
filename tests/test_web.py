@@ -1,4 +1,5 @@
 """The web layer: examples, decisions, the blocked download and staff actions over real HTTP."""
+import itertools
 import json
 import re
 import threading
@@ -8,7 +9,7 @@ from http.server import ThreadingHTTPServer
 
 import pytest
 
-from gatekeeper import web
+from gatekeeper import spe, web
 
 
 @pytest.fixture(scope="module")
@@ -100,6 +101,14 @@ def test_new_request_gets_a_case_number_from_the_system(base):
     assert all(re.fullmatch(r"C-\d{3}", i) for i in ids) and ids[0] != ids[1]
     status, raw = call(base, "/api/cases")
     assert set(ids) <= {c["id"] for c in json.loads(raw)}
+
+
+def test_case_id_skips_a_folder_left_on_disk_by_an_earlier_run(tmp_path, monkeypatch):
+    (tmp_path / "C-001").mkdir()
+    monkeypatch.setattr(spe, "ROOT", tmp_path)
+    monkeypatch.setattr(web, "_seq", itertools.count(1))
+    monkeypatch.setattr(web, "_cases", {})
+    assert web._next_case_id() == "C-002"
 
 
 def test_edited_sample_drops_its_id_so_the_server_assigns_a_case_number(base):
