@@ -28,6 +28,7 @@ Where everything is. Read top to bottom once, then jump.
 | All five challenge metrics on the 10 requests | `scripts/eval_metrics.py` |
 | Web app: applicant notice, staff case file, blocked download (`python scripts/serve.py`) | `src/gatekeeper/web.py`, `src/gatekeeper/static/` |
 | Red-team test sets (tuning, held-out exam, disputed) and the human review sheet | `redteam/`, `redteam/REVIEW.md` (rebuild with `scripts/redteam_review.py`) |
+| Generated training requests (question and definitions from the data, labels from the rules) | `src/gatekeeper/synth.py`, output under `synth/` (`python -m gatekeeper.synth --n N --seed S`) |
 
 ## Facts that must not drift
 
