@@ -42,3 +42,7 @@
 - Training is another session's job; this batch is the input. 40 requests over 11 targets is thin for the rarer targets (2 to 3 each): a second seed with Arda's numbers doubles them.
 - The 20 unwritten prompts of seed 1 (items 40 to 59) are in the run's draw and can be written in a later batch without redrawing.
 - Cost of this run: two Opus writers about 111K bar units each, two Fable judges about 117K each.
+
+## Update 2026-10-30 - Art. 53(2) third-party clause decided
+- `S17d8f076` relabelled by `rules.decide()` with the keyword reader to APPROVE_STATISTICAL [53, 69], flagged for staff to verify the mandate, and moved to `synth/tuning/` (tuning 26, disputed 3). The offline eval numbers above were measured on the 25-file tuning set and were not re-run.
+- `S02d73635`, `S882325ec`, `Sfa328edb` stay in `synth/disputed/`: the keyword reader does not read their purpose as reserved for public bodies. See the DECIDED entry in `docs/decisions/log.md`.
