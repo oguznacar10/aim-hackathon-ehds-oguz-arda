@@ -2,6 +2,7 @@
 
     python scripts/serve.py            # http://127.0.0.1:8000
 """
+import itertools
 import json
 import re
 import threading
@@ -22,6 +23,7 @@ MAX_BODY = 64 * 1024
 DECISIONS = {"REJECT", "APPROVE_STATISTICAL", "APPROVE_SPE"}
 
 _cases = {}
+_seq = itertools.count(1)
 _lock = threading.Lock()
 
 
@@ -34,7 +36,16 @@ def examples():
             for p in sorted(REQUESTS.glob("R*.json"))]
 
 
+def _next_case_id():
+    with _lock:
+        while (cid := f"C-{next(_seq):03d}") in _cases:
+            pass
+        return cid
+
+
 def decide(request):
+    if isinstance(request, dict) and not str(request.get("id") or "").strip():
+        request = {**request, "id": _next_case_id()}
     result = pipeline.handle(request)
     case = {"request": request, "result": result, "decided_at": _now(),
             "status": "needs review" if result["needs_staff_review"] else "decided automatically",
@@ -61,7 +72,7 @@ def case_summary(case_id, case):
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Datenzugang"
+    server_version = "Gatekeeper"
 
     def log_message(self, fmt, *args):
         pass
@@ -169,5 +180,5 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(host="127.0.0.1", port=8000):
     httpd = ThreadingHTTPServer((host, port), Handler)
-    print(f"Datenzugang running at http://{host}:{port}")
+    print(f"Gatekeeper running at http://{host}:{port}")
     httpd.serve_forever()
