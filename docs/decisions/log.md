@@ -96,3 +96,9 @@ Arda approved both readings in his session on 2026-10-30 after the review of the
 ## 2026-10-30 - Product name .Gatekeeper (Oguz via Devin, PROPOSED)
 
 The app is called Gatekeeper, shown as the wordmark ".Gatekeeper" in the header, the tab title, the server banner and the README intro, replacing Datenzugang (PR 17). Becomes DECIDED when Arda or Oguz says so here.
+
+## 2026-10-30 - Art. 53(2) third-party clause: a private contractor working for a public body (Arda via Claude, PROPOSED)
+
+- Art. 53(2) reserves the purposes in Art. 53(1)(a), (b), (c) to public bodies "including where processing of data for carrying out those tasks is done by a third party on behalf of those public sector bodies". The decided 2026-10-30 entry on 53(2), `rules.py` and `redteam.JUDGE_PROMPT` all treat every private applicant with such a purpose as REJECT [53] and do not read the clause.
+- Found by the blind review of synth run 1: 4 of 40 generated requests are a private consultancy or wholesaler preparing planning input "under a contract with a federal state" or "for a regional health authority". Under the clause an access body would ask for the mandate and could approve under Art. 53(1)(a) or (b) as statistics; under the current rules it rejects.
+- Proposed reading: a private applicant who states that it processes on behalf of a named public body for that body's task is treated as the public body for Art. 53(2), flagged `needs_staff_review` so staff verify the mandate; a private applicant claiming the purpose for itself stays REJECT [53]. Until decided, the 4 files sit in `synth/disputed/` and seed nothing. If decided, `rules.py`, the judge prompt and the `private_reserved_purpose` writer brief ("the applicant claims the purpose for itself, not on behalf of a public body") change together.

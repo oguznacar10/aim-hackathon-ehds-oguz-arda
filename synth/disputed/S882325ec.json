@@ -1,0 +1,71 @@
+{
+  "id": "S882325ec",
+  "submitted": "2026-10-12T14:45:00+02:00",
+  "applicant": {
+    "name": "Dr. Elena Rossi",
+    "organisation": "Medicor Consulting AG (healthcare consultancy)",
+    "country": "CH"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We are preparing a policy briefing on respiratory medicines supply for the health planning committee of an Austrian federal state. The briefing needs inhaler use among adults with asthma in fine age bands.",
+  "question": "How often are combined inhalers and anticholinergic inhalers used for asthma in different age groups?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Asthma = any condition with an ICD-10 code starting with J45.",
+    "Combined inhaler = ATC code starting with R03AK; Anticholinergic inhaler = ATC code starting with R03BB.",
+    "A medication is active on 31 December 2025 if start_date is on or before that day and end_date is empty or on or after that day.",
+    "Age bands on 31 December 2025: 18-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80+.",
+    "Report per band: adults with asthma, % with an active combined inhaler, % with an active anticholinergic inhaler, one decimal."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "53"
+    ],
+    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+  },
+  "target": "private_reserved_purpose",
+  "answer": {
+    "18-29": {
+      "adults_with_asthma": 175,
+      "pct_with_an_active_combined_inhaler": 42.9,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "30-39": {
+      "adults_with_asthma": 153,
+      "pct_with_an_active_combined_inhaler": 43.1,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "40-49": {
+      "adults_with_asthma": 155,
+      "pct_with_an_active_combined_inhaler": 40.0,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "50-59": {
+      "adults_with_asthma": 126,
+      "pct_with_an_active_combined_inhaler": 38.1,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "60-69": {
+      "adults_with_asthma": 113,
+      "pct_with_an_active_combined_inhaler": 37.2,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "70-79": {
+      "adults_with_asthma": 96,
+      "pct_with_an_active_combined_inhaler": 30.2,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    },
+    "80+": {
+      "adults_with_asthma": 67,
+      "pct_with_an_active_combined_inhaler": 46.3,
+      "pct_with_an_active_anticholinergic_inhaler": "suppressed"
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 2: a private consultancy whose purpose is only a policy briefing for a health planning committee fits policy-making alone, with nothing readable as research, teaching, care improvement or algorithm work, so Art. 53(2) bars it."
+  },
+  "review": "Blind review 2026-10-30: the applicant processes on behalf of a public body, which Art. 53(2) covers ('including where processing ... is done by a third party on behalf of those public sector bodies'); REJECT [53] is contestable, human call needed"
+}

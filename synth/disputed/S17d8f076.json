@@ -1,0 +1,79 @@
+{
+  "id": "S17d8f076",
+  "submitted": "2026-10-14T17:15:00+02:00",
+  "applicant": {
+    "name": "Dr. Thomas Berger",
+    "organisation": "Nephro Analytics Consulting AG (management consultancy)",
+    "country": "CH"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We are preparing a public health planning report on regional dialysis capacity for a provincial government client and need the prevalence of chronic kidney disease per region as input.",
+  "question": "How many adults have chronic kidney disease in each region and what is the prevalence?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Chronic kidney disease = any condition with an ICD-10 code starting with N18.",
+    "Prevalence = adults with chronic kidney disease / all adults in the region × 100, one decimal.",
+    "Report per region: adults, adults with chronic kidney disease and the prevalence."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "53"
+    ],
+    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+  },
+  "target": "private_reserved_purpose",
+  "answer": {
+    "Burgenland": {
+      "adults": 532,
+      "adults_with_chronic_kidney_disease": 15,
+      "prevalence": 2.8
+    },
+    "Kärnten": {
+      "adults": 885,
+      "adults_with_chronic_kidney_disease": 15,
+      "prevalence": 1.7
+    },
+    "Niederösterreich": {
+      "adults": 2740,
+      "adults_with_chronic_kidney_disease": 86,
+      "prevalence": 3.1
+    },
+    "Oberösterreich": {
+      "adults": 2473,
+      "adults_with_chronic_kidney_disease": 61,
+      "prevalence": 2.5
+    },
+    "Salzburg": {
+      "adults": 908,
+      "adults_with_chronic_kidney_disease": 18,
+      "prevalence": 2.0
+    },
+    "Steiermark": {
+      "adults": 2052,
+      "adults_with_chronic_kidney_disease": 66,
+      "prevalence": 3.2
+    },
+    "Tirol": {
+      "adults": 1240,
+      "adults_with_chronic_kidney_disease": 40,
+      "prevalence": 3.2
+    },
+    "Vorarlberg": {
+      "adults": 639,
+      "adults_with_chronic_kidney_disease": 17,
+      "prevalence": 2.7
+    },
+    "Wien": {
+      "adults": 3247,
+      "adults_with_chronic_kidney_disease": 96,
+      "prevalence": 3.0
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 2: a private management consultancy whose purpose is only a public health planning report for a government client fits public health and policy-making alone, so Art. 53(2) bars it."
+  },
+  "review": "Blind review 2026-10-30: the applicant processes on behalf of a public body, which Art. 53(2) covers ('including where processing ... is done by a third party on behalf of those public sector bodies'); REJECT [53] is contestable, human call needed"
+}

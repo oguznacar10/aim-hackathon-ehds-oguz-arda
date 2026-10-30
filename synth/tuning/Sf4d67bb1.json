@@ -1,0 +1,37 @@
+{
+  "id": "Sf4d67bb1",
+  "submitted": "2026-10-17T09:15:00+02:00",
+  "applicant": {
+    "name": "Assoc. Prof. Dr. Eva Brunner",
+    "organisation": "Vienna Oncology Research Group (university research group)",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We investigate whether BMI changes during treatment predict recurrence in breast cancer. This requires linking each patient's BMI measurements over time with her diagnoses and therapy, which cannot be done on aggregate tables.",
+  "question": "Provide pseudonymised conditions, medications and BMI values for adults with breast cancer who have at least one BMI value.",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Breast cancer = any condition with an ICD-10 code starting with C50.",
+    "Cohort = adults with breast cancer who have at least one BMI value (LOINC 39156-5).",
+    "Report the size of the cohort you would make available."
+  ],
+  "expected": {
+    "decision": "APPROVE_SPE",
+    "articles": [
+      "53",
+      "66",
+      "68",
+      "73"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The applicant has shown that anonymised data cannot achieve it, so pseudonymised data is justified (Art. 66(3)). Access only under a data permit (Art. 68) inside a secure processing environment; only non-personal data may leave it (Art. 73(2))."
+  },
+  "target": "spe_mechanism",
+  "answer": {
+    "cohort_size": 72
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "Rule 4: the application says it links each patient's BMI measurements over time with her diagnoses and therapy, which statistics cannot do, and the Report line is a cohort size, not per-group counts, percentages or means."
+  }
+}

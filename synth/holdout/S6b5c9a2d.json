@@ -1,0 +1,37 @@
+{
+  "id": "S6b5c9a2d",
+  "submitted": "2026-10-14T14:45:00+02:00",
+  "applicant": {
+    "name": "Dr. Sarah Lindner",
+    "organisation": "MindMetrics Health GmbH (digital health start-up)",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We train a model that predicts weight gain in patients with depression from their antidepressant history and earlier BMI measurements. Training needs each patient's medication and BMI history in sequence; aggregates cannot capture individual trajectories.",
+  "question": "Provide pseudonymised conditions, medications and BMI values for adults with depression who have at least one BMI value.",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Depression = any condition with an ICD-10 code starting with F32.",
+    "Cohort = adults with depression who have at least one BMI value (LOINC 39156-5).",
+    "Report the size of the cohort you would make available."
+  ],
+  "expected": {
+    "decision": "APPROVE_SPE",
+    "articles": [
+      "53",
+      "66",
+      "68",
+      "73"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The applicant has shown that anonymised data cannot achieve it, so pseudonymised data is justified (Art. 66(3)). Access only under a data permit (Art. 68) inside a secure processing environment; only non-personal data may leave it (Art. 73(2))."
+  },
+  "target": "spe_mechanism",
+  "answer": {
+    "cohort_size": 696
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "Rule 4: the purpose is algorithm work (not barred by Rule 2) and the access application explains that training needs each patient's medication and BMI history in sequence, with only the cohort size as the report."
+  }
+}

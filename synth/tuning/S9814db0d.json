@@ -1,0 +1,70 @@
+{
+  "id": "S9814db0d",
+  "submitted": "2026-10-27T15:30:00+01:00",
+  "applicant": {
+    "name": "Dr. Christoph Mayr",
+    "organisation": "Department of Pulmonology, Southern Burgenland Regional Hospital (hospital department)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We are examining whether body weight among adults with asthma differs between regions, as part of a project to improve weight management advice in our asthma outpatient clinic.",
+  "question": "What is the mean BMI of adults with asthma, by region?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Asthma = any condition with an ICD-10 code starting with J45.",
+    "Use the latest BMI (LOINC 39156-5) per patient; patients without a BMI are left out.",
+    "Report per region: number of adults with asthma who have a BMI and mean BMI with one decimal."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). A health data request is answered only with anonymised statistics; the applicant never sees the data (Art. 69)."
+  },
+  "target": "stat_research",
+  "answer": {
+    "Burgenland": {
+      "adults_with_asthma_who_have_a_bmi": "<10",
+      "mean_bmi": "suppressed"
+    },
+    "Kärnten": {
+      "adults_with_asthma_who_have_a_bmi": 37,
+      "mean_bmi": 26.3
+    },
+    "Niederösterreich": {
+      "adults_with_asthma_who_have_a_bmi": 103,
+      "mean_bmi": 26.9
+    },
+    "Oberösterreich": {
+      "adults_with_asthma_who_have_a_bmi": 122,
+      "mean_bmi": 26.8
+    },
+    "Salzburg": {
+      "adults_with_asthma_who_have_a_bmi": 31,
+      "mean_bmi": 27.3
+    },
+    "Steiermark": {
+      "adults_with_asthma_who_have_a_bmi": 76,
+      "mean_bmi": 27.6
+    },
+    "Tirol": {
+      "adults_with_asthma_who_have_a_bmi": 54,
+      "mean_bmi": 27.5
+    },
+    "Vorarlberg": {
+      "adults_with_asthma_who_have_a_bmi": 22,
+      "mean_bmi": 27.8
+    },
+    "Wien": {
+      "adults_with_asthma_who_have_a_bmi": 125,
+      "mean_bmi": 26.6
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 3: requested_as is a health data request; Rules 1 and 2 do not apply to a hospital department improving care."
+  }
+}

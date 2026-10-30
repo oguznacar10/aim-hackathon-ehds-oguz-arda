@@ -1,0 +1,61 @@
+{
+  "id": "Sd72d8af5",
+  "submitted": "2026-10-10T12:30:00+02:00",
+  "applicant": {
+    "name": "Dr. Julia Steiner",
+    "organisation": "Emergency Department, Upper Austria Regional Hospital (hospital department)",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We are reviewing how emergency demand was spread across regions in 2023 in order to improve staffing and triage in our department.",
+  "question": "How many emergency visits started in 2023, by the patient's region?",
+  "definitions": [
+    "Emergency visit = encounter with type 'emergency'.",
+    "Count visits (not patients) whose start_date is in 2023.",
+    "Report per region: emergency visits."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "66",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The application does not show why anonymised statistics are not enough, so pseudonymised records are not justified (Art. 66(2)). It is answered with anonymised statistics instead (Art. 68(3), Art. 69)."
+  },
+  "target": "app_no_claim",
+  "answer": {
+    "Burgenland": {
+      "emergency_visit": 34
+    },
+    "Kärnten": {
+      "emergency_visit": 64
+    },
+    "Niederösterreich": {
+      "emergency_visit": 236
+    },
+    "Oberösterreich": {
+      "emergency_visit": 199
+    },
+    "Salzburg": {
+      "emergency_visit": 62
+    },
+    "Steiermark": {
+      "emergency_visit": 173
+    },
+    "Tirol": {
+      "emergency_visit": 89
+    },
+    "Vorarlberg": {
+      "emergency_visit": 36
+    },
+    "Wien": {
+      "emergency_visit": 222
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 5: the access application states no use of individual records that statistics cannot provide, and the report definition is a count of visits per region, so Rule 4 fails and the default for an access application applies."
+  }
+}

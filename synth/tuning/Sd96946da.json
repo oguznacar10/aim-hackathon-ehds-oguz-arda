@@ -1,0 +1,61 @@
+{
+  "id": "Sd96946da",
+  "submitted": "2026-10-26T08:30:00+01:00",
+  "applicant": {
+    "name": "Dr. Lena Hofbauer",
+    "organisation": "Institute of General Practice, Paracelsus Medical University Salzburg (university)",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We want to describe how beta blocker use differs between regions to inform quality circles for general practitioners.",
+  "question": "How many patients have an active beta blocker prescription, by region?",
+  "definitions": [
+    "Beta blocker = ATC code starting with C07AB.",
+    "A medication is active on 31 December 2025 if start_date is on or before that day and end_date is empty or on or after that day.",
+    "Report per region: patients with an active beta blocker."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "66",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The application does not show why anonymised statistics are not enough, so pseudonymised records are not justified (Art. 66(2)). It is answered with anonymised statistics instead (Art. 68(3), Art. 69)."
+  },
+  "target": "app_no_claim",
+  "answer": {
+    "Burgenland": {
+      "patients_with_an_active_beta_blocker": "<10"
+    },
+    "Kärnten": {
+      "patients_with_an_active_beta_blocker": "<10"
+    },
+    "Niederösterreich": {
+      "patients_with_an_active_beta_blocker": 43
+    },
+    "Oberösterreich": {
+      "patients_with_an_active_beta_blocker": 35
+    },
+    "Salzburg": {
+      "patients_with_an_active_beta_blocker": 14
+    },
+    "Steiermark": {
+      "patients_with_an_active_beta_blocker": 23
+    },
+    "Tirol": {
+      "patients_with_an_active_beta_blocker": 15
+    },
+    "Vorarlberg": {
+      "patients_with_an_active_beta_blocker": "<10"
+    },
+    "Wien": {
+      "patients_with_an_active_beta_blocker": 39
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 5: the text describes a research goal only, with no use of individual records that statistics cannot do, and the Report definition is a count per region."
+  }
+}

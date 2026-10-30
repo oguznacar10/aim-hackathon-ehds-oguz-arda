@@ -1,0 +1,59 @@
+{
+  "id": "S23889b65",
+  "submitted": "2026-10-16T10:15:00+02:00",
+  "applicant": {
+    "name": "Dr. Markus Leitgeb",
+    "organisation": "CardioGen Pharma GmbH (generic medicines company)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "Communication planning for the launch of our ARB generic. We want to know in which regions most patients currently take an ARB, so that field visits and pharmacy information material go where they are most relevant.",
+  "question": "How many patients have an active ARB prescription, by region?",
+  "definitions": [
+    "ARB = ATC code starting with C09CA.",
+    "A medication is active on 31 December 2025 if start_date is on or before that day and end_date is empty or on or after that day.",
+    "Report per region: patients with an active ARB."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "54"
+    ],
+    "reason": "The stated purpose amounts to advertising or marketing (Art. 54(c)). Access is refused (Art. 54); a refusal is always justified to the applicant (Art. 68(9))."
+  },
+  "target": "reject_54c",
+  "answer": {
+    "Burgenland": {
+      "patients_with_an_active_arb": 50
+    },
+    "Kärnten": {
+      "patients_with_an_active_arb": 55
+    },
+    "Niederösterreich": {
+      "patients_with_an_active_arb": 224
+    },
+    "Oberösterreich": {
+      "patients_with_an_active_arb": 188
+    },
+    "Salzburg": {
+      "patients_with_an_active_arb": 87
+    },
+    "Steiermark": {
+      "patients_with_an_active_arb": 146
+    },
+    "Tirol": {
+      "patients_with_an_active_arb": 97
+    },
+    "Vorarlberg": {
+      "patients_with_an_active_arb": 42
+    },
+    "Wien": {
+      "patients_with_an_active_arb": 252
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 1: communication planning for a product launch, directing field visits and pharmacy information material, is advertising or marketing prohibited by Art. 54."
+  }
+}

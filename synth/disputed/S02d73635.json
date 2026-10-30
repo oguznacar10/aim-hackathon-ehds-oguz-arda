@@ -1,0 +1,60 @@
+{
+  "id": "S02d73635",
+  "submitted": "2026-10-23T14:15:00+02:00",
+  "applicant": {
+    "name": "Mag. Peter Huber",
+    "organisation": "PharmaLogistik Austria GmbH (pharmaceutical wholesaler)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "Under a contract with a federal state, we prepare its medicines supply planning and need the number of patients with an active combined inhaler per region.",
+  "question": "How many patients have an active combined inhaler prescription, by region?",
+  "definitions": [
+    "Combined inhaler = ATC code starting with R03AK.",
+    "A medication is active on 31 December 2025 if start_date is on or before that day and end_date is empty or on or after that day.",
+    "Report per region: patients with an active combined inhaler."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "53"
+    ],
+    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+  },
+  "target": "private_reserved_purpose",
+  "answer": {
+    "Burgenland": {
+      "patients_with_an_active_combined_inhaler": 11
+    },
+    "Kärnten": {
+      "patients_with_an_active_combined_inhaler": 31
+    },
+    "Niederösterreich": {
+      "patients_with_an_active_combined_inhaler": 80
+    },
+    "Oberösterreich": {
+      "patients_with_an_active_combined_inhaler": 75
+    },
+    "Salzburg": {
+      "patients_with_an_active_combined_inhaler": 28
+    },
+    "Steiermark": {
+      "patients_with_an_active_combined_inhaler": 63
+    },
+    "Tirol": {
+      "patients_with_an_active_combined_inhaler": 41
+    },
+    "Vorarlberg": {
+      "patients_with_an_active_combined_inhaler": 19
+    },
+    "Wien": {
+      "patients_with_an_active_combined_inhaler": 98
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 2: a private wholesaler whose purpose is only a federal state's medicines supply planning fits public health and policy-making alone, so Art. 53(2) bars it."
+  },
+  "review": "Blind review 2026-10-30: the applicant processes on behalf of a public body, which Art. 53(2) covers ('including where processing ... is done by a third party on behalf of those public sector bodies'); REJECT [53] is contestable, human call needed"
+}

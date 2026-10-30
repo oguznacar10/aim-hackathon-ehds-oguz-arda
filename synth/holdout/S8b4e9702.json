@@ -1,0 +1,78 @@
+{
+  "id": "S8b4e9702",
+  "submitted": "2026-10-18T14:15:00+02:00",
+  "applicant": {
+    "name": "Ing. Sandra Moser",
+    "organisation": "Austriaca Lebensversicherung AG (insurance company)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "Our public affairs office is contributing to the national cancer policy consultation and needs regional breast cancer prevalence figures to support its written policy submission.",
+  "question": "How many adults have breast cancer in each region and what is the prevalence?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Breast cancer = any condition with an ICD-10 code starting with C50.",
+    "Prevalence = adults with breast cancer / all adults in the region × 100, one decimal.",
+    "Report per region: adults, adults with breast cancer and the prevalence."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "53"
+    ],
+    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+  },
+  "target": "private_reserved_purpose",
+  "answer": {
+    "Burgenland": {
+      "adults": 532,
+      "adults_with_breast_cancer": "<10",
+      "prevalence": "suppressed"
+    },
+    "Kärnten": {
+      "adults": 885,
+      "adults_with_breast_cancer": 10,
+      "prevalence": 1.1
+    },
+    "Niederösterreich": {
+      "adults": 2740,
+      "adults_with_breast_cancer": 23,
+      "prevalence": 0.8
+    },
+    "Oberösterreich": {
+      "adults": 2473,
+      "adults_with_breast_cancer": 19,
+      "prevalence": 0.8
+    },
+    "Salzburg": {
+      "adults": 908,
+      "adults_with_breast_cancer": "<10",
+      "prevalence": "suppressed"
+    },
+    "Steiermark": {
+      "adults": 2052,
+      "adults_with_breast_cancer": 19,
+      "prevalence": 0.9
+    },
+    "Tirol": {
+      "adults": 1240,
+      "adults_with_breast_cancer": 11,
+      "prevalence": 0.9
+    },
+    "Vorarlberg": {
+      "adults": 639,
+      "adults_with_breast_cancer": "<10",
+      "prevalence": "suppressed"
+    },
+    "Wien": {
+      "adults": 3247,
+      "adults_with_breast_cancer": 19,
+      "prevalence": 0.6
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 2: a private insurance company whose purpose is only a written submission to a national policy consultation fits policy-making alone, so Art. 53(2) bars it."
+  }
+}
