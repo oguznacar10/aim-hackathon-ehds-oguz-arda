@@ -81,7 +81,7 @@ pytest -q                               # regression tests, never call an LLM
 | Component | File | What it does |
 |---|---|---|
 | Reader | `src/gatekeeper/reader.py` | LLM answers two yes/no questions about the request text, with the evidence sentence. A keyword reader gives a second opinion; any disagreement sets `needs_staff_review`. |
-| Decision rules | `src/gatekeeper/rules.py` | Deterministic: Art. 54 purpose → reject; health data request → statistics; access application that explains why statistics are not enough → SPE; otherwise statistics. Attaches the articles. The LLM never decides. |
+| Decision rules | `src/gatekeeper/rules.py` | Deterministic: Art. 54 purpose → reject; health data request → statistics; private applicant whose purpose fits only public health, policy-making or official statistics → reject under Art. 53(2); access application that names what records are needed for and does not ask for a table per group → SPE; otherwise statistics. Attaches the articles. The LLM never decides. |
 | Planner | `src/gatekeeper/planner.py` | Turns the plain-English definitions into a JSON query plan or SPE spec. The LLM sees only question, definitions and the code list (ICD-10, ATC, LOINC labels), never patient rows. A rule planner writes the same plan; different numbers flag staff review. |
 | Query engine | `src/gatekeeper/query.py` | A plan never contains SQL. Every field is validated, then compiled to parameterised SQL. Staff see plan and SQL. |
 | Data access | `src/gatekeeper/data.py` | The only door to the CSVs. Loads one in-memory SQLite database per hospital and drops opted-out patients (Art. 71) and all their rows. |

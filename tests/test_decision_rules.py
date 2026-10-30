@@ -104,3 +104,57 @@ def test_llm_client_retries_rate_limits(monkeypatch):
     monkeypatch.setattr(llm.urllib.request, "urlopen", urlopen)
     assert llm.chat_json("json please", "openrouter") == {"ok": True}
     assert len(calls) == 3
+
+
+def private_reserved_request():
+    """A private insurer asking, as a health data request, for official statistics (Art. 53(2))."""
+    return {**load("R07"), "id": "T53",
+            "applicant": {"name": "Markus Gruber", "organisation": "Alpenland Versicherung AG, public affairs",
+                          "country": "AT"}}
+
+
+def test_private_applicant_with_reserved_purpose_is_refused_under_53():
+    req = private_reserved_request()
+    out = rules.decide(req, reader.read(req))
+    assert (out["decision"], out["articles"], out["needs_staff_review"]) == ("REJECT", ["53"], True)
+    assert "53(2)" in out["reason"]
+
+
+def test_public_body_keeps_the_reserved_purpose():
+    out = rules.decide(load("R07"), reader.read(load("R07")))
+    assert (out["decision"], out["articles"]) == ("APPROVE_STATISTICAL", ["53", "69"])
+
+
+def test_private_applicant_approved_when_purpose_also_fits_research():
+    req = {**private_reserved_request(),
+           "purpose": "Official statistics on hospital use, as input to our research study of regional differences."}
+    assert rules.decide(req, reader.read(req))["decision"] == "APPROVE_STATISTICAL"
+
+
+def test_readers_disagreeing_on_53_2_flag_review(monkeypatch):
+    monkeypatch.setattr(reader.llm, "available_providers", lambda: ["openrouter"])
+    monkeypatch.setattr(reader, "llm_reading",
+                        lambda req, provider, model=None, cache=True: {
+                            "prohibited": False, "art54_point": None, "public_body": False,
+                            "reserved_purpose_only": True, "justifies_records": False, "evidence": "x"})
+    out = reader.read(load("R07"))
+    assert out["needs_staff_review"] is True
+
+
+def test_records_justified_but_table_requested_falls_to_rule_4():
+    req = {**load("R09"), "purpose": load("R09")["purpose"]
+           + " We will train a model on individual-level histories; aggregates are not enough."}
+    assert reader.read(req)["justifies_records"] is True
+    out = rules.decide(req, reader.read(req))
+    assert (out["decision"], out["articles"], out["rule"]) == ("APPROVE_STATISTICAL", ["53", "66", "69"], 4)
+    assert "66(2)" in out["reason"]
+
+
+def test_bare_assertion_is_not_a_justification():
+    req = {**load("R09"), "purpose": load("R09")["purpose"] + " Individual-level records are essential."}
+    assert reader.read(req)["justifies_records"] is False
+
+
+def test_r05_report_line_is_not_a_table():
+    assert rules.report_is_table(load("R05")["definitions"]) is False
+    assert rules.report_is_table(load("R09")["definitions"]) is True
