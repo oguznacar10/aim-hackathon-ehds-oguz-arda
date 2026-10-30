@@ -1,0 +1,19 @@
+# .Gatekeeper intro video - narration script for the author to record (6 segments, 2:00 total; narrate.sh and captions.mjs parse the [N] blocks)
+
+[1] 0:00-0:15
+Medical research depends on reliable health data. Yet accessing it can be expensive and complicated. In Germany, for example, the standard processing fee for a single application costs €4,000. That's why we created Gatekeeper.
+
+[2] 0:15-0:40
+Gatekeeper is an AI-powered decision-support platform for the European Health Data Space. Researchers can submit applications, specify their research objectives, and request access to healthcare data. Before official submission, our system identifies potential issues and helps prevent costly mistakes.
+
+[3] 0:40-1:05
+Unlike LLMs, our approach uses specialized decision models designed for structured and consistent evaluations. Gatekeeper analyzes each request, checks relevant requirements, and provides an explainable recommendation: rejection, statistical access, or access through a secure processing environment.
+
+[4] 1:05-1:30
+On the staff side, applications are organized into case files for review. Our federated architecture allows participating hospital databases to process queries locally, without unnecessarily centralizing sensitive patient information. The system also respects patient opt-outs and applies privacy safeguards.
+
+[5] 1:30-1:45
+We evaluate Gatekeeper using decision accuracy, statistical correctness, privacy protection, consistency, and processing time. Our goal is to minimize critical errors while making the evaluation process more efficient.
+
+[6] 1:45-2:00
+Our current prototype demonstrates this workflow using synthetic hospital data. Integration with real European healthcare infrastructure remains future work. Our vision is to help research institutions access and analyze health data more reliably, affordably, and securely. Gatekeeper: Making European health research safer, smarter, and more accessible.
