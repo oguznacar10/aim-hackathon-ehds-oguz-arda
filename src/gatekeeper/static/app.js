@@ -36,7 +36,12 @@ function el(tag, attrs = {}, ...kids) {
   return node;
 }
 async function api(path, options = {}) {
-  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  let res;
+  try {
+    res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  } catch {
+    return { ok: false, status: 0, body: { error: "Could not reach the server. Check that it is running and try again." } };
+  }
   const body = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, body };
 }
@@ -59,6 +64,7 @@ document.querySelectorAll(".view-btn").forEach((btn) => btn.addEventListener("cl
 }));
 
 /* intake */
+const welcome = $("#welcome");
 async function loadExamples() {
   const res = await api("/api/examples");
   examples = res.body || [];
@@ -69,8 +75,8 @@ async function loadExamples() {
 }
 $("#example").addEventListener("change", (e) => {
   const ex = examples.find((x) => x.id === e.target.value);
-  if (!ex) return;
   const f = $("#request-form");
+  if (!ex) { f.id.value = ""; return; }
   f.name.value = ex.applicant.name || "";
   f.organisation.value = ex.applicant.organisation || "";
   f.country.value = ex.applicant.country || "";
@@ -79,6 +85,9 @@ $("#example").addEventListener("change", (e) => {
   f.question.value = ex.question;
   f.definitions.value = (ex.definitions || []).join("\n");
 });
+for (const name of ["purpose", "question", "definitions"]) {
+  $("#request-form")[name].addEventListener("input", () => { $("#request-form").id.value = ""; });
+}
 
 function readForm() {
   const f = $("#request-form");
@@ -99,7 +108,7 @@ $("#request-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const error = $("#form-error");
   const request = readForm();
-  const missing = [["id", "Case number"], ["purpose", "Purpose"], ["question", "Question"]].find(([k]) => !request[k]);
+  const missing = [["purpose", "Purpose"], ["question", "Question"]].find(([k]) => !request[k]);
   if (missing) {
     error.textContent = `${missing[1]} is empty. Fill it in and submit again.`;
     error.hidden = false;
@@ -115,7 +124,7 @@ $("#request-form").addEventListener("submit", async (e) => {
   btn.disabled = false;
   btn.textContent = "Submit request";
   if (!res.ok) {
-    slot.replaceChildren();
+    slot.replaceChildren(welcome);
     error.textContent = res.body.error || `The server answered ${res.status}.`;
     error.hidden = false;
     return;
@@ -127,7 +136,7 @@ $("#request-form").addEventListener("submit", async (e) => {
 
 function pendingNotice(request) {
   const n = $("#notice-tpl").content.firstElementChild.cloneNode(true);
-  $(".case-no", n).textContent = request.id;
+  $(".case-no", n).textContent = request.id || "New case";
   $(".applicant", n).textContent = request.applicant.organisation;
   $(".verdict", n).textContent = "Deciding";
   $(".verdict-code", n).hidden = true;

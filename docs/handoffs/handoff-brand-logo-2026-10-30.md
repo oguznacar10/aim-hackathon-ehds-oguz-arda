@@ -1,8 +1,8 @@
 # Handoff: .Gatekeeper wordmark - 2026-10-30
 
 ## What changed
-- The product name is now Gatekeeper, shown as the wordmark ".Gatekeeper" in the header: a blue dot (`--statistical`, the same colour as the APPROVE_STATISTICAL status dot) before the bold name. "Health Data Access Body" stays as the subtitle.
-- Browser tab title "Gatekeeper - Health Data Access Body" and a blue dot favicon (inline SVG data URI, no new route).
+- The product name is now Gatekeeper, shown as the wordmark ".Gatekeeper" in the header: a blue dot (`--statistical`, the same colour as the APPROVE_STATISTICAL status dot) before the bold name. The subtitle is "European Health Data Space" (changed in commit eedc2a2 on the empty-state branch).
+- Browser tab title "Gatekeeper - European Health Data Space" and a blue dot favicon (inline SVG data URI, no new route).
 - `web.py` server banner and README intro say Gatekeeper instead of Datenzugang.
 
 ## Verified

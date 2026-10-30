@@ -92,3 +92,7 @@ Arda approved both readings in his session on 2026-10-30 after the review of the
 - Run today on commit `573297a`, `--runs 3 --no-cache`: rules, hybrid (gpt-4o reads), llm (gpt-4o decides, ablation only), nimble (local, no key), vote. All five: 10/10 correct, 10/10 consistent, 0 dangerous, 0 unflagged, 0 escalated. p95: rules 0.00 s, nimble 1.10 s, vote 1.48 s, llm 1.92 s, hybrid 2.21 s. Full output in `docs/handoffs/handoff-decision-ablation-2026-10-30.md`. jev not run.
 - What we may claim: the shipped path (hybrid) and the local Nimble reader both score 10/10 live on the challenge set; the local reader needs no key and no cloud call. What we may not claim: that any mode is safer than another; 30 decisions with 0 failures bound the true failure rate only to 10%.
 - Why PROPOSED: the ranking question stays open until the synthetic held-out set exists (PR 16) and the modes run on it at Arda's batch size. The shipped path does not change on these numbers.
+
+## 2026-10-30 - Product name .Gatekeeper (Oguz via Devin, PROPOSED)
+
+The app is called Gatekeeper, shown as the wordmark ".Gatekeeper" in the header, the tab title, the server banner and the README intro, replacing Datenzugang (PR 17). Becomes DECIDED when Arda or Oguz says so here.

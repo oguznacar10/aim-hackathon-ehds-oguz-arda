@@ -1,5 +1,6 @@
 """The web layer: examples, decisions, the blocked download and staff actions over real HTTP."""
 import json
+import re
 import threading
 import urllib.error
 import urllib.request
@@ -36,6 +37,7 @@ def example(base, rid):
 def test_pages_and_examples(base):
     status, html = call(base, "/")
     assert status == 200 and b"Gatekeeper" in html
+    assert b'id="welcome"' in html and b'id="staff-welcome"' in html
     for path in ("/app.css", "/app.js"):
         assert call(base, path)[0] == 200
     _, raw = call(base, "/api/examples")
@@ -85,3 +87,22 @@ def test_hospitals_endpoint_returns_totals_only(base):
     rows = json.loads(raw)
     assert len(rows) == 3
     assert all(set(r) == {"hospital", "patients", "opted_out_excluded", "records"} for r in rows)
+
+
+def test_new_request_gets_a_case_number_from_the_system(base):
+    req = {**example(base, "R03"), "requested_as": "health data access application"}
+    del req["id"]
+    ids = []
+    for _ in range(2):
+        status, raw = call(base, "/api/decide", req)
+        assert status == 200
+        ids.append(json.loads(raw)["id"])
+    assert all(re.fullmatch(r"C-\d{3}", i) for i in ids) and ids[0] != ids[1]
+    status, raw = call(base, "/api/cases")
+    assert set(ids) <= {c["id"] for c in json.loads(raw)}
+
+
+def test_edited_sample_drops_its_id_so_the_server_assigns_a_case_number(base):
+    _, js = call(base, "/app.js")
+    assert b'["purpose", "question", "definitions"]' in js
+    assert b'addEventListener("input", () => { $("#request-form").id.value = ""; })' in js

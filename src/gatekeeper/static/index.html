@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gatekeeper - Health Data Access Body</title>
+<title>Gatekeeper - European Health Data Space</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%231D4E89'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 </head>
 <body>
 <header class="masthead">
-  <p class="product"><span class="product-name"><span class="product-dot" aria-hidden="true">.</span>Gatekeeper</span> <span class="product-role">Health Data Access Body</span></p>
+  <p class="product"><span class="product-name"><span class="product-dot" aria-hidden="true">.</span>Gatekeeper</span> <span class="product-role">European Health Data Space</span></p>
   <nav class="views" aria-label="View">
     <button type="button" class="view-btn" data-view="applicant" aria-pressed="true">Applicant</button>
     <button type="button" class="view-btn" data-view="staff" aria-pressed="false">Staff</button>
@@ -23,29 +23,61 @@
   <section class="intake" aria-labelledby="intake-title">
     <div class="intake-head">
       <h1 id="intake-title">Request access to health data</h1>
-      <label class="example-pick">Load an example
+      <label class="example-pick"><span class="lbl">Load an example<span class="info" tabindex="0" role="button" aria-label="About Load an example" aria-describedby="tip-example">i</span><span class="tip" role="tooltip" id="tip-example">Fills the form with one of the 10 sample requests from the challenge, so you can see how each is decided.</span></span>
         <select id="example"><option value="">Choose a sample request</option></select>
       </label>
     </div>
     <form id="request-form" novalidate>
-      <div class="row two">
-        <label>Applicant name<input name="name" required autocomplete="off"></label>
-        <label>Organisation<input name="organisation" required autocomplete="off"></label>
+      <input type="hidden" name="id">
+      <label><span class="lbl">Applicant name<span class="info" tabindex="0" role="button" aria-label="About Applicant name" aria-describedby="tip-name">i</span><span class="tip" role="tooltip" id="tip-name">The person responsible for the request. The name appears on the decision notice.</span></span><input name="name" required autocomplete="off"></label>
+      <div class="row org-country">
+        <label><span class="lbl">Organisation<span class="info" tabindex="0" role="button" aria-label="About Organisation" aria-describedby="tip-organisation">i</span><span class="tip" role="tooltip" id="tip-organisation">The university, authority or company you apply for. Companies may apply too; who you are is not a reason to refuse.</span></span><input name="organisation" required autocomplete="off"></label>
+        <label><span class="lbl">Country<span class="info" tabindex="0" role="button" aria-label="About Country" aria-describedby="tip-country">i</span><span class="tip" role="tooltip" id="tip-country">Two-letter code of the country your organisation is based in, for example AT or DE.</span></span><input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
       </div>
-      <div class="row two">
-        <label>Country<input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
-        <label>Case number<input name="id" required placeholder="R11" autocomplete="off"></label>
-      </div>
-      <label>Purpose<textarea name="purpose" rows="3" required></textarea></label>
-      <label>Question<textarea name="question" rows="3" required></textarea></label>
-      <label>Definitions <span class="hint">one per line, for example "Adult = aged 18 or older on 31 December 2025."</span>
+      <label><span class="lbl">Purpose<span class="info" tabindex="0" role="button" aria-label="About Purpose" aria-describedby="tip-purpose">i</span><span class="tip" role="tooltip" id="tip-purpose">Why you need the data and what it will be used for. Some purposes are prohibited (Art. 54), for example setting insurance premiums, advertising, or decisions about individual people.</span></span><textarea name="purpose" rows="3" required></textarea></label>
+      <label><span class="lbl">Question<span class="info" tabindex="0" role="button" aria-label="About Question" aria-describedby="tip-question">i</span><span class="tip" role="tooltip" id="tip-question">What you want to know, in one or two sentences. If you need patient-level records rather than statistics, explain here why statistics are not enough.</span></span><textarea name="question" rows="3" required></textarea></label>
+      <label><span class="lbl">Definitions<span class="info" tabindex="0" role="button" aria-label="About Definitions" aria-describedby="tip-definitions">i</span><span class="tip" role="tooltip" id="tip-definitions">One rule per line. Define each term, for example “Adult = aged 18 or older on 31 December 2025.” End with what to report, for example “Report per hospital: adults.”</span></span>
         <textarea name="definitions" rows="4"></textarea></label>
       <p id="form-error" class="form-error" role="alert" hidden></p>
       <button type="submit" class="primary" id="submit">Submit request</button>
     </form>
   </section>
 
-  <section id="notice-slot" class="notice-slot" aria-live="polite"></section>
+  <section id="notice-slot" class="notice-slot" aria-live="polite">
+      <div id="welcome" class="welcome">
+        <svg class="net" viewBox="0 0 560 290" role="img" aria-label="Three hospital databases connected through Gatekeeper to researchers in Vienna, Berlin and Lisbon">
+          <path id="net-h0" class="net-line" d="M92 80 C170 80 190 160 252 160"/>
+          <path id="net-h1" class="net-line" d="M92 160 L252 160"/>
+          <path id="net-h2" class="net-line" d="M92 240 C170 240 190 160 252 160"/>
+          <path id="net-r0" class="net-line" d="M308 160 C370 160 390 80 468 80"/>
+          <path id="net-r1" class="net-line" d="M308 160 L468 160"/>
+          <path id="net-r2" class="net-line" d="M308 160 C370 160 390 240 468 240"/>
+          <path class="net-flow" d="M92 80 C170 80 190 160 252 160"/>
+          <path class="net-flow" d="M92 160 L252 160"/>
+          <path class="net-flow" d="M92 240 C170 240 190 160 252 160"/>
+          <path class="net-flow" d="M308 160 C370 160 390 80 468 80"/>
+          <path class="net-flow" d="M308 160 L468 160"/>
+          <path class="net-flow" d="M308 160 C370 160 390 240 468 240"/>
+          <g class="net-db" transform="translate(70 80)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum Nord</text></g>
+          <g class="net-db" transform="translate(70 160)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum Süd</text></g>
+          <g class="net-db" transform="translate(70 240)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum West</text></g>
+          <g class="net-person" transform="translate(490 80)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Vienna</text></g>
+          <g class="net-person" transform="translate(490 160)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Berlin</text></g>
+          <g class="net-person" transform="translate(490 240)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Lisbon</text></g>
+          <g class="net-hub" transform="translate(280 160)"><circle class="net-pulse" r="28"/><circle class="net-ring" r="28"/><circle class="net-core" r="5"/><text y="50">.Gatekeeper</text></g>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#net-h0"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite"><mpath href="#net-r0"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-0.8s" repeatCount="indefinite"><mpath href="#net-h1"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-2.0s" repeatCount="indefinite"><mpath href="#net-r1"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-1.6s" repeatCount="indefinite"><mpath href="#net-h2"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-2.8s" repeatCount="indefinite"><mpath href="#net-r2"/></animateMotion></circle>
+          <text class="net-cap" x="70" y="28">Hospitals</text><text class="net-cap" x="490" y="28">Researchers</text>
+        </svg>
+        <p class="welcome-lead">Gatekeeper connects hospitals with researchers all over Europe.</p>
+        <p>Each hospital keeps its own patients. Questions travel to the data, and only anonymised totals come back.</p>
+        <p class="welcome-hint">Submit a request or load an example to see the decision here.</p>
+      </div>
+    </section>
 </main>
 
 <main id="staff" class="view" hidden>
@@ -62,7 +94,26 @@
     <div id="queue-list"></div>
   </aside>
   <section id="casefile" class="casefile" aria-live="polite">
-    <p class="empty">Select a case to open its file.</p>
+    <div id="staff-welcome" class="welcome">
+      <svg class="net net-staff" viewBox="0 0 560 270" role="img" aria-label="A case file sends a query to each of the three hospital databases; only totals come back">
+        <path id="staff-q0" class="net-line" d="M280 66 C280 104 120 96 120 132"/>
+        <path id="staff-q1" class="net-line" d="M280 66 L280 132"/>
+        <path id="staff-q2" class="net-line" d="M280 66 C280 104 440 96 440 132"/>
+        <g class="net-file" transform="translate(280 42)"><path d="M-13 -20h18l8 8v32h-26z M5 -20v8h8"/><path class="net-file-rows" d="M-7 -2h14M-7 5h14M-7 12h9"/><text x="22" y="4">Case file</text></g>
+        <g class="net-db net-db-big" transform="translate(120 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><ellipse class="net-db-glow" cx="0" cy="0" rx="36" ry="9" style="animation-delay:-0.0s"/><text y="96">Klinikum Nord</text></g>
+        <g class="net-db net-db-big" transform="translate(280 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><ellipse class="net-db-glow" cx="0" cy="0" rx="36" ry="9" style="animation-delay:-0.9s"/><text y="96">Klinikum Süd</text></g>
+        <g class="net-db net-db-big" transform="translate(440 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><ellipse class="net-db-glow" cx="0" cy="0" rx="36" ry="9" style="animation-delay:-1.8s"/><text y="96">Klinikum West</text></g>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-0.0s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q0"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-0.0s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q0"/></animateMotion></circle>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-0.9s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q1"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-0.9s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q1"/></animateMotion></circle>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-1.8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q2"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-1.8s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q2"/></animateMotion></circle>
+      </svg>
+      <p class="welcome-lead">Every request becomes a case file here.</p>
+      <p>Each hospital database answers on its own. Only totals reach the case file, never patient rows.</p>
+      <p class="welcome-hint">Cases marked for review wait for you to confirm or overrule. Select a case on the left to start.</p>
+    </div>
   </section>
 </main>
 
