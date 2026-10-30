@@ -69,8 +69,8 @@ async function loadExamples() {
 }
 $("#example").addEventListener("change", (e) => {
   const ex = examples.find((x) => x.id === e.target.value);
-  if (!ex) return;
   const f = $("#request-form");
+  if (!ex) { f.id.value = ""; return; }
   f.name.value = ex.applicant.name || "";
   f.organisation.value = ex.applicant.organisation || "";
   f.country.value = ex.applicant.country || "";
@@ -99,7 +99,7 @@ $("#request-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const error = $("#form-error");
   const request = readForm();
-  const missing = [["id", "Case number"], ["purpose", "Purpose"], ["question", "Question"]].find(([k]) => !request[k]);
+  const missing = [["purpose", "Purpose"], ["question", "Question"]].find(([k]) => !request[k]);
   if (missing) {
     error.textContent = `${missing[1]} is empty. Fill it in and submit again.`;
     error.hidden = false;
@@ -127,7 +127,7 @@ $("#request-form").addEventListener("submit", async (e) => {
 
 function pendingNotice(request) {
   const n = $("#notice-tpl").content.firstElementChild.cloneNode(true);
-  $(".case-no", n).textContent = request.id;
+  $(".case-no", n).textContent = request.id || "New case";
   $(".applicant", n).textContent = request.applicant.organisation;
   $(".verdict", n).textContent = "Deciding";
   $(".verdict-code", n).hidden = true;

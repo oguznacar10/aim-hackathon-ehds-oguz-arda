@@ -27,13 +27,13 @@
       </label>
     </div>
     <form id="request-form" novalidate>
+      <input type="hidden" name="id">
       <div class="row two">
         <label>Applicant name<input name="name" required autocomplete="off"></label>
         <label>Organisation<input name="organisation" required autocomplete="off"></label>
       </div>
       <div class="row two">
         <label>Country<input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
-        <label>Case number<input name="id" required placeholder="R11" autocomplete="off"></label>
       </div>
       <label>Purpose<textarea name="purpose" rows="3" required></textarea></label>
       <label>Question<textarea name="question" rows="3" required></textarea></label>
