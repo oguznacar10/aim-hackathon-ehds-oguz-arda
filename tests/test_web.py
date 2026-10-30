@@ -35,7 +35,8 @@ def example(base, rid):
 
 def test_pages_and_examples(base):
     status, html = call(base, "/")
-    assert status == 200 and b"Datenzugang" in html and b'id="welcome"' in html
+    assert status == 200 and b"Datenzugang" in html
+    assert b'id="welcome"' in html
     for path in ("/app.css", "/app.js"):
         assert call(base, path)[0] == 200
     _, raw = call(base, "/api/examples")
