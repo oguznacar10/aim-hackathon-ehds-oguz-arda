@@ -30,7 +30,8 @@ button, input, select, textarea { font: inherit; color: inherit; accent-color: v
 .masthead { display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
   padding: var(--s3) var(--s5); background: var(--paper); border-bottom: 1px solid var(--rule); }
 .product { margin: 0; display: flex; align-items: baseline; gap: var(--s3); }
-.product-name { font-weight: 700; font-size: 20px; }
+.product-name { font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+.product-dot { color: var(--statistical); font-size: 1.35em; line-height: 0; margin-right: 1px; }
 .product-role { color: var(--muted); }
 .views { display: inline-flex; border: 1px solid var(--ink); border-radius: var(--control-radius); overflow: hidden; }
 .view-btn { border: 0; background: var(--paper); padding: var(--s2) var(--s3); cursor: pointer; }
