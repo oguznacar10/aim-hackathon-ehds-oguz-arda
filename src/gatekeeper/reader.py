@@ -66,13 +66,13 @@ def keyword_reading(request):
     }
 
 
-def llm_reading(request, provider, model=None):
+def llm_reading(request, provider, model=None, cache=True):
     visible = {k: request[k] for k in ("applicant", "requested_as", "purpose", "question")}
     model = model or llm.DEFAULT_MODELS[provider]
     key = hashlib.sha256(json.dumps([PROMPT_VERSION, provider, model, visible],
                                     sort_keys=True).encode()).hexdigest()
     cached = CACHE_DIR / f"{key}.json"
-    if cached.exists():
+    if cache and cached.exists():
         return json.loads(cached.read_text(encoding="utf-8"))
     out = llm.chat_json(PROMPT + json.dumps(visible, ensure_ascii=False), provider, model)
     reading = {
@@ -81,20 +81,24 @@ def llm_reading(request, provider, model=None):
         "justifies_records": bool(out.get("justifies_records")),
         "evidence": str(out.get("evidence") or ""),
     }
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cached.write_text(json.dumps(reading), encoding="utf-8")
+    if cache:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        cached.write_text(json.dumps(reading), encoding="utf-8")
     return reading
 
 
-def read(request, provider=None, model=None):
-    """LLM reading when a key is configured, keyword reading otherwise; flags disagreement."""
+def read(request, provider=None, model=None, mode="auto", cache=True):
+    """LLM reading when a key is configured, keyword reading otherwise; flags disagreement.
+
+    mode="keywords" forces the keyword reader even when a key is set (the "rules" ablation).
+    """
     kw = keyword_reading(request)
     providers = llm.available_providers()
     provider = provider or (providers[0] if providers else None)
-    if provider is None:
+    if provider is None or mode == "keywords":
         return {**kw, "source": "keywords", "needs_staff_review": False}
     try:
-        ai = llm_reading(request, provider, model)
+        ai = llm_reading(request, provider, model, cache)
     except (llm.LLMUnavailable, ValueError, OSError) as e:
         return {**kw, "source": "keywords", "needs_staff_review": True,
                 "llm_error": f"{provider} unavailable, keyword reading used: {e}"[:300]}

@@ -50,8 +50,9 @@ def test_staff_review_flag_is_passed_through():
 def test_disagreement_between_readers_flags_review(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test")
     monkeypatch.setattr(reader, "llm_reading",
-                        lambda req, provider, model=None: {"prohibited": True, "art54_point": "a",
-                                                           "justifies_records": False, "evidence": "x"})
+                        lambda req, provider, model=None, cache=True: {
+                            "prohibited": True, "art54_point": "a", "justifies_records": False,
+                            "evidence": "x"})
     out = reader.read(load("R01"))
     assert out["prohibited"] is True
     assert out["needs_staff_review"] is True
