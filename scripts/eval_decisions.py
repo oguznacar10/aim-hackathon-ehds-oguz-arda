@@ -20,6 +20,22 @@ from gatekeeper import direct, llm, reader, rules  # noqa: E402
 
 EXTRA_OK = {"67", "71"}
 MODES = ("rules", "hybrid", "llm")
+RELEASE = {"REJECT": 0, "APPROVE_STATISTICAL": 1, "APPROVE_SPE": 2}
+
+
+def error_kind(expected, got):
+    """None when right; 'dangerous' releases more data than the law allows, 'restrictive' less,
+    'invalid' is no usable decision at all."""
+    if got == expected:
+        return None
+    if got not in RELEASE:
+        return "invalid"
+    return "dangerous" if RELEASE[got] > RELEASE[expected] else "restrictive"
+
+
+def percentile(values, pct):
+    values = sorted(values)
+    return values[min(len(values) - 1, int(round(pct / 100 * (len(values) - 1))))]
 
 
 def decide(req, mode, cache, provider=None):
@@ -65,39 +81,58 @@ def main():
     modes = MODES if args.mode == "all" else (args.mode,)
     summary = {mode: run_mode(mode, cases, args) for mode in modes}
     if len(modes) > 1:
-        print(f"{'mode':<8} {'correct':<9} {'consistent':<11} slowest")
-        for mode, (correct, consistent, slowest) in summary.items():
-            print(f"{mode:<8} {correct:<2}/{len(cases):<6} {consistent:<2}/{len(cases):<8} {slowest:.2f} s")
-    return 0 if all(c == len(cases) for c, _, _ in summary.values()) else 1
+        print(f"{'mode':<8} {'correct':<8} {'consistent':<11} {'danger/unflagged':<17} "
+              f"{'restrictive':<12} {'escalated':<10} {'p95 s':<7} max s")
+        for mode, m in summary.items():
+            print(f"{mode:<8} {m['correct']:>2}/{len(cases):<5} {m['consistent']:>2}/{len(cases):<8} "
+                  f"{m['dangerous']:>3} / {m['unflagged']:<9} {m['restrictive']:<12} "
+                  f"{m['escalated']:<10} {m['p95']:<7.2f} {m['max']:.2f}")
+    return 0 if all(m["correct"] == len(cases) and m["unflagged"] == 0 for m in summary.values()) else 1
 
 
 def run_mode(mode, cases, args):
-    runs, slowest = [], 0.0
+    runs, timings, kinds = [], [], {"dangerous": 0, "restrictive": 0, "invalid": 0}
+    unflagged = escalated = 0
     for _ in range(args.runs):
         outcome = {}
         for req, exp_decision, exp_articles in cases:
             t0 = time.perf_counter()
             result = decide(req, mode, cache=not args.no_cache, provider=args.provider)
-            slowest = max(slowest, time.perf_counter() - t0)
+            timings.append(time.perf_counter() - t0)
             ok = result["decision"] == exp_decision and (
                 exp_articles is None or articles_ok(result["articles"], exp_articles))
-            outcome[req["id"]] = (result["decision"], result["articles"], ok,
-                                  result["needs_staff_review"], result["source"])
+            kind = error_kind(exp_decision, result["decision"])
+            review = bool(result["needs_staff_review"])
+            escalated += review
+            if kind:
+                kinds[kind] += 1
+                unflagged += kind != "restrictive" and not review
+            outcome[req["id"]] = (result["decision"], result["articles"], ok, review, result["source"], kind)
         runs.append(outcome)
 
     first = runs[0]
+    total = len(cases) * args.runs
     source = next(iter(first.values()))[4]
     print(f"mode={mode} set={args.set} cases={len(cases)} runs={args.runs} source={source} "
           f"cache={'off' if args.no_cache else 'on'}")
-    for rid, (decision, arts, ok, review, _) in first.items():
+    for rid, (decision, arts, ok, review, _, kind) in first.items():
         flag = " [staff review]" if review else ""
-        print(f"  {rid:<10} {decision:<20} {','.join(arts):<14} {'ok' if ok else 'WRONG'}{flag}")
-    correct = sum(ok for _, _, ok, _, _ in first.values())
+        verdict = "ok" if ok else f"WRONG ({kind or 'articles'})"
+        print(f"  {rid:<10} {decision:<20} {','.join(arts):<14} {verdict}{flag}")
+    correct = sum(ok for _, _, ok, _, _, _ in first.values())
     consistent = sum(len({json.dumps(r[rid][:2]) for r in runs}) == 1 for rid in first)
     print(f"correct decisions: {correct}/{len(cases)}")
     print(f"consistent over {args.runs} runs: {consistent}/{len(cases)}")
-    print(f"slowest decision: {slowest:.2f} s")
-    return correct, consistent, slowest
+    print(f"over all {total} decisions: dangerous (more data than the law allows) {kinds['dangerous']}, "
+          f"invalid {kinds['invalid']}, of those not flagged for staff {unflagged}; "
+          f"restrictive (less than allowed) {kinds['restrictive']}; escalated to staff {escalated}")
+    print(f"latency: p50 {percentile(timings, 50):.2f} s, p95 {percentile(timings, 95):.2f} s, "
+          f"max {max(timings):.2f} s")
+    print(f"with {total} decisions and 0 observed failures the true failure rate can still be "
+          f"up to {3 / total:.1%} (rule of three, 95% confidence)")
+    return {"correct": correct, "consistent": consistent, "dangerous": kinds["dangerous"] + kinds["invalid"],
+            "unflagged": unflagged, "restrictive": kinds["restrictive"], "escalated": escalated,
+            "p95": percentile(timings, 95), "max": max(timings)}
 
 
 if __name__ == "__main__":

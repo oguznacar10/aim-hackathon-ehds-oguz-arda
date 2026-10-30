@@ -45,6 +45,7 @@ def test_eval_script_rules_mode_runs_offline():
                           cwd=REPO, env=env, capture_output=True, text=True, timeout=120)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "mode=rules" in proc.stdout and "correct decisions: 10/10" in proc.stdout
+    assert "not flagged for staff 0" in proc.stdout and "latency: p50" in proc.stdout
 
 
 def test_openrouter_is_a_provider_with_openai_shaped_calls(monkeypatch):
@@ -111,3 +112,21 @@ def test_key_can_come_from_secret_manager_inside_the_process(monkeypatch):
     assert seen["cmd"] == ["gcloud", "auth"]
     assert seen["url"].startswith("https://secretmanager.googleapis.com/v1/projects/p1/secrets/s1/")
     assert seen["project"] == "p1"
+
+
+@pytest.mark.parametrize("expected, got, kind", [
+    ("REJECT", "REJECT", None),
+    ("REJECT", "APPROVE_STATISTICAL", "dangerous"),
+    ("REJECT", "APPROVE_SPE", "dangerous"),
+    ("APPROVE_STATISTICAL", "APPROVE_SPE", "dangerous"),
+    ("APPROVE_STATISTICAL", "REJECT", "restrictive"),
+    ("APPROVE_SPE", "APPROVE_STATISTICAL", "restrictive"),
+    ("APPROVE_SPE", "REJECT", "restrictive"),
+    ("APPROVE_SPE", "INVALID", "invalid"),
+])
+def test_error_kind_separates_over_release_from_over_restriction(expected, got, kind):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("eval_decisions", REPO / "scripts" / "eval_decisions.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.error_kind(expected, got) == kind
