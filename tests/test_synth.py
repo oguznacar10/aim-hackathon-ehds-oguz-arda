@@ -36,8 +36,10 @@ def test_every_shape_passes_the_validator_and_runs_on_the_data(seed):
             shape = synth.build_shape(rng, kind)
             req = synth.assemble(shape, synth.TARGETS[0], stub_writer(shape, synth.TARGETS[0]), rng)
             assert redteam.validate_generated(req, VOCAB) == [], req["definitions"]
-            answer = synth.answer(req)
-            assert answer, req["question"]
+            try:
+                assert synth.answer(req), req["question"]
+            except synth.planner.PlanningFailed as e:
+                assert "suppressed" in str(e), req["question"]
 
 
 def test_targets_label_as_intended_through_the_rules():
@@ -65,7 +67,7 @@ def test_records_targets_never_ask_for_a_table():
 
 
 def test_generate_writes_labelled_files(tmp_path):
-    stats = synth.generate(6, 11, stub_writer, out=tmp_path)
+    stats = synth.generate(6, 11, stub_writer, 30, out=tmp_path)
     files = sorted(tmp_path.glob("*/*.json"))
     assert stats["kept"] == len(files) == 6
     assert stats["invalid"] == 0
@@ -83,8 +85,8 @@ def test_generate_writes_labelled_files(tmp_path):
 
 
 def test_generate_is_deterministic_for_a_seed(tmp_path):
-    synth.generate(3, 5, stub_writer, out=tmp_path / "a")
-    synth.generate(3, 5, stub_writer, out=tmp_path / "b")
+    synth.generate(3, 5, stub_writer, 20, out=tmp_path / "a")
+    synth.generate(3, 5, stub_writer, 20, out=tmp_path / "b")
     a = sorted(p.name for p in (tmp_path / "a").glob("*/*.json"))
     b = sorted(p.name for p in (tmp_path / "b").glob("*/*.json"))
     assert a == b and len(a) == 3
@@ -94,11 +96,57 @@ def test_judge_disagreement_goes_to_disputed(tmp_path):
     def contrary_judge(req):
         return {"decision": "REJECT" if req["expected"]["decision"] != "REJECT" else "APPROVE_SPE",
                 "why": "test"}
-    stats = synth.generate(4, 2, stub_writer, judge=contrary_judge, out=tmp_path)
+    stats = synth.generate(4, 2, stub_writer, 20, judge=contrary_judge, out=tmp_path)
     assert stats["disputed"] == 4
     for f in tmp_path.glob("disputed/*.json"):
         req = json.loads(f.read_text(encoding="utf-8"))
         assert req["judge"]["decision"] != req["expected"]["decision"]
+
+
+def test_judge_never_sees_the_label(tmp_path):
+    seen = []
+    def recording_judge(req):
+        seen.append(set(synth.judge_input(req)))
+        return {"decision": req["expected"]["decision"], "why": "agree"}
+    synth.generate(3, 4, stub_writer, 20, judge=recording_judge, out=tmp_path)
+    assert seen and all(not keys & {"expected", "target", "answer", "intended", "judge"} for keys in seen)
+
+
+def test_judge_prompt_carries_the_decided_rules():
+    assert "53(2)" in redteam.JUDGE_PROMPT and "per group" in redteam.JUDGE_PROMPT
+
+
+def test_attempt_cap_bounds_writer_calls(tmp_path):
+    calls = []
+    def bad_writer(shape, target):
+        calls.append(1)
+        return ["not", "a", "dict"]
+    stats = synth.generate(5, 1, bad_writer, 7, out=tmp_path)
+    assert len(calls) == 7 and stats["kept"] == 0 and stats["attempts"] == 7
+
+
+def test_writer_error_is_counted_not_raised(tmp_path):
+    def failing_writer(shape, target):
+        raise json.JSONDecodeError("bad", "x", 0)
+    stats = synth.generate(2, 1, failing_writer, 3, out=tmp_path)
+    assert stats["malformed"] == 3 and stats["kept"] == 0
+    assert len(list((tmp_path / "invalid").glob("*.json"))) == 3
+
+
+def test_all_suppressed_answer_is_not_answerable():
+    assert synth._has_number({"Wien": {"n": "<10", "mean": "suppressed"}}) is False
+    assert synth._has_number({"Wien": {"n": 12, "mean": "suppressed"}}) is True
+    assert synth._has_number({"cohort_size": "<10"}) is False
+
+
+def test_submitted_offset_follows_summer_time():
+    rng = random.Random(0)
+    shape = synth.build_shape(rng, "table")
+    stamps = [synth.assemble(shape, synth.TARGETS[0], stub_writer(shape, synth.TARGETS[0]),
+                             random.Random(i))["submitted"] for i in range(40)]
+    for s in stamps:
+        day = int(s[8:10])
+        assert s.endswith("+02:00" if day < 25 else "+01:00"), s
 
 
 def test_writer_prompt_never_sees_patient_rows_and_names_the_target():

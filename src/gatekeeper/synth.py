@@ -9,18 +9,22 @@ and must run through the planner on the data; one that yields no answer is dropp
 optional judge LLM reads the text independently; a disagreement sends the file to disputed/ for a
 human instead of the training set.
 
-    python -m gatekeeper.synth --n N --seed S [--provider P] [--judge P2]
+    python -m gatekeeper.synth --n N --seed S --max-attempts M [--provider P] [--judge P2]
 
-N and S have no defaults: Arda picks every run size.
+N, S and M have no defaults: Arda picks every run size. M bounds the paid LLM calls, N the files kept.
 """
 import argparse
 import datetime as dt
 import hashlib
 import json
 import random
+import urllib.error
+from functools import lru_cache
 from pathlib import Path
 
-from gatekeeper import llm, planner, query, redteam, rules
+from gatekeeper import llm, pipeline, planner, query, redteam, rules
+
+WRITER_ERRORS = (json.JSONDecodeError, llm.LLMUnavailable, urllib.error.URLError, ValueError, OSError)
 
 OUT = redteam.REPO / "synth"
 DATE = redteam.REFERENCE_DATE
@@ -53,7 +57,6 @@ PAIRS = {
     "C50": ("breast cancer", [], [("39156-5", "BMI")]),
 }
 
-# One reading per target; rules.decide() turns it into the label.
 TARGETS = [
     {"name": "reject_54a", "requested_as": rules.APPLICATION, "shape": "records", "decision": "REJECT",
      "reading": {"prohibited": True, "art54_point": "a", "justifies_records": True},
@@ -204,7 +207,8 @@ def build_shape(rng, kind):
 def assemble(shape, target, prose, rng):
     """One request in the originals' shape; the id comes from the text, the date from the seed."""
     day, hour, minute = rng.randrange(1, 29), rng.randrange(8, 18), _pick(rng, [0, 15, 30, 45])
-    req = {"id": "", "submitted": f"2026-10-{day:02d}T{hour:02d}:{minute:02d}:00+01:00",
+    offset = "+02:00" if day < 25 else "+01:00"  # summer time ends 25 October 2026
+    req = {"id": "", "submitted": f"2026-10-{day:02d}T{hour:02d}:{minute:02d}:00{offset}",
            "applicant": prose["applicant"], "requested_as": target["requested_as"],
            "requested_format": redteam.FORMATS[target["requested_as"]],
            "purpose": prose["purpose"], "question": shape["question"], "definitions": shape["definitions"]}
@@ -213,12 +217,21 @@ def assemble(shape, target, prose, rng):
 
 
 def answer(req):
-    """Runs the request on the data; raises PlanningFailed or InvalidPlan when the data cannot answer it."""
-    if any(d.lower().startswith("report per") for d in req["definitions"]):
-        return query.run(planner.rule_statistics_plan(req))["answer"]
-    spec = planner.rule_spe_spec(req)
-    return {"cohort_size": query.run({"population": spec["cohort"],
-                                      "measures": [{"name": "n", "kind": "count"}]})["answer"]["n"]}
+    """Runs the request on the data; raises PlanningFailed or InvalidPlan when the data cannot answer it
+    or when every cell of the answer is suppressed."""
+    if rules.report_is_table(req["definitions"]):
+        out = query.run(planner.rule_statistics_plan(req))["answer"]
+    else:
+        out = {"cohort_size": pipeline._cohort_size(planner.rule_spe_spec(req))}
+    if not _has_number(out):
+        raise planner.PlanningFailed("every cell of the answer is suppressed by the small-cell rule")
+    return out
+
+
+def _has_number(node):
+    if isinstance(node, dict):
+        return any(_has_number(v) for v in node.values())
+    return isinstance(node, (int, float)) and not isinstance(node, bool)
 
 
 def label(req, target):
@@ -226,12 +239,17 @@ def label(req, target):
     return {k: out[k] for k in ("decision", "articles", "reason")}
 
 
-def writer_prompt(shape, target):
+@lru_cache(maxsize=1)
+def _examples():
     examples = []
     for rid in ("R01", "R05", "R07"):
         ex = json.loads((redteam.REPO / "challenge/requests" / f"{rid}.json").read_text(encoding="utf-8"))
         examples.append(json.dumps({"applicant": ex["applicant"], "purpose": ex["purpose"]}, ensure_ascii=False))
-    return WRITER_PROMPT.format(brief=target["brief"], examples="\n".join(examples),
+    return "\n".join(examples)
+
+
+def writer_prompt(shape, target):
+    return WRITER_PROMPT.format(brief=target["brief"], examples=_examples(),
                                 question=shape["question"], definitions=json.dumps(shape["definitions"]))
 
 
@@ -241,22 +259,38 @@ def llm_writer(provider, model=None):
     return write
 
 
+LABEL_FIELDS = ("expected", "target", "answer")
+
+
+def judge_input(req):
+    """What an independent judge may see: the request as an applicant would send it, nothing else."""
+    return {k: v for k, v in req.items() if k not in LABEL_FIELDS}
+
+
 def llm_judge(provider, model=None):
     def judge(req):
-        return redteam.judge({k: v for k, v in req.items() if k != "expected"}, provider, model)
+        return redteam.judge(judge_input(req), provider, model)
     return judge
 
 
-def generate(n, seed, writer, judge=None, out=OUT):
-    """Writes n labelled requests under out/{tuning,holdout,disputed}; failures under out/invalid."""
+def generate(n, seed, writer, max_attempts, judge=None, out=OUT):
+    """Writes n labelled requests under out/{tuning,holdout,disputed}; failures under out/invalid.
+    Stops after max_attempts writer calls even if fewer than n were kept."""
     rng = random.Random(seed)
     vocab = redteam.vocabulary()
-    stats = {"kept": 0, "invalid": 0, "disputed": 0, "malformed": 0}
+    stats = {"kept": 0, "invalid": 0, "disputed": 0, "malformed": 0, "attempts": 0}
     seen = set()
-    while stats["kept"] + stats["disputed"] < n:
+    while stats["kept"] + stats["disputed"] < n and stats["attempts"] < max_attempts:
+        stats["attempts"] += 1
         target = _pick(rng, TARGETS)
         shape = build_shape(rng, target["shape"])
-        prose = writer(shape, target)
+        try:
+            prose = writer(shape, target)
+        except WRITER_ERRORS as e:
+            stats["malformed"] += 1
+            _write(out / "invalid", f"attempt{stats['attempts']}", {"target": target["name"], "shape": shape,
+                                                                   "problems": [f"writer failed: {e}"]})
+            continue
         if not isinstance(prose, dict) or not isinstance(prose.get("purpose"), str) \
                 or not isinstance(prose.get("applicant"), dict):
             stats["malformed"] += 1
@@ -281,7 +315,10 @@ def generate(n, seed, writer, judge=None, out=OUT):
         req["answer"] = result
         folder = "holdout" if redteam.is_holdout(req) else "tuning"
         if judge is not None:
-            req["judge"] = judge(req)
+            try:
+                req["judge"] = judge(req)
+            except WRITER_ERRORS as e:
+                req["judge"] = {"decision": None, "why": f"judge failed: {e}"}
             if req["judge"].get("decision") != req["expected"]["decision"]:
                 folder = "disputed"
         stats["disputed" if folder == "disputed" else "kept"] += 1
@@ -299,6 +336,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--n", type=int, required=True, help="how many requests to keep; no default")
     ap.add_argument("--seed", type=int, required=True, help="random seed; no default")
+    ap.add_argument("--max-attempts", type=int, required=True,
+                    help="upper bound on writer calls, so a failing writer cannot spend without limit; no default")
     providers = llm.available_providers()
     ap.add_argument("--provider", default=providers[0] if providers else None)
     ap.add_argument("--model")
@@ -309,7 +348,8 @@ def main():
     if not args.provider:
         raise SystemExit("Set OPENAI_API_KEY, ANTHROPIC_API_KEY or OPENROUTER_API_KEY (or its _SECRET) first.")
     judge = llm_judge(args.judge, args.judge_model) if args.judge else None
-    stats = generate(args.n, args.seed, llm_writer(args.provider, args.model), judge, Path(args.out))
+    stats = generate(args.n, args.seed, llm_writer(args.provider, args.model), args.max_attempts, judge,
+                     Path(args.out))
     print(json.dumps({**stats, "finished": dt.datetime.now(dt.UTC).isoformat(timespec="seconds")}))
 
 

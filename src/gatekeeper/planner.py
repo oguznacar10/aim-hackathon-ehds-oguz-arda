@@ -95,9 +95,9 @@ def _parse(request):
     terms, percents, extra = {}, {}, {"report": None, "cohort": None, "bands": None, "unit": "patient",
                                        "year": (None, None), "picks": {}}
     for d in defs:
-        for m in re.finditer(r"(?:latest|last|earliest|first|any)?\s*([A-Za-z0-9][\w\-]*)\s+(?:values?\s+)?"
-                             r"\(LOINC\s+([\w\-]+)\)", d):
-            terms.setdefault(m.group(1), {"kind": "observation", "loinc": m.group(2)})
+        for m in re.finditer(r"(?:\b(?:latest|last|earliest|first|any)\s+((?:[A-Za-z0-9][\w\-]*\s+)*?[A-Za-z0-9][\w\-]*)"
+                             r"|([A-Za-z0-9][\w\-]*))\s+(?:values?\s+)?\(LOINC\s+([\w\-]+)\)", d):
+            terms.setdefault(m.group(1) or m.group(2), {"kind": "observation", "loinc": m.group(3)})
         m = re.search(r"\b(latest|last|earliest|first)\b[^.]*?\(LOINC\s+([\w\-]+)\)", d, re.I)
         if m:
             extra["picks"][m.group(2)] = "earliest" if m.group(1).lower() in ("earliest", "first") else "latest"
@@ -201,6 +201,18 @@ def _split_measures(body, terms):
     return restore
 
 
+FILLER = set("""a an the with who whose have has had their them its that those of how many number count total all
+any no not without active patients patient people persons value values mean average age share in % percent
+percentage proportion rate is are recorded measured""".split())
+
+
+def _undefined_words(phrase, names):
+    low = phrase.lower()
+    for n in sorted(names, key=len, reverse=True):
+        low = re.sub(_pattern(n), " ", low)
+    return [w for w in re.findall(r"[a-z0-9%]+", low) if w not in FILLER]
+
+
 def rule_statistics_plan(request):
     terms, percents, extra = _parse(request)
     report = extra["report"]
@@ -239,6 +251,9 @@ def rule_statistics_plan(request):
 
     measures, last_where = [], []
     for phrase in _split_measures(body, terms):
+        unknown = _undefined_words(phrase, list(terms) + list(percents))
+        if unknown:
+            raise PlanningFailed(f"'{phrase}' uses words no definition explains: {', '.join(unknown)}")
         mentioned = _mentioned(phrase, terms)
         where = [_measure_filter(terms[n], neg) for n, neg in mentioned if n in measure_terms]
         pct_def = next((n for n in percents if re.search(_pattern(n), phrase, re.I)), None)
