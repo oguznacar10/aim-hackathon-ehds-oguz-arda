@@ -59,6 +59,7 @@ document.querySelectorAll(".view-btn").forEach((btn) => btn.addEventListener("cl
 }));
 
 /* intake */
+const DEMO_APPLICANT = { name: "Demo Researcher", organisation: "Demo University", country: "AT" };
 async function loadExamples() {
   const res = await api("/api/examples");
   examples = res.body || [];
@@ -70,10 +71,12 @@ async function loadExamples() {
 $("#example").addEventListener("change", (e) => {
   const ex = examples.find((x) => x.id === e.target.value);
   const f = $("#request-form");
+  const who = ex ? ex.applicant : DEMO_APPLICANT;
+  f.name.value = who.name || "";
+  f.organisation.value = who.organisation || "";
+  f.country.value = who.country || "";
+  $("#who").textContent = [who.name, who.organisation].filter(Boolean).join(", ");
   if (!ex) { f.id.value = ""; return; }
-  f.name.value = ex.applicant.name || "";
-  f.organisation.value = ex.applicant.organisation || "";
-  f.country.value = ex.applicant.country || "";
   f.id.value = ex.id;
   f.purpose.value = ex.purpose;
   f.question.value = ex.question;

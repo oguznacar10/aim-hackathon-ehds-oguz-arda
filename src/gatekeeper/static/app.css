@@ -57,7 +57,8 @@ form label { display: flex; flex-direction: column; gap: var(--s1); margin-botto
 input, select, textarea { width: 100%; padding: 10px 12px; background: var(--paper);
   border: 1px solid #8D99A4; border-radius: var(--control-radius); font-weight: 400; }
 textarea { resize: vertical; line-height: 1.45; }
-.row.two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+.signed-in { margin: 0 0 var(--s4); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+.signed-in #who { color: var(--ink); font-weight: 600; }
 fieldset.kind { border: 0; padding: 0; margin: 0 0 var(--s3); }
 legend { font-weight: 600; margin-bottom: var(--s2); }
 .choice { flex-direction: row !important; align-items: flex-start; gap: var(--s2) !important; font-weight: 400 !important;
