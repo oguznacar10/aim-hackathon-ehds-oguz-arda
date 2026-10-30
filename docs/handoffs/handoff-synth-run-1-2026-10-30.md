@@ -27,8 +27,14 @@
 - Driver divergence (harmless): `assemble` stops at N kept before judging, so disputed files shrink the batch below N, whereas `generate()` counts kept plus disputed.
 - Counts over all 40 checked by script: no duplicate purposes, names or ids; every applicant a titled person with an organisation kind and a country; 0 em-dashes; all `submitted` in October 2026 with the right offset; eval loader byte-identical to main on the challenge and redteam sets.
 
+## Key-bound modes, live run (same day, gpt-4o through OpenRouter, `--runs 3 --no-cache --provider openrouter`, key fetched in-process)
+- hybrid: tuning 25/25, holdout 11/11, 0 dangerous, escalated 37 of 75 and 21 of 33. vote: identical. llm alone: tuning 23/25, holdout 10/11, 9 dangerous unflagged of 108, all three misses stable over the 3 runs: S1a044872 and Sd958e10d (app_bare_claim, SPE granted on a bare "essential"), S8b4e9702 (private_reserved_purpose, approved because the direct prompt lacks Art. 53(2)).
+- Running the three modes in parallel hit HTTP 429 on OpenRouter despite the retry; run them one after another.
+- The eval resolves the provider from the environment: with `OPENAI_API_KEY` exported in the shell it picks OpenAI's restricted key and fails with 401. Use `env -u OPENAI_API_KEY ... --provider openrouter`.
+- A pass with Fable 5.1 agents answering the same prompts was also made; it is not a product number (the app cannot call Fable) and is not reported.
+
 ## Not verified
-- `--mode hybrid`, `--mode llm`, `--mode vote` need the OpenRouter key and are Arda's to run from his terminal:
+- The commands as they were first written here (without `env -u OPENAI_API_KEY` and `--provider openrouter`):
   `OPENROUTER_API_KEY_SECRET=projects/project-beta-482921/secrets/openrouter PYTHONPATH=src python3 scripts/eval_decisions.py --set synth/tuning --mode hybrid --runs 3` (then `--mode llm`, `--mode vote`, and `--set synth/holdout`).
 - No human tick of `synth/holdout/` yet. Judge agreement is not a human review.
 

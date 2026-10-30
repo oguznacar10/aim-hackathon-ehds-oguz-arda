@@ -1,0 +1,17 @@
+mode=nimble set=synth/holdout cases=11 runs=3 source=nimble cache=on
+  S20d72630  REJECT               54             ok
+  S36ea251c  APPROVE_STATISTICAL  53,69          ok
+  S529c1441  REJECT               54             ok
+  S534b35ac  APPROVE_SPE          53,66,68,73    ok
+  S6b5c9a2d  APPROVE_SPE          53,66,68,73    ok
+  S8b4e9702  APPROVE_STATISTICAL  53,69          WRONG (dangerous)
+  Sa334d900  APPROVE_SPE          53,66,68,73    ok
+  Sb3143894  REJECT               54             ok
+  Sb38e7764  APPROVE_STATISTICAL  53,66,69       WRONG (restrictive)
+  Sb4ac117a  REJECT               54             ok
+  See057563  APPROVE_STATISTICAL  53,69          ok
+correct decisions: 9/11
+consistent over 3 runs: 11/11
+over all 33 decisions: dangerous (more data than the law allows) 3, invalid 0, of those not flagged for staff 3; restrictive (less than allowed) 3; escalated to staff 0
+latency: p50 0.00 s, p95 0.97 s, max 1.08 s
+with 33 decisions and 0 observed failures the true failure rate can still be up to 9.1% (rule of three, 95% confidence)

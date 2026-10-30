@@ -30,6 +30,7 @@ Where everything is. Read top to bottom once, then jump.
 | Red-team test sets (tuning, held-out exam, disputed) and the human review sheet | `redteam/`, `redteam/REVIEW.md` (rebuild with `scripts/redteam_review.py`) |
 | Generated training requests (question and definitions from the data, labels from the rules) | `src/gatekeeper/synth.py`, output under `synth/` (`python -m gatekeeper.synth --n N --seed S`) |
 | Generator driven by Claude Code agents as writer and judge (draw, assemble, route) | `scripts/synth_agents.py`, run 1 under `synth/tuning`, `synth/holdout` |
+| Eval outputs of the decision modes on synth run 1 (rules, nimble, llm, hybrid, vote) | `docs/evals/synth-run-1-*.txt` |
 
 ## Facts that must not drift
 

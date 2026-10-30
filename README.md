@@ -114,6 +114,20 @@ Runs 2 and 3 reuse the cached LLM answers, so consistency is partly guaranteed b
 
 On the 8 AI-written red-team requests where writer and judge agreed: 8 of 8 correct decisions, 8 of 8 consistent over 3 runs, slowest 1.3 s.
 
+### On the 36 generated requests (synth run 1)
+
+`scripts/eval_decisions.py --set synth/tuning` and `--set synth/holdout`, 30 October 2026, 3 runs with `--no-cache` for the key-bound modes (every run a live gpt-4o call through OpenRouter), 3 runs for the offline modes. The 36 requests are built from the data's vocabulary, labelled by the rules and checked by an independent judge; 4 more with a contestable Art. 53(2) label sit in `synth/disputed/` and are not scored.
+
+| Mode | Tuning (25) | Holdout (11) | Dangerous, not flagged | Escalated to staff |
+|---|---|---|---|---|
+| rules (keyword reader, offline) | 14 | 4 | 21 of 75, 9 of 33 | 0 |
+| nimble (local reader, offline) | 22 | 9 | 9 of 75, 3 of 33 | 0 |
+| llm (gpt-4o decides alone, ablation) | 23 | 10 | 6 of 75, 3 of 33 | 0 |
+| hybrid (gpt-4o reads, rules decide, shipped) | 25 | 11 | 0 | 37 of 75, 21 of 33 |
+| vote (gpt-4o reads, Nimble second opinion) | 25 | 11 | 0 | 37 of 75, 21 of 33 |
+
+Every mode gave the same decision in all 3 runs. The model alone would have granted records to two applications that only call individual data "essential" and approved an insurer's policy-consultation request that Art. 53(2) reserves to public bodies; the shipped path decides all 36 correctly and sends the cases where the keyword reader disagrees with the model to staff.
+
 ## What works and what does not
 
 Works:
