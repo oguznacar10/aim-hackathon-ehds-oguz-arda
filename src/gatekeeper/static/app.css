@@ -186,6 +186,7 @@ pre { background: var(--ink); color: #E8EDF1; padding: var(--s3); overflow-x: au
 .welcome p { margin: 0 0 var(--s2); max-width: 56ch; }
 .welcome .welcome-lead { color: var(--ink); font: 600 22px/1.3 var(--doc); margin-top: var(--s4); }
 .welcome .welcome-hint { font-size: 14px; margin-top: var(--s3); }
+.casefile > .welcome { max-width: 720px; }
 .net { display: block; width: 100%; max-width: 560px; height: auto; margin: 0 auto; overflow: visible; }
 .net text { font: 12px var(--ui); fill: var(--muted); text-anchor: middle; }
 .net .net-cap { font-weight: 600; fill: var(--ink); letter-spacing: .02em; }

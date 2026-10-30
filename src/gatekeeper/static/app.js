@@ -65,6 +65,12 @@ document.querySelectorAll(".view-btn").forEach((btn) => btn.addEventListener("cl
 
 /* intake */
 const welcome = $("#welcome");
+{
+  const art = $("svg.net", welcome).cloneNode(true);
+  art.querySelectorAll("[id]").forEach((n) => { n.id = `staff-${n.id}`; });
+  art.querySelectorAll("mpath").forEach((m) => m.setAttribute("href", `#staff-${m.getAttribute("href").slice(1)}`));
+  $("#staff-welcome").prepend(art);
+}
 async function loadExamples() {
   const res = await api("/api/examples");
   examples = res.body || [];
