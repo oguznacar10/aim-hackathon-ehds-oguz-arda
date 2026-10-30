@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenzugang - Health Data Access Body</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="masthead">
+  <p class="product"><span class="product-name">Datenzugang</span> <span class="product-role">Health Data Access Body</span></p>
+  <nav class="views" aria-label="View">
+    <button type="button" class="view-btn" data-view="applicant" aria-pressed="true">Applicant</button>
+    <button type="button" class="view-btn" data-view="staff" aria-pressed="false">Staff</button>
+  </nav>
+</header>
+
+<main id="applicant" class="view">
+  <section class="intake" aria-labelledby="intake-title">
+    <div class="intake-head">
+      <h1 id="intake-title">Request access to health data</h1>
+      <label class="example-pick">Load an example
+        <select id="example"><option value="">Choose a sample request</option></select>
+      </label>
+    </div>
+    <form id="request-form" novalidate>
+      <div class="row two">
+        <label>Applicant name<input name="name" required autocomplete="off"></label>
+        <label>Organisation<input name="organisation" required autocomplete="off"></label>
+      </div>
+      <div class="row two">
+        <label>Country<input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
+        <label>Case number<input name="id" required placeholder="R11" autocomplete="off"></label>
+      </div>
+      <fieldset class="kind">
+        <legend>What are you asking for?</legend>
+        <label class="choice"><input type="radio" name="requested_as" value="health data request" checked>
+          <span><strong>Health data request</strong> You receive anonymised statistics.</span></label>
+        <label class="choice"><input type="radio" name="requested_as" value="health data access application">
+          <span><strong>Health data access application</strong> You ask for pseudonymised records in a secure environment.</span></label>
+      </fieldset>
+      <label>Purpose<textarea name="purpose" rows="3" required></textarea></label>
+      <label>Question<textarea name="question" rows="3" required></textarea></label>
+      <label>Definitions <span class="hint">one per line, for example "Adult = aged 18 or older on 31 December 2025."</span>
+        <textarea name="definitions" rows="4"></textarea></label>
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+      <button type="submit" class="primary" id="submit">Submit request</button>
+    </form>
+  </section>
+
+  <section id="notice-slot" class="notice-slot" aria-live="polite"></section>
+</main>
+
+<main id="staff" class="view" hidden>
+  <aside class="queue" aria-labelledby="queue-title">
+    <div class="queue-head">
+      <h1 id="queue-title">Cases</h1>
+      <button type="button" class="quiet" id="run-samples">Decide the 10 sample requests</button>
+    </div>
+    <div id="queue-list"></div>
+  </aside>
+  <section id="casefile" class="casefile" aria-live="polite">
+    <p class="empty">Select a case to open its file.</p>
+  </section>
+</main>
+
+<template id="notice-tpl">
+  <article class="notice">
+    <header class="notice-head">
+      <p class="meta"><span class="code case-no"></span><span class="applicant"></span><span class="date"></span></p>
+      <h2 class="verdict"></h2>
+      <p class="verdict-code"><span class="mark"></span><span class="code decision-code"></span></p>
+      <p class="review-flag" hidden>A case officer will check this decision before it is final.</p>
+    </header>
+    <section class="path-wrap" aria-label="How the decision was reached">
+      <h3>How we decided</h3>
+      <ol class="path"></ol>
+    </section>
+    <section class="reasons-wrap">
+      <h3>Reasons</h3>
+      <div class="reasons"></div>
+    </section>
+    <section class="outcome"></section>
+  </article>
+</template>
+
+<script src="/app.js"></script>
+</body>
+</html>

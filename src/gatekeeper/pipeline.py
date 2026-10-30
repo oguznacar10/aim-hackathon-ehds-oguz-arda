@@ -33,6 +33,7 @@ def handle(request, provider=None):
     reading = reader.read(request, provider)
     result = rules.decide(request, reading)
     out = {"id": request["id"], **result, "reader": reading["source"], "answer": None}
+    out["reading"] = {k: v for k, v in reading.items() if k != "needs_staff_review"}
     if result["decision"] == "REJECT":
         return out
 
