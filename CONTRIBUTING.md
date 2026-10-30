@@ -14,6 +14,12 @@ Two people, one weekend. The rules exist so neither of us has to re-read the oth
 - Red CI is fixed in the same PR. If a check is wrong, the fix to the check is its own PR with the reason in the description.
 - A gitleaks hit on any branch reddens every PR until it is fingerprinted in `.gitleaksignore` with a reason comment, or the secret is rotated and the history rewritten by agreement of both.
 
+## Checking CI
+- `gh run list --workflow CI --limit 5` lists our runs. Always pass `--workflow CI`: a push to `main` also creates Dependabot Updates and Dependency Graph runs, which are GitHub's own, sit in GitHub's queue, and are never part of `ci-green`.
+- `gh run view <id> --json jobs -q '.jobs[] | "\(.name): \(.conclusion)"'` shows the six jobs: `secrets`, `em-dash`, `shell`, `python`, `node`, `ci-green`.
+- `gh pr checks <number>` shows the same for a PR; only `ci-green` is required by the ruleset.
+- A job that stays `queued` for minutes on a fresh repo is almost always the wrong run id; re-list with the workflow filter before reading anything into it.
+
 ## Decisions and handoffs
 - `docs/decisions/log.md`: append-only, dated entries, PROPOSED or DECIDED, with the why.
 - `docs/handoffs/`: one file per session end. The next session starts from the newest one.
