@@ -1,7 +1,8 @@
 """One request in, one answer out: read, decide, then compute statistics or build the SPE."""
 import json
+import os
 
-from gatekeeper import llm, planner, query, reader, rules, spe
+from gatekeeper import decision, llm, planner, query, reader, rules, spe
 
 
 def _plan(request, mode, provider):
@@ -31,6 +32,8 @@ def handle(request, provider=None):
     providers = llm.available_providers()
     provider = provider or (providers[0] if providers else None)
     reading = reader.read(request, provider)
+    if os.environ.get("GATEKEEPER_SECOND_OPINION"):
+        reading = _with_second_opinion(request, reading, os.environ["GATEKEEPER_SECOND_OPINION"])
     result = rules.decide(request, reading)
     out = {"id": request["id"], **result, "reader": reading["source"], "answer": None}
     out["reading"] = {k: v for k, v in reading.items() if k != "needs_staff_review"}
@@ -53,6 +56,19 @@ def handle(request, provider=None):
         out["needs_staff_review"] = True
         out["staff"]["review_note"] = check
     return out
+
+
+def _with_second_opinion(request, reading, backend):
+    """A decision model (jev hosted, nimble local) replaces the keyword reader as the second opinion;
+    a disagreement that can change the outcome escalates to staff. The model being down never blocks."""
+    try:
+        dm = decision.decision_reading(request, backend=backend)
+    except (llm.LLMUnavailable, OSError, ValueError, KeyError) as e:
+        return {**reading, "second_opinion_error": f"{backend} unavailable: {e}"[:200]}
+    disagree = dm["prohibited"] != reading["prohibited"] or (
+        not reading["prohibited"] and request["requested_as"] == rules.APPLICATION
+        and dm["justifies_records"] != reading["justifies_records"])
+    return {**reading, "needs_staff_review": reading["needs_staff_review"] or disagree, "second_opinion": dm}
 
 
 def _cohort_size(spec):

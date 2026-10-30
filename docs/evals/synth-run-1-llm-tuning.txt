@@ -1,7 +1,8 @@
-mode=llm set=synth/tuning cases=25 runs=3 source=openrouter cache=off
+mode=llm set=synth/tuning cases=26 runs=3 source=openrouter cache=off
   S00cc9e14  REJECT               54             ok
   S019d79d6  REJECT               54             ok
   S0250a4b0  APPROVE_SPE          53,66,68,73    ok
+  S17d8f076  APPROVE_STATISTICAL  53,69          ok
   S1a044872  APPROVE_SPE          53,66,68,73    WRONG (dangerous)
   S21d76cb7  REJECT               54             ok
   S23889b65  REJECT               54             ok
@@ -24,8 +25,8 @@ mode=llm set=synth/tuning cases=25 runs=3 source=openrouter cache=off
   Sd96946da  APPROVE_STATISTICAL  53,66,69       ok
   Se8a03473  REJECT               54             ok
   Sf4d67bb1  APPROVE_SPE          53,66,68,73    ok
-correct decisions: 23/25
-consistent over 3 runs: 25/25
-over all 75 decisions: dangerous (more data than the law allows) 6, invalid 0, of those not flagged for staff 6; restrictive (less than allowed) 0; escalated to staff 0
-latency: p50 1.34 s, p95 2.12 s, max 2.38 s
-with 75 decisions and 0 observed failures the true failure rate can still be up to 4.0% (rule of three, 95% confidence)
+correct decisions: 24/26
+consistent over 3 runs: 26/26
+over all 78 decisions: dangerous (more data than the law allows) 6, invalid 0, of those not flagged for staff 6; restrictive (less than allowed) 0; escalated to staff 0
+latency: p50 1.33 s, p95 1.94 s, max 2.48 s
+with 78 decisions and 0 observed failures the true failure rate can still be up to 3.8% (rule of three, 95% confidence)

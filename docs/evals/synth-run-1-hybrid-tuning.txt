@@ -1,8 +1,9 @@
-mode=hybrid set=synth/tuning cases=25 runs=3 source=openrouter cache=off
+mode=hybrid set=synth/tuning cases=26 runs=3 source=openrouter cache=off
   S00cc9e14  REJECT               54             ok
   S019d79d6  REJECT               54             ok [staff review]
   S0250a4b0  APPROVE_SPE          53,66,68,73    ok [staff review]
-  S1a044872  APPROVE_STATISTICAL  53,66,69       ok
+  S17d8f076  APPROVE_STATISTICAL  53,69          ok [staff review]
+  S1a044872  APPROVE_STATISTICAL  53,66,69       ok [staff review]
   S21d76cb7  REJECT               54             ok [staff review]
   S23889b65  REJECT               54             ok [staff review]
   S24c8249b  REJECT               54             ok
@@ -20,12 +21,12 @@ mode=hybrid set=synth/tuning cases=25 runs=3 source=openrouter cache=off
   Scdfb9531  APPROVE_STATISTICAL  53,69          ok
   Sd0de2807  REJECT               54             ok [staff review]
   Sd72d8af5  APPROVE_STATISTICAL  53,66,69       ok
-  Sd958e10d  APPROVE_STATISTICAL  53,66,69       ok [staff review]
+  Sd958e10d  APPROVE_STATISTICAL  53,66,69       ok
   Sd96946da  APPROVE_STATISTICAL  53,66,69       ok
   Se8a03473  REJECT               54             ok [staff review]
   Sf4d67bb1  APPROVE_SPE          53,66,68,73    ok [staff review]
-correct decisions: 25/25
-consistent over 3 runs: 25/25
-over all 75 decisions: dangerous (more data than the law allows) 0, invalid 0, of those not flagged for staff 0; restrictive (less than allowed) 0; escalated to staff 37
-latency: p50 1.23 s, p95 1.94 s, max 3.59 s
-with 75 decisions and 0 observed failures the true failure rate can still be up to 4.0% (rule of three, 95% confidence)
+correct decisions: 26/26
+consistent over 3 runs: 26/26
+over all 78 decisions: dangerous (more data than the law allows) 0, invalid 0, of those not flagged for staff 0; restrictive (less than allowed) 0; escalated to staff 40
+latency: p50 1.28 s, p95 1.74 s, max 2.74 s
+with 78 decisions and 0 observed failures the true failure rate can still be up to 3.8% (rule of three, 95% confidence)

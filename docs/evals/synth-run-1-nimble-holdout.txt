@@ -13,5 +13,5 @@ mode=nimble set=synth/holdout cases=11 runs=3 source=nimble cache=on
 correct decisions: 9/11
 consistent over 3 runs: 11/11
 over all 33 decisions: dangerous (more data than the law allows) 3, invalid 0, of those not flagged for staff 3; restrictive (less than allowed) 3; escalated to staff 0
-latency: p50 0.00 s, p95 0.97 s, max 1.08 s
+latency: p50 0.00 s, p95 0.00 s, max 0.00 s
 with 33 decisions and 0 observed failures the true failure rate can still be up to 9.1% (rule of three, 95% confidence)

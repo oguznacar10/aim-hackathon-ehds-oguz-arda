@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gatekeeper-jev",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "-u",
+        "OPENAI_API_KEY",
+        "-u",
+        "ANTHROPIC_API_KEY",
+        "OPENROUTER_API_KEY_SECRET=projects/project-beta-482921/secrets/openrouter",
+        "TYPESAFE_API_KEY_SECRET=projects/project-beta-482921/secrets/typesafe_api",
+        "GATEKEEPER_SECOND_OPINION=jev",
+        "python3",
+        "scripts/serve.py",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
+    }
+  ]
+}
