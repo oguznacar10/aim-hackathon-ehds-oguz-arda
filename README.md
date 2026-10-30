@@ -38,12 +38,13 @@ python scripts/serve.py
 
 Open http://127.0.0.1:8000. In **Applicant**, load one of the 10 sample requests (or type a new one) and submit. In **Staff**, click "Decide the 10 sample requests" to fill the queue. Stop the server with Ctrl+C.
 
-Without an API key everything still runs, offline: a keyword reader and a rule planner replace the LLM. They handle the wording of the 10 sample requests but are weaker on new wording.
+Without an API key everything still runs, offline: a keyword reader and a rule planner replace the LLM. They handle the wording of the 10 sample requests but are weaker on new wording. The rule planner refuses a request whose measure no definition explains, instead of guessing numbers.
 
 Other commands:
 ```
 python scripts/eval_metrics.py          # the five challenge metrics on the 10 requests
 python scripts/eval_decisions.py --set tuning   # decisions on the AI-written red-team requests
+python -m gatekeeper.synth --n N --seed S --max-attempts M   # generate labelled training requests
 pytest -q                               # regression tests, never call an LLM
 ```
 
@@ -89,6 +90,8 @@ pytest -q                               # regression tests, never call an LLM
 | SPE | `src/gatekeeper/spe.py` | Copies the cohort and only the record types the question names into `spe/<id>/workspace.sqlite`. Downloads are refused server-side and logged. |
 | Pipeline | `src/gatekeeper/pipeline.py` | `handle(request)`: read, decide, then statistics or SPE. |
 | Web app | `src/gatekeeper/web.py`, `src/gatekeeper/static/` | Python standard library HTTP server, plain HTML/CSS/JS, no build step. Patient rows never reach the browser. |
+| LLM-only mode | `src/gatekeeper/direct.py` | Not the shipped path. The LLM reads the brief's rules and decides end to end, so `eval_decisions.py` can compare LLM alone, rules alone and LLM reads, rules decide. |
+| Training requests | `src/gatekeeper/synth.py` | Builds the question and definitions from the real vocabulary of the data; an LLM writes only applicant and purpose. Labels come from `rules.decide()`; a judge LLM that disagrees sends the request to a human. |
 | Red-team loop | `src/gatekeeper/redteam.py` | One LLM writes tricky new requests with an intended decision, a second LLM from another vendor labels them independently. Agreements become test cases, disagreements go to a human (`redteam/REVIEW.md`). |
 
 **Models and services.** One OpenRouter key (`OPENROUTER_API_KEY`). Reader and planner use `openai/gpt-4o` at temperature 0; answers are cached by prompt version, model and request text, so the same request gets the same answer. For the red team, `openai/gpt-4o` writes and `anthropic/claude-haiku-4.5` judges. We picked gpt-4o after comparing planners on the 6 approved requests: gpt-4o 6/6, gpt-4.1-mini 4/6, gpt-4o-mini 2/6. OpenAI and Anthropic keys also work (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`). Only request text is ever sent to an LLM.
@@ -107,7 +110,7 @@ From `python scripts/eval_metrics.py` with `OPENROUTER_API_KEY` set, run on 30 O
 | Consistency over 3 runs | 10 of 10 | 10 of 10 |
 | Slowest request | under 60 s | 12.7 s |
 
-Runs 2 and 3 reuse the cached LLM answers, so consistency is partly guaranteed by the cache. The offline mode (no key) also scores 10/10, 6/6, 0 leaks, 10/10.
+Runs 2 and 3 reuse the cached LLM answers, so consistency is partly guaranteed by the cache. The offline mode (no key) also scores 10/10, 6/6, 0 leaks, 10/10, slowest 1.0 s (re-run on the current `main`). The run with the key above was made before the planner changes in PRs #13 and #21 and has not been repeated since.
 
 On the 8 AI-written red-team requests where writer and judge agreed: 8 of 8 correct decisions, 8 of 8 consistent over 3 runs, slowest 1.3 s.
 
@@ -118,6 +121,7 @@ Works:
 - New requests typed into the form, including grouping by hospital and filtering stays by main diagnosis (tested against counts taken straight from the data).
 - Opt-outs, the small-cell rule and the download block are enforced in code on the server, not in the browser.
 - Staff see where the AI and the keyword reader disagree and can confirm or overrule with a reason.
+- Staff see the three hospital databases with their patients, records and excluded opt-outs (totals only).
 - If the LLM is down or rate limited, the app keeps working on the keyword reader and flags the case for staff review.
 
 Does not, yet:
