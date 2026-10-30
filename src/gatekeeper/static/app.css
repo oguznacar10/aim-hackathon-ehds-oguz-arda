@@ -205,8 +205,8 @@ pre { background: var(--ink); color: #E8EDF1; padding: var(--s3); overflow-x: au
 .net-file-rows { stroke: var(--muted); }
 .net-dot-up { fill: var(--paper); stroke: var(--statistical); stroke-width: 1.5; }
 .net-staff text { font-size: 13px; }
-.net-db-glow { fill: var(--statistical); stroke: none; opacity: 0; animation: net-glow 2.7s var(--ease) infinite; }
-@keyframes net-glow { 0%, 38% { opacity: 0; } 50% { opacity: .35; } 75%, 100% { opacity: 0; } }
+.net-db-glow { fill: var(--statistical); fill-opacity: 0; animation: net-glow 2.7s var(--ease) infinite; }
+@keyframes net-glow { 0%, 38% { fill-opacity: 0; } 50% { fill-opacity: .35; } 75%, 100% { fill-opacity: 0; } }
 @keyframes net-flow { to { stroke-dashoffset: -24; } }
 @keyframes net-pulse { 0% { opacity: .18; transform: scale(1); } 100% { opacity: 0; transform: scale(1.7); } }
 @media (max-width: 900px) {
