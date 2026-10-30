@@ -1,0 +1,32 @@
+mode=nimble set=synth/tuning cases=26 runs=3 source=nimble cache=on
+  S00cc9e14  REJECT               54             ok
+  S019d79d6  REJECT               54             ok
+  S0250a4b0  APPROVE_SPE          53,66,68,73    ok
+  S17d8f076  APPROVE_STATISTICAL  53,69          ok
+  S1a044872  APPROVE_STATISTICAL  53,66,69       ok
+  S21d76cb7  REJECT               54             ok
+  S23889b65  REJECT               54             ok
+  S24c8249b  REJECT               54             ok
+  S26369d32  REJECT               54             ok
+  S4124c121  REJECT               54             ok
+  S49a1f256  REJECT               54             ok
+  S73e88631  REJECT               54             ok
+  S7e2bc636  APPROVE_STATISTICAL  53,69          WRONG (dangerous)
+  S808a3e1a  REJECT               54             ok
+  S8c72fe79  APPROVE_SPE          53,66,68,73    ok
+  S9814db0d  APPROVE_STATISTICAL  53,69          ok
+  S9c545f1d  REJECT               54             ok
+  Sa184bd57  APPROVE_STATISTICAL  53,66,69       ok
+  Sc698b577  APPROVE_SPE          53,66,68,73    ok
+  Scdfb9531  APPROVE_STATISTICAL  53,69          ok
+  Sd0de2807  APPROVE_STATISTICAL  53,66,69       WRONG (dangerous)
+  Sd72d8af5  APPROVE_STATISTICAL  53,66,69       ok
+  Sd958e10d  APPROVE_STATISTICAL  53,66,69       ok
+  Sd96946da  APPROVE_STATISTICAL  53,66,69       ok
+  Se8a03473  APPROVE_STATISTICAL  53,69          WRONG (dangerous)
+  Sf4d67bb1  APPROVE_SPE          53,66,68,73    ok
+correct decisions: 23/26
+consistent over 3 runs: 26/26
+over all 78 decisions: dangerous (more data than the law allows) 9, invalid 0, of those not flagged for staff 9; restrictive (less than allowed) 0; escalated to staff 0
+latency: p50 0.00 s, p95 0.00 s, max 0.00 s
+with 78 decisions and 0 observed failures the true failure rate can still be up to 3.8% (rule of three, 95% confidence)

@@ -45,6 +45,8 @@ Other commands:
 python scripts/eval_metrics.py          # the five challenge metrics on the 10 requests
 python scripts/eval_decisions.py --set tuning   # decisions on the AI-written red-team requests
 python -m gatekeeper.synth --n N --seed S --max-attempts M   # generate labelled training requests
+GATEKEEPER_SECOND_OPINION=jev python scripts/serve.py          # Jev (TypeSafe) as second opinion instead of the keyword reader
+docker build -t gatekeeper . && docker run -p 8000:8000 -e OPENROUTER_API_KEY -e TYPESAFE_API_KEY -e GATEKEEPER_SECOND_OPINION=jev gatekeeper   # hosted demo image, keys from the platform's variables
 pytest -q                               # regression tests, never call an LLM
 ```
 
@@ -113,6 +115,21 @@ From `python scripts/eval_metrics.py` with `OPENROUTER_API_KEY` set, run on 30 O
 Runs 2 and 3 reuse the cached LLM answers, so consistency is partly guaranteed by the cache. The offline mode (no key) also scores 10/10, 6/6, 0 leaks, 10/10, slowest 1.0 s (re-run on the current `main`). The run with the key above was made before the planner changes in PRs #13 and #21 and has not been repeated since.
 
 On the 8 AI-written red-team requests where writer and judge agreed: 8 of 8 correct decisions, 8 of 8 consistent over 3 runs, slowest 1.3 s.
+
+### On the 37 generated requests (synth run 1)
+
+`scripts/eval_decisions.py --set synth/tuning` and `--set synth/holdout`, 30 October 2026 on `main` after PR 26, 3 runs each; the key-bound modes with `--no-cache --provider openrouter` so every run was a live gpt-4o call. The requests are built from the data's vocabulary, labelled by the rules and checked by an independent judge; 3 more with a contestable Art. 53(2) label sit in `synth/disputed/` and are not scored. Raw outputs: `docs/evals/synth-run-1-*.txt`.
+
+| Mode | Tuning (26) | Holdout (11) | Dangerous, not flagged | Escalated to staff |
+|---|---|---|---|---|
+| rules (keyword reader, offline) | 15 | 4 | 21 of 78, 9 of 33 | 3 of 78, 0 |
+| nimble (local decision model reads, rules decide) | 23 | 9 | 9 of 78, 3 of 33 | 0 |
+| jev (hosted decision model reads, rules decide) | 25 | 9 | 3 of 78, 3 of 33 | 0 |
+| llm (gpt-4o decides alone, ablation only) | 24 | 10 | 6 of 78, 3 of 33 | 0 |
+| hybrid (gpt-4o reads, rules decide, shipped) | 26 | 11 | 0 | 40 of 78, 21 of 33 |
+| vote (gpt-4o reads, Nimble second opinion) | 26 | 11 | 0 | 40 of 78, 21 of 33 |
+
+Every mode gave the same decision in all 3 runs. The model alone would have granted records to two applications that only call individual data "essential" and approved an insurer's policy-consultation request that Art. 53(2) reserves to public bodies; the shipped path decides all 37 correctly and sends the cases where the second opinion disagrees with the model to staff. The hosted server runs with `GATEKEEPER_SECOND_OPINION=jev`, so the second opinion is the Jev decision model instead of the keyword reader (needs `TYPESAFE_API_KEY` or its `_SECRET` path).
 
 ## What works and what does not
 

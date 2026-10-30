@@ -27,8 +27,16 @@
 - Driver divergence (harmless): `assemble` stops at N kept before judging, so disputed files shrink the batch below N, whereas `generate()` counts kept plus disputed.
 - Counts over all 40 checked by script: no duplicate purposes, names or ids; every applicant a titled person with an organisation kind and a country; 0 em-dashes; all `submitted` in October 2026 with the right offset; eval loader byte-identical to main on the challenge and redteam sets.
 
+## All modes, live run on main after PR 26 (same day, 26 tuning, 11 holdout, 3 runs)
+- Offline: rules 15/26 and 4/11 (21 + 9 dangerous unflagged); nimble 23/26 and 9/11 (9 + 3); jev 25/26 and 9/11 (3 + 3 dangerous, 3 restrictive; misses S21d76cb7 rehab triage 54(a), S8b4e9702 insurer 53(2), Sb38e7764 public SPE downgraded), p95 0.3 s.
+- gpt-4o through OpenRouter, `--no-cache --provider openrouter`, key fetched in-process: hybrid 26/26 and 11/11, 0 dangerous, escalated 40 of 78 and 21 of 33; vote identical; llm alone 24/26 and 10/11, 9 dangerous unflagged of 111, the same three misses in every run: S1a044872 and Sd958e10d (SPE granted on a bare "essential"), S8b4e9702 (approved; the direct prompt lacks Art. 53(2)).
+- Every mode consistent over the 3 runs. Raw outputs in `docs/evals/synth-run-1-<mode>-<set>.txt`.
+- `pipeline.handle()` now takes `GATEKEEPER_SECOND_OPINION=jev|nimble`: the decision model replaces the keyword reader as second opinion, a disagreement that can change the outcome escalates, the model being down never blocks (3 tests in `tests/test_second_opinion.py`). `.claude/launch.json` has the `gatekeeper-jev` server config with the two secret paths. Verified live: R03 through the running server came back APPROVE_STATISTICAL [53, 69], reader openrouter, second opinion jev, numbers computed.
+- Traps: three key-bound modes in parallel hit HTTP 429 on OpenRouter, run them one after another; with `OPENAI_API_KEY` exported in the shell the eval picks OpenAI first and fails with 401, use `env -u OPENAI_API_KEY ... --provider openrouter`.
+- A pass with Fable 5.1 agents answering the same prompts was also made; not a product number (the app cannot call Fable), not reported.
+
 ## Not verified
-- `--mode hybrid`, `--mode llm`, `--mode vote` need the OpenRouter key and are Arda's to run from his terminal:
+- The commands as they were first written here (without `env -u OPENAI_API_KEY` and `--provider openrouter`):
   `OPENROUTER_API_KEY_SECRET=projects/project-beta-482921/secrets/openrouter PYTHONPATH=src python3 scripts/eval_decisions.py --set synth/tuning --mode hybrid --runs 3` (then `--mode llm`, `--mode vote`, and `--set synth/holdout`).
 - No human tick of `synth/holdout/` yet. Judge agreement is not a human review.
 
