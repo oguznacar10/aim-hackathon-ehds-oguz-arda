@@ -45,6 +45,14 @@ button, input, select, textarea { font: inherit; color: inherit; accent-color: v
 .example-pick { display: flex; flex-direction: column; gap: var(--s1); color: var(--muted); }
 form label { display: flex; flex-direction: column; gap: var(--s1); margin-bottom: var(--s3); font-weight: 600; }
 .hint { font-weight: 400; color: var(--muted); font-size: 14px; }
+.lbl { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.info { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--muted);
+  border-radius: 50%; font: italic 600 12px/1 var(--doc); color: var(--muted); cursor: help; }
+.info:hover, .info:focus-visible { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.tip { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 10; width: max-content; max-width: 34ch;
+  padding: var(--s2) 10px; background: var(--ink); color: var(--paper); border-radius: var(--control-radius);
+  font: 400 14px/1.4 var(--ui); }
+.info:hover + .tip, .info:focus + .tip { display: block; }
 input, select, textarea { width: 100%; padding: 10px 12px; background: var(--paper);
   border: 1px solid #8D99A4; border-radius: var(--control-radius); font-weight: 400; }
 textarea { resize: vertical; line-height: 1.45; }
