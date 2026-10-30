@@ -36,7 +36,12 @@ function el(tag, attrs = {}, ...kids) {
   return node;
 }
 async function api(path, options = {}) {
-  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  let res;
+  try {
+    res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+  } catch {
+    return { ok: false, status: 0, body: { error: "Could not reach the server. Check that it is running and try again." } };
+  }
   const body = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, body };
 }
