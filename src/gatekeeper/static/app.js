@@ -75,7 +75,6 @@ $("#example").addEventListener("change", (e) => {
   f.organisation.value = ex.applicant.organisation || "";
   f.country.value = ex.applicant.country || "";
   f.id.value = ex.id;
-  f.querySelector(`input[name=requested_as][value="${ex.requested_as}"]`).checked = true;
   f.purpose.value = ex.purpose;
   f.question.value = ex.question;
   f.definitions.value = (ex.definitions || []).join("\n");
@@ -88,7 +87,7 @@ function readForm() {
     id: f.id.value.trim(),
     submitted: ex ? ex.submitted : new Date().toISOString(),
     applicant: { name: f.name.value.trim(), organisation: f.organisation.value.trim(), country: f.country.value.trim().toUpperCase() },
-    requested_as: f.querySelector("input[name=requested_as]:checked").value,
+    requested_as: ex ? ex.requested_as : "health data access application",
     requested_format: ex ? ex.requested_format : "",
     purpose: f.purpose.value.trim(),
     question: f.question.value.trim(),
@@ -146,8 +145,7 @@ function stepAnswers(result, request) {
   return STEPS.map((_, i) => {
     const step = i + 1;
     if (step < r) {
-      const answer = step === 3 ? "No" : step === 2 ? "No, records were asked for" : "No";
-      return { state: "checked", answer };
+      return { state: "checked", answer: "No" };
     }
     if (step === r) {
       const answer = { 1: "Yes: refused", 2: "Yes: statistics", 3: "Yes: secure environment", 4: isApp ? "Records not justified: statistics instead" : "Statistics" }[step];
@@ -180,23 +178,20 @@ function renderNotice(request, result) {
   });
 
   const reasons = $(".reasons", n);
-  const sentences = result.reason.split(/(?<=[.;])\s+(?=[A-Z])/);
-  for (const sentence of sentences.map((s) => s.trim()).filter(Boolean)) {
-    const refs = [...new Set([...sentence.matchAll(/Art\. (\d+)(\(\w+\))?/g)].map((m) => m[0]))];
-    const margin = el("div", { class: "margin" });
-    for (const ref of refs) {
-      const num = ref.match(/\d+/)[0];
-      const note = el("p", { class: "art-note", hidden: "", text: ARTICLES[num] || "" });
-      const btn = el("button", { type: "button", class: "art", "aria-expanded": "false", text: ref });
-      btn.addEventListener("click", () => {
-        const open = btn.getAttribute("aria-expanded") === "true";
-        btn.setAttribute("aria-expanded", String(!open));
-        note.hidden = open;
-      });
-      margin.append(btn, note);
-    }
-    reasons.append(el("p", { text: sentence }), margin);
+  const refs = [...new Set([...result.reason.matchAll(/Art\. (\d+)(\(\w+\))?/g)].map((m) => m[0]))];
+  const margin = el("div", { class: "margin" });
+  for (const ref of refs) {
+    const num = ref.match(/\d+/)[0];
+    const note = el("p", { class: "art-note", hidden: "", text: ARTICLES[num] || "" });
+    const btn = el("button", { type: "button", class: "art", "aria-expanded": "false", text: ref });
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!open));
+      note.hidden = open;
+    });
+    margin.append(btn, note);
   }
+  reasons.append(el("p", { text: result.reason }), margin);
 
   const outcome = $(".outcome", n);
   if (result.decision === "REJECT") {

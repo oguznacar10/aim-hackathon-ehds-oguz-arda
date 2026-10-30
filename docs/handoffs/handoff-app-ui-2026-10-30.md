@@ -12,3 +12,7 @@
 
 ## Open
 - Not yet clicked through by a human on every request; README and video still to do.
+
+## Update: form choice removed, reasons as one paragraph
+- The applicant form no longer asks for statistics vs records; the system decides (see decision log, 2026-10-30, PROPOSED).
+- Reasons render as one connected paragraph, with all cited articles in the margin.

@@ -35,13 +35,6 @@
         <label>Country<input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
         <label>Case number<input name="id" required placeholder="R11" autocomplete="off"></label>
       </div>
-      <fieldset class="kind">
-        <legend>What are you asking for?</legend>
-        <label class="choice"><input type="radio" name="requested_as" value="health data request" checked>
-          <span><strong>Health data request</strong> You receive anonymised statistics.</span></label>
-        <label class="choice"><input type="radio" name="requested_as" value="health data access application">
-          <span><strong>Health data access application</strong> You ask for pseudonymised records in a secure environment.</span></label>
-      </fieldset>
       <label>Purpose<textarea name="purpose" rows="3" required></textarea></label>
       <label>Question<textarea name="question" rows="3" required></textarea></label>
       <label>Definitions <span class="hint">one per line, for example "Adult = aged 18 or older on 31 December 2025."</span>
