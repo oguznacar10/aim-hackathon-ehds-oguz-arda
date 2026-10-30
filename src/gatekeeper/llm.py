@@ -7,7 +7,8 @@ import urllib.request
 
 DEFAULT_MODELS = {"openai": "gpt-4o-mini", "anthropic": "claude-3-5-haiku-latest",
                   "openrouter": "openai/gpt-4o"}
-KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "openrouter": "OPENROUTER_API_KEY"}
+KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "openrouter": "OPENROUTER_API_KEY",
+           "typesafe": "TYPESAFE_API_KEY"}
 # <KEY_ENV>_SECRET names a Google Secret Manager resource (projects/<id>/secrets/<name>);
 # the key is fetched inside this process with Application Default Credentials and never printed.
 KEY_SECRET_ENV = {p: env + "_SECRET" for p, env in KEY_ENV.items()}
@@ -24,8 +25,13 @@ class LLMUnavailable(RuntimeError):
 
 
 def available_providers():
-    return [p for p in KEY_ENV
-            if os.environ.get(KEY_ENV[p]) or os.environ.get(KEY_SECRET_ENV[p])]
+    """Chat providers with a key; typesafe is a decision-model backend, not a chat provider."""
+    return [p for p in KEY_ENV if p != "typesafe"
+            and (os.environ.get(KEY_ENV[p]) or os.environ.get(KEY_SECRET_ENV[p]))]
+
+
+def key_for(provider):
+    return _key(provider)
 
 
 def _key(provider):

@@ -5,7 +5,9 @@
     python scripts/eval_decisions.py --mode all --no-cache --runs N   # ablation, live LLM calls
 
 Modes: rules = keyword reader + rules (offline); hybrid = LLM reads, rules decide (shipped path);
-llm = the model decides end to end; all = the three side by side.
+llm = the model decides end to end; nimble = local decision model (Ollama) reads, rules decide;
+jev = hosted decision model (TypeSafe) reads, rules decide; vote = LLM reads, Nimble as second
+opinion, disagreement escalates; all = rules, hybrid, llm, nimble, vote side by side.
 """
 import argparse
 import json
@@ -16,10 +18,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 
-from gatekeeper import direct, llm, reader, rules  # noqa: E402
+from gatekeeper import decision, direct, llm, reader, rules  # noqa: E402
 
 EXTRA_OK = {"67", "71"}
-MODES = ("rules", "hybrid", "llm")
+MODES = ("rules", "hybrid", "llm", "nimble", "jev", "vote")
+ALL = ("rules", "hybrid", "llm", "nimble", "vote")
 RELEASE = {"REJECT": 0, "APPROVE_STATISTICAL": 1, "APPROVE_SPE": 2}
 
 
@@ -39,10 +42,24 @@ def percentile(values, pct):
 
 
 def decide(req, mode, cache, provider=None):
+    """rules: keywords + rules. hybrid: LLM reads, rules decide. llm: model decides alone.
+    nimble / jev: a decision model answers the two typed questions, rules decide.
+    vote: LLM reads with the local decision model as second opinion; disagreement escalates."""
     if mode == "llm":
         return direct.decide(req, provider=provider, cache=cache)
-    reading = reader.read(req, provider=provider, mode="keywords" if mode == "rules" else "auto",
-                          cache=cache)
+    if mode in ("nimble", "jev"):
+        reading = decision.decision_reading(req, backend=mode, cache=cache)
+    elif mode == "vote":
+        ai = reader.read(req, provider=provider, cache=cache)
+        dm = decision.decision_reading(req, backend="nimble", cache=cache)
+        disagree = ai["prohibited"] != dm["prohibited"] or (
+            not ai["prohibited"] and req["requested_as"] == rules.APPLICATION
+            and ai["justifies_records"] != dm["justifies_records"])
+        reading = {**ai, "needs_staff_review": ai["needs_staff_review"] or disagree,
+                   "second_opinion": dm, "source": f"{ai['source']}+nimble"}
+    else:
+        reading = reader.read(req, provider=provider, mode="keywords" if mode == "rules" else "auto",
+                              cache=cache)
     return {**rules.decide(req, reading), "source": reading["source"]}
 
 
@@ -78,7 +95,7 @@ def main():
     cases = load(args.set)
     if not cases:
         raise SystemExit(f"no cases in set '{args.set}'")
-    modes = MODES if args.mode == "all" else (args.mode,)
+    modes = ALL if args.mode == "all" else (args.mode,)
     summary = {mode: run_mode(mode, cases, args) for mode in modes}
     if len(modes) > 1:
         print(f"{'mode':<8} {'correct':<8} {'consistent':<11} {'danger/unflagged':<17} "
@@ -115,10 +132,10 @@ def run_mode(mode, cases, args):
     source = next(iter(first.values()))[4]
     print(f"mode={mode} set={args.set} cases={len(cases)} runs={args.runs} source={source} "
           f"cache={'off' if args.no_cache else 'on'}")
-    for rid, (decision, arts, ok, review, _, kind) in first.items():
+    for rid, (verdict_name, arts, ok, review, _, kind) in first.items():
         flag = " [staff review]" if review else ""
         verdict = "ok" if ok else f"WRONG ({kind or 'articles'})"
-        print(f"  {rid:<10} {decision:<20} {','.join(arts):<14} {verdict}{flag}")
+        print(f"  {rid:<10} {verdict_name:<20} {','.join(arts):<14} {verdict}{flag}")
     correct = sum(ok for _, _, ok, _, _, _ in first.values())
     consistent = sum(len({json.dumps(r[rid][:2]) for r in runs}) == 1 for rid in first)
     print(f"correct decisions: {correct}/{len(cases)}")

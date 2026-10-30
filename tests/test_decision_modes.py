@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from gatekeeper import direct, llm, reader
+from gatekeeper import decision, direct, llm, reader
 
 REPO = Path(__file__).resolve().parent.parent
 R01 = json.loads((REPO / "challenge" / "requests" / "R01.json").read_text(encoding="utf-8"))
@@ -130,3 +130,39 @@ def test_error_kind_separates_over_release_from_over_restriction(expected, got, 
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     assert mod.error_kind(expected, got) == kind
+
+
+def fake_answers(choice="none", noul=0.1, confidence=0.9):
+    def _systemone(state, questions, backend, timeout=60):
+        assert set(questions) == {"art54", "justifies"}
+        assert set(state) == {"applicant", "requested_as", "purpose", "question"}
+        return {"art54": {"type": "choice", "choice": choice, "confidence": confidence,
+                          "probabilities": {choice: confidence}},
+                "justifies": {"type": "noul", "noul": noul}}
+    return _systemone
+
+
+@pytest.mark.parametrize("choice, noul, prohibited, point, justifies", [
+    ("none", 0.1, False, None, False),
+    ("b", 0.2, True, "b", False),
+    ("none", 0.8, False, None, True),
+])
+def test_decision_model_answers_map_to_the_two_facts(monkeypatch, choice, noul, prohibited, point, justifies):
+    monkeypatch.setattr(decision, "systemone", fake_answers(choice, noul))
+    out = decision.decision_reading(R01, backend="nimble", cache=False)
+    assert (out["prohibited"], out["art54_point"], out["justifies_records"]) == (prohibited, point, justifies)
+    assert out["source"] == "nimble" and out["confidence"] == 0.9
+
+
+def test_vote_mode_escalates_when_llm_and_decision_model_disagree(monkeypatch):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("eval_decisions", REPO / "scripts" / "eval_decisions.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod.reader, "read", lambda req, **k: {
+        "prohibited": False, "art54_point": None, "justifies_records": False, "evidence": "",
+        "source": "openrouter", "needs_staff_review": False})
+    monkeypatch.setattr(mod.decision, "systemone", fake_answers("b", 0.1))
+    out = mod.decide(R01, "vote", cache=False)
+    assert out["decision"] == "APPROVE_STATISTICAL" and out["needs_staff_review"] is True
+    assert out["source"] == "openrouter+nimble"
