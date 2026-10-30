@@ -37,8 +37,8 @@ open(f"{out}/overlay.args", "w").write(inputs.strip() + "\n")
 open(f"{out}/overlay.filter", "w").write(";".join(chain) + "\n")
 open(f"{out}/overlay.last", "w").write(prev + "\n")
 PY
-  # shellcheck disable=SC2046
   N=$(python3 -c "import json,sys; print(len(json.load(open('$OUT/captions/cues.json'))))")
+  # shellcheck disable=SC2046
   ffmpeg -y -hide_banner -loglevel error -i "$OUT/picture.mp4" $(cat "$OUT/overlay.args") -i "$OUT/narration.wav" \
     -filter_complex_script "$OUT/overlay.filter" -map "$(cat "$OUT/overlay.last")" -map "$((N + 1)):a" \
     -c:v libx264 -pix_fmt yuv420p -preset medium -crf 18 -r 30 -c:a aac -b:a 160k -t 120 "$OUT/gatekeeper-intro.mp4"
