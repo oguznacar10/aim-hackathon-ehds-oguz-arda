@@ -1,0 +1,26 @@
+{
+  "id": "Gd14bab6f",
+  "submitted": "2026-10-05T16:45:00+01:00",
+  "applicant": {
+    "name": "Dr. Lisa Schwarz",
+    "organisation": "University of Vienna",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "aggregated statistics",
+  "purpose": "Research potential links between dietary supplements and mental health outcomes.",
+  "question": "Provide aggregate statistics of patients with mental health diagnoses and their LOINC observations related to dietary supplements.",
+  "definitions": [
+    "Mental health = any ICD-10 condition starting with F.",
+    "Dietary supplements = any LOINC codes related to nutritional products."
+  ],
+  "intended": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Aggregated data request suitable for research without needing individual histories."
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "The request is submitted as a 'health data request' (not a health data access application), which triggers step 2 of the decision tree. According to step 2, all health data requests are approved for statistical purposes. The purpose (research on dietary supplements and mental health) does not fall under prohibited categories in Art. 54. The applicant explicitly requests 'aggregated statistics' in the requested_format field, which aligns with statistical approval. Step 2 applies and the request should be approved."
+  },
+  "expected": "APPROVE_STATISTICAL"
+}

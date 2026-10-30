@@ -1,0 +1,26 @@
+{
+  "id": "Gde652cfe",
+  "submitted": "2026-09-15T14:30:00+01:00",
+  "applicant": {
+    "name": "Dr. Julia Thompson",
+    "organisation": "Pioneering Health Research Ltd.",
+    "country": "DE"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Analyze medication efficacy in patients with chronic pain to improve treatment plans. Individual-level data is crucial for understanding variation in responses.",
+  "question": "Provide pseudonymised records of patients with chronic pain diagnoses and their corresponding prescribed medications for analysis.",
+  "definitions": [
+    "Chronic pain = any ICD-10 diagnoses with G89 code.",
+    "Cohort = patients with G89 diagnoses who have been prescribed any ATC medication."
+  ],
+  "intended": {
+    "decision": "APPROVE_SPE",
+    "why": "Explicit need for individual-level data explained in purpose."
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "This is a health data access application (not merely a 'health data request') that explicitly explains why anonymised statistics cannot achieve the purpose. The applicant states 'Individual-level data is crucial for understanding variation in responses' - this directly articulates why aggregated statistics are insufficient. Analyzing medication efficacy and treatment plan improvement requires understanding individual-level response patterns and heterogeneity, which cannot be captured through statistical aggregates alone. The purpose is not prohibited by Art. 54. The request meets the threshold for special purpose access under step 3."
+  },
+  "expected": "APPROVE_SPE"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "Ga9a3dfc0",
+  "submitted": "2026-11-15T17:45:00+01:00",
+  "applicant": {
+    "name": "FutureCare Dynamics",
+    "organisation": "Health Dynamics Network",
+    "country": "SE"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Develop personalized care pathways for oncology patients based on treatment history. Individual-level records are essential to create effective care plans.",
+  "question": "Provide pseudonymised records of oncology patients, detailing their treatment protocols and outcomes.",
+  "definitions": [
+    "Oncology patients = any patient with ICD-10 cancer codes C00-C97.",
+    "Treatment protocols = prescribed ATC medications and procedure codes."
+  ],
+  "intended": {
+    "decision": "APPROVE_SPE",
+    "why": "The necessity of individual-level data is outlined for personalized care development."
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "The request is submitted as a 'health data access application' (Step 2 criterion not met - not a simple 'health data request'). At Step 3, the applicant must explicitly explain why anonymised statistics cannot achieve their purpose. The application states that 'individual-level records are essential to create effective care plans' and describes a research goal (developing personalized care pathways), but does not provide a substantive explanation of why aggregated or anonymised statistical data would be insufficient for this purpose. The statement that records are 'essential' is conclusory rather than explanatory. Therefore, Step 3 criteria are not satisfied, and Step 4 applies: any other access application defaults to APPROVE_STATISTICAL."
+  }
+}

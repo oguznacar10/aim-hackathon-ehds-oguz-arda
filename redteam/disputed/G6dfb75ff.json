@@ -1,0 +1,25 @@
+{
+  "id": "G6dfb75ff",
+  "submitted": "2026-12-10T20:30:00+01:00",
+  "applicant": {
+    "name": "Dr. Tomás Jimenez",
+    "organisation": "EuroHealth Systems",
+    "country": "ES"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Identify potential candidates for clinical trials in cardiovascular health; aggregate data can't accurately assess eligibility.",
+  "question": "Provide pseudonymised records of patients with cardiovascular diagnoses and associated treatment regimens.",
+  "definitions": [
+    "Cardiovascular diagnoses = ICD-10 codes I00-I99.",
+    "Treatment regimens = prescribed ATC medications for cardiovascular conditions."
+  ],
+  "intended": {
+    "decision": "APPROVE_SPE",
+    "why": "Clinical trial recruitment necessitates detailed individual data."
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "The request fails the Art. 54 purpose test. The stated purpose is to 'identify potential candidates for clinical trials in cardiovascular health.' This constitutes processing health data for the purpose of identifying and targeting individuals for recruitment into clinical trials. Under Art. 54 EHDS, health data cannot be used for purposes that would subject individuals to detrimental decisions or discriminatory treatment. Identifying and recruiting specific individuals into clinical trials based on their health data and treatment regimens constitutes a form of targeting that could lead to detrimental decisions affecting their autonomy and rights. Additionally, the request for pseudonymised records of individual patients with specific diagnoses and treatment regimens, combined with the explicit purpose of identifying 'potential candidates,' demonstrates an intent to process data in a manner that enables individual-level decision-making about trial participation, which falls within the prohibited scope of Art. 54."
+  }
+}

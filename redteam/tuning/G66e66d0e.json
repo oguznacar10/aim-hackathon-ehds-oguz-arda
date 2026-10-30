@@ -1,0 +1,26 @@
+{
+  "id": "G66e66d0e",
+  "submitted": "2026-10-20T09:15:00+01:00",
+  "applicant": {
+    "name": "NewMed Analytics",
+    "organisation": "PharmaTech Innovations",
+    "country": "IT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Develop a marketing strategy for new anti-hypertensive medication. Individual data is required to segment target demographics.",
+  "question": "Provide pseudonymised records of patients with hypertension and their prescribed medications.",
+  "definitions": [
+    "Hypertension = ICD-10 codes starting with I10.",
+    "Cohort = patients prescribed ATC medications for hypertension."
+  ],
+  "intended": {
+    "decision": "REJECT",
+    "why": "Purpose involves marketing, which is prohibited by Art. 54."
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "The stated purpose is 'develop a marketing strategy for new anti-hypertensive medication' with explicit mention of 'segment target demographics.' This falls squarely within the prohibited category of advertising or marketing under Art. 54 EHDS. Regardless of the requested format or the applicant's framing as a 'health data access application,' the fundamental purpose is marketing-related, which is explicitly prohibited. The request cannot proceed to step 3 analysis because the purpose itself is prohibited at step 1."
+  },
+  "expected": "REJECT"
+}

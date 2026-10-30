@@ -1,0 +1,26 @@
+{
+  "id": "G4f523622",
+  "submitted": "2027-01-05T08:45:00+01:00",
+  "applicant": {
+    "name": "Dr. Emma Becker",
+    "organisation": "National Institute of Public Health",
+    "country": "PL"
+  },
+  "requested_as": "health data request",
+  "requested_format": "aggregated statistics",
+  "purpose": "Investigate healthcare system efficiency and performance across regions to inform policy.",
+  "question": "Supply aggregated encounter statistics, conditions, and treatment outcomes by region.",
+  "definitions": [
+    "Healthcare system efficiency = measures of resource utilization and patient outcomes.",
+    "Region = various geographical areas within Austria."
+  ],
+  "intended": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Aggregated data is appropriate for policy research on system efficiency."
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "The request is explicitly submitted as a 'health data request' (step 2 criterion met). The purpose of investigating healthcare system efficiency and performance to inform policy is not prohibited under Art. 54. The requested format is already aggregated statistics, which aligns with statistical access. No explicit explanation is provided for why anonymised statistics cannot achieve the purpose, so step 3 does not apply. Step 2 is satisfied, therefore the decision is APPROVE_STATISTICAL."
+  },
+  "expected": "APPROVE_STATISTICAL"
+}

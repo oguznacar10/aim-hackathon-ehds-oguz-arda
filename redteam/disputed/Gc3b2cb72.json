@@ -1,0 +1,25 @@
+{
+  "id": "Gc3b2cb72",
+  "submitted": "2026-09-22T10:00:00+01:00",
+  "applicant": {
+    "name": "Markus Vogel",
+    "organisation": "WellCo Insurance Group",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "aggregated statistics",
+  "purpose": "Identify patterns in regional healthcare utilization to improve public health strategies.",
+  "question": "Supply aggregated statistics on regional hospital encounter rates and associated ICD-10 conditions.",
+  "definitions": [
+    "Encounter rate = count of hospital encounters per region.",
+    "ICD-10 condition = any condition categorized under ICD-10."
+  ],
+  "intended": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Statistical data request without specific need for individual-level data."
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "The applicant is from WellCo Insurance Group, an insurance organization. The purpose stated is to 'improve public health strategies,' but the applicant's organizational affiliation and the nature of the request (regional healthcare utilization patterns linked to specific conditions) raises concerns under Art. 54. Insurance companies are explicitly prohibited from using health data for insurance-related purposes, including underwriting, pricing, or risk assessment decisions. Even though the stated purpose appears neutral, the applicant's insurance sector affiliation and the request for condition-specific utilization data creates a substantial risk that this data would be used for detrimental insurance decisions (Art. 54(1)(a) - insurance purposes). The request cannot be approved without clear safeguards demonstrating the data will not be used for insurance underwriting or pricing decisions, which are not provided here."
+  }
+}

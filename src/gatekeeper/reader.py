@@ -8,7 +8,7 @@ import json
 import re
 from pathlib import Path
 
-from gatekeeper import llm
+from gatekeeper import llm, rules
 
 PROMPT_VERSION = "1"
 CACHE_DIR = Path(__file__).resolve().parents[2] / ".cache" / "readings"
@@ -94,6 +94,7 @@ def read(request, provider=None, model=None):
     if provider is None:
         return {**kw, "source": "keywords", "needs_staff_review": False}
     ai = llm_reading(request, provider, model)
-    disagree = (ai["prohibited"] != kw["prohibited"]
-                or ai["justifies_records"] != kw["justifies_records"])
+    disagree = ai["prohibited"] != kw["prohibited"] or (
+        not ai["prohibited"] and request["requested_as"] == rules.APPLICATION
+        and ai["justifies_records"] != kw["justifies_records"])
     return {**ai, "source": provider, "needs_staff_review": disagree, "second_opinion": kw}
