@@ -48,3 +48,8 @@ Oguz asked that the system, not the researcher, decides between anonymised stati
 - Why: a training set or a live demo built on requests the data cannot answer would embarrass us in front of the access-body jurors, and free `requested_format` wording would teach a classifier a spurious signal.
 - Still a human call: the Art. 66(3) borderline (one-sentence "individual-level data is crucial" justifications). The same judge accepted it in `Gde652cfe` and refused the same pattern in `Ga9a3dfc0`; settle the rule once in this log before generating more.
 - Open: whether a trained model may decide at all. The 2026-10-30 "LLM reads, rules decide" entry says no; Arda's plan to train on generated requests needs its own entry (model as second opinion versus model as decider).
+
+
+## 2026-10-30 - An LLM outage never stops a request (Oguz via Devin, PROPOSED)
+
+- A fresh run without the cache hit HTTP 429 from OpenRouter and crashed the pipeline. Now `llm.chat_json` retries 429 and 5xx up to 3 times (1 s, 2 s, 4 s), and if the reader still gets no answer the keyword reader decides and the case is flagged `needs_staff_review` with the error text. The planner already fell back to the rule plan.
