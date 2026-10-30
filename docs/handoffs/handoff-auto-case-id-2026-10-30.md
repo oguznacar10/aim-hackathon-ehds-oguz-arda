@@ -10,7 +10,7 @@
 - Playwright: a new request comes back as `C-NNN`; loading R01 fills name, organisation and country.
 
 ## Open
-- Case numbers are in memory and restart at C-001 with the server.
+- Case numbers are in memory and restart at C-001 with the server. Fixed on `claude/case-id-restart`: an id whose `spe/<id>` folder exists is skipped, so an old audit log is not reused. Case records themselves are still lost on restart.
 
 ## Next step
 - Merge after Oguz or Arda says so.
