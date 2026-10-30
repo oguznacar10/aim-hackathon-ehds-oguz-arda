@@ -178,3 +178,13 @@ def test_multi_word_observation_name_is_one_term():
     assert [m["kind"] for m in plan["measures"]] == ["count", "mean"]
     assert plan["measures"][1]["value"]["loinc"] == "8480-6"
     assert isinstance(pipeline.handle(req)["answer"], dict)
+
+
+def test_rule_planner_refuses_a_measure_no_definition_explains():
+    req = new_request("T03", "How many patients with type 2 diabetes are there, by hospital?", [
+        "Report per hospital: patients with type 2 diabetes.",
+    ])
+    with pytest.raises(planner.PlanningFailed, match="type, 2, diabetes"):
+        planner.rule_statistics_plan(req)
+    with pytest.raises(planner.PlanningFailed):
+        pipeline.handle(req)

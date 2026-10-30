@@ -201,6 +201,18 @@ def _split_measures(body, terms):
     return restore
 
 
+FILLER = set("""a an the with who whose have has had their them its that those of how many number count total all
+any no not without active patients patient people persons value values mean average age share in % percent
+percentage proportion rate is are recorded measured""".split())
+
+
+def _undefined_words(phrase, names):
+    low = phrase.lower()
+    for n in sorted(names, key=len, reverse=True):
+        low = re.sub(_pattern(n), " ", low)
+    return [w for w in re.findall(r"[a-z0-9%]+", low) if w not in FILLER]
+
+
 def rule_statistics_plan(request):
     terms, percents, extra = _parse(request)
     report = extra["report"]
@@ -239,6 +251,9 @@ def rule_statistics_plan(request):
 
     measures, last_where = [], []
     for phrase in _split_measures(body, terms):
+        unknown = _undefined_words(phrase, list(terms) + list(percents))
+        if unknown:
+            raise PlanningFailed(f"'{phrase}' uses words no definition explains: {', '.join(unknown)}")
         mentioned = _mentioned(phrase, terms)
         where = [_measure_filter(terms[n], neg) for n, neg in mentioned if n in measure_terms]
         pct_def = next((n for n in percents if re.search(_pattern(n), phrase, re.I)), None)
