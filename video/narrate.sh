@@ -17,8 +17,8 @@ for i in 1 2 3 4 5 6; do
     say -v "$VOICE" -r "$rate" -o "out/voice/seg$i.aiff" "$text"
     ffmpeg -y -loglevel error -i "out/voice/seg$i.aiff" -ar 48000 -ac 2 "out/voice/seg$i.wav"
     dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "out/voice/seg$i.wav")
-    if python3 -c "import sys; sys.exit(0 if $dur <= $slot - 0.5 else 1)" || [ "$rate" -ge 230 ]; then break; fi
-    rate=$(( rate + 10 > 230 ? 230 : rate + 10 ))
+    if python3 -c "import sys; sys.exit(0 if $dur <= $slot - 0.5 else 1)" || [ "$rate" -ge 300 ]; then break; fi
+    rate=$(( rate + 10 > 300 ? 300 : rate + 10 ))
   done
   printf "%-8s %-6s %-7.2f %s\n" "$i" "$slot" "$dur" "$rate"
   inputs+=(-i "out/voice/seg$i.wav")
