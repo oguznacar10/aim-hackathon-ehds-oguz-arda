@@ -54,37 +54,45 @@ def create(request_id, spec):
     params = []
     where = query.where_sql(spec.get("cohort", []), "patient", params)
     cohort_sql = f"SELECT p.patient_id FROM patients p WHERE {where}"
-    ids = [r[0] for r in data.connection().execute(cohort_sql, params)]
+    hospitals = data.nodes()
+    cohorts = {h: [r[0] for r in db.execute(cohort_sql, params)] for h, db in hospitals.items()}
+    ids = [i for h in hospitals for i in cohorts[h]]
+
+    copies = []
+    for rec in spec["records"]:
+        table = rec["table"]
+        cols = list(data.SCHEMA[table])
+        cond, p = ["t.patient_id IN (SELECT patient_id FROM temp.spe_cohort)"], []
+        if rec.get("loinc") and table == "observations":
+            cond.append(f"t.loinc IN ({','.join('?' * len(rec['loinc']))})")
+            p.extend(rec["loinc"])
+        if rec.get("icd10_prefixes") and table == "conditions":
+            cond.append(query.like_any("t.icd10", rec["icd10_prefixes"], p))
+        if rec.get("atc_prefixes") and table == "medications":
+            cond.append(query.like_any("t.atc", rec["atc_prefixes"], p))
+        copies.append((table, cols, f"SELECT {', '.join('t.' + c for c in cols)} FROM {table} t "
+                                    f"WHERE {' AND '.join(cond)}", p))
 
     with closing(sqlite3.connect(db_path)) as out:
         out.execute("CREATE TABLE cohort (patient_id TEXT PRIMARY KEY)")
         out.executemany("INSERT INTO cohort VALUES (?)", [(i,) for i in ids])
-        src = data.connection()
-        src.execute("DROP TABLE IF EXISTS temp.spe_cohort")
-        src.execute("CREATE TEMP TABLE spe_cohort (patient_id TEXT PRIMARY KEY)")
-        src.executemany("INSERT INTO temp.spe_cohort VALUES (?)", [(i,) for i in ids])
-        tables = {}
-        for rec in spec["records"]:
-            table = rec["table"]
-            cols = list(data.SCHEMA[table])
-            cond, p = ["t.patient_id IN (SELECT patient_id FROM temp.spe_cohort)"], []
-            if rec.get("loinc") and table == "observations":
-                cond.append(f"t.loinc IN ({','.join('?' * len(rec['loinc']))})")
-                p.extend(rec["loinc"])
-            if rec.get("icd10_prefixes") and table == "conditions":
-                cond.append(query.like_any("t.icd10", rec["icd10_prefixes"], p))
-            if rec.get("atc_prefixes") and table == "medications":
-                cond.append(query.like_any("t.atc", rec["atc_prefixes"], p))
-            rows = src.execute(f"SELECT {', '.join('t.' + c for c in cols)} FROM {table} t "
-                               f"WHERE {' AND '.join(cond)}", p).fetchall()
+        for table, cols, _, _ in copies:
             out.execute(f"CREATE TABLE {table} ({', '.join(cols)})")
-            out.executemany(f"INSERT INTO {table} VALUES ({','.join('?' * len(cols))})", rows)
-            tables[table] = len(rows)
-        src.execute("DROP TABLE temp.spe_cohort")
+        tables = {table: 0 for table, *_ in copies}
+        for h, src in hospitals.items():
+            src.execute("DROP TABLE IF EXISTS temp.spe_cohort")
+            src.execute("CREATE TEMP TABLE spe_cohort (patient_id TEXT PRIMARY KEY)")
+            src.executemany("INSERT INTO temp.spe_cohort VALUES (?)", [(i,) for i in cohorts[h]])
+            for table, cols, sql, p in copies:
+                rows = src.execute(sql, p).fetchall()
+                out.executemany(f"INSERT INTO {table} VALUES ({','.join('?' * len(cols))})", rows)
+                tables[table] += len(rows)
+            src.execute("DROP TABLE temp.spe_cohort")
         out.commit()
     manifest = {
         "request_id": request_id,
         "cohort_size": len(ids),
+        "hospitals": {h: len(cohorts[h]) for h in hospitals},
         "tables": tables,
         "workspace": str(db_path.relative_to(ROOT.parent)),
         "cohort_sql": query.render_sql(cohort_sql, params),

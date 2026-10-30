@@ -359,6 +359,8 @@ async function openCase(id) {
   const query = el("section", { class: "cf-section" }, el("h3", { text: "How the numbers were computed" }));
   if (plan) {
     query.append(el("p", { text: staff.planner === "rules" ? "Planned by the rule planner from the definitions." : `Planned by the AI planner (${staff.planner}) and checked against the rule planner.` }));
+    const hospitals = staff.hospitals || (staff.spe && Object.keys(staff.spe.hospitals || {}));
+    if (hospitals && hospitals.length) query.append(el("p", { text: `Run separately in ${hospitals.length} hospital databases (${hospitals.join(", ")}); only totals left each hospital.` }));
     query.append(el("details", { class: "sql" }, el("summary", { text: "Query plan" }), el("pre", { text: JSON.stringify(plan, null, 2) })));
     const sql = staff.sql || (staff.spe || {}).cohort_sql;
     if (sql) query.append(el("details", { class: "sql" }, el("summary", { text: "Generated SQL" }), el("pre", { text: sql })));

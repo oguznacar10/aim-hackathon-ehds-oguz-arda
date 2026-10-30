@@ -1,6 +1,7 @@
-"""The only door to the patient data: an in-memory SQLite copy without opted-out patients.
+"""The only door to the patient data: one in-memory SQLite database per hospital (data holder).
 
-Opted-out patients (Art. 71) are dropped while loading, so no query or SPE copy can reach them.
+Each hospital database holds only that hospital's patients and their records. Opted-out patients
+(Art. 71) are dropped while loading, so no query or SPE copy can reach them.
 """
 import csv
 import sqlite3
@@ -26,8 +27,8 @@ def _rows(name):
         yield from csv.DictReader(f)
 
 
-@lru_cache(maxsize=1)
-def _load():
+@lru_cache(maxsize=None)
+def _load(holder=None):
     db = sqlite3.connect(":memory:", check_same_thread=False)
     db.execute("CREATE TABLE patients (patient_id TEXT PRIMARY KEY, sex TEXT, birth_date TEXT, "
                "region TEXT, data_holder TEXT, age INTEGER)")
@@ -40,7 +41,7 @@ def _load():
                "type TEXT, start_date TEXT, end_date TEXT, primary_icd10 TEXT)")
     kept = set()
     for r in _rows("patients"):
-        if r["opted_out"] == "true":
+        if r["opted_out"] == "true" or (holder and r["data_holder"] != holder):
             continue
         kept.add(r["patient_id"])
         db.execute("INSERT INTO patients VALUES (?,?,?,?,?,?)",
@@ -67,16 +68,38 @@ def _load():
 
 
 def connection():
+    """All hospitals in one database. Only for tests that check the federated answers."""
     return _load()
+
+
+@lru_cache(maxsize=1)
+def holders():
+    return tuple(sorted({r["data_holder"] for r in _rows("patients")}))
+
+
+def nodes():
+    """One database per hospital; queries run in each and only aggregates come back."""
+    return {h: _load(h) for h in holders()}
+
+
+def _union(sql):
+    return sorted({r[0] for db in nodes().values() for r in db.execute(sql)})
+
+
+def _labels(sql):
+    out = {}
+    for db in nodes().values():
+        for code, label in db.execute(sql):
+            out[code] = min(out.get(code, label), label)
+    return dict(sorted(out.items()))
 
 
 @lru_cache(maxsize=1)
 def groups():
     """Every value a group can take, so empty groups still appear in an answer."""
-    db = connection()
     return {
-        "region": [r[0] for r in db.execute("SELECT DISTINCT region FROM patients ORDER BY 1")],
-        "data_holder": [r[0] for r in db.execute("SELECT DISTINCT data_holder FROM patients ORDER BY 1")],
+        "region": _union("SELECT DISTINCT region FROM patients"),
+        "data_holder": _union("SELECT DISTINCT data_holder FROM patients"),
         "sex": ["female", "male"],
     }
 
@@ -84,13 +107,11 @@ def groups():
 @lru_cache(maxsize=1)
 def catalog():
     """Code lists with labels. Vocabulary only, no patient rows; safe to show an LLM."""
-    db = connection()
     return {
-        "icd10": dict(db.execute("SELECT icd10, MIN(description) FROM conditions GROUP BY 1 ORDER BY 1")),
-        "atc": dict(db.execute("SELECT atc, MIN(name) FROM medications GROUP BY 1 ORDER BY 1")),
-        "loinc": dict(db.execute("SELECT loinc, MIN(name) FROM observations GROUP BY 1 ORDER BY 1")),
-        "primary_icd10": [r[0] for r in db.execute(
-            "SELECT DISTINCT primary_icd10 FROM encounters WHERE primary_icd10 IS NOT NULL ORDER BY 1")],
-        "encounter_type": [r[0] for r in db.execute("SELECT DISTINCT type FROM encounters ORDER BY 1")],
+        "icd10": _labels("SELECT icd10, MIN(description) FROM conditions GROUP BY 1"),
+        "atc": _labels("SELECT atc, MIN(name) FROM medications GROUP BY 1"),
+        "loinc": _labels("SELECT loinc, MIN(name) FROM observations GROUP BY 1"),
+        "primary_icd10": _union("SELECT DISTINCT primary_icd10 FROM encounters WHERE primary_icd10 IS NOT NULL"),
+        "encounter_type": _union("SELECT DISTINCT type FROM encounters"),
         **groups(),
     }

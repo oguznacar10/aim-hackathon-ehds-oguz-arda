@@ -41,7 +41,7 @@ def handle(request, provider=None):
         plan, source, other = _plan(request, "statistics", provider)
         run = query.run(plan)
         out["answer"] = run["answer"]
-        out["staff"] = {"plan": plan, "planner": source, "sql": run["sql"]}
+        out["staff"] = {"plan": plan, "planner": source, "sql": run["sql"], "hospitals": run["hospitals"]}
         check = _cross_check(other, run["answer"], lambda p: query.run(p)["answer"])
     else:
         spec, source, other = _plan(request, "spe", provider)
