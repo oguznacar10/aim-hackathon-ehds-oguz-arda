@@ -71,3 +71,9 @@ Oguz asked that the system, not the researcher, decides between anonymised stati
 - Eval modes: rules (keywords + rules), hybrid (LLM reads, rules decide, the shipped path), llm (ablation only), nimble and jev (decision model reads, rules decide), vote (LLM reads, Nimble as second opinion, disagreement escalates to staff). Errors are split into dangerous (more data than the law allows) and restrictive (less), with unflagged dangerous errors, escalations and latency p95 reported.
 - Why: the 2026-10-30 "LLM reads, rules decide" entry stands. This entry records that a decision model is allowed in the reader seat, which that entry did not cover, and that a model in the decider seat is for measurement only. A trained model as decider needs its own entry, which is not proposed here.
 - Open: live numbers for every mode except rules. Those runs start from Arda's terminal; see PR #5.
+
+## 2026-10-30 - Live ablation on the 10 requests: every mode 10/10, the 10 cannot rank readers (Arda, PROPOSED)
+
+- Run today on commit `573297a`, `--runs 3 --no-cache`: rules, hybrid (gpt-4o reads), llm (gpt-4o decides, ablation only), nimble (local, no key), vote. All five: 10/10 correct, 10/10 consistent, 0 dangerous, 0 unflagged, 0 escalated. p95: rules 0.00 s, nimble 1.10 s, vote 1.48 s, llm 1.92 s, hybrid 2.21 s. Full output in `docs/handoffs/handoff-decision-ablation-2026-10-30.md`. jev not run.
+- What we may claim: the shipped path (hybrid) and the local Nimble reader both score 10/10 live on the challenge set; the local reader needs no key and no cloud call. What we may not claim: that any mode is safer than another; 30 decisions with 0 failures bound the true failure rate only to 10%.
+- Why PROPOSED: the ranking question stays open until the synthetic held-out set exists (PR 16) and the modes run on it at Arda's batch size. The shipped path does not change on these numbers.
