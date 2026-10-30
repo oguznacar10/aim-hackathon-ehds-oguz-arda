@@ -180,7 +180,7 @@ function renderNotice(request, result) {
   });
 
   const reasons = $(".reasons", n);
-  const sentences = result.reason.match(/[^.;]+(?:\([^)]*\))?[^.;]*[.;]?/g) || [result.reason];
+  const sentences = result.reason.split(/(?<=[.;])\s+(?=[A-Z])/);
   for (const sentence of sentences.map((s) => s.trim()).filter(Boolean)) {
     const refs = [...new Set([...sentence.matchAll(/Art\. (\d+)(\(\w+\))?/g)].map((m) => m[0]))];
     const margin = el("div", { class: "margin" });

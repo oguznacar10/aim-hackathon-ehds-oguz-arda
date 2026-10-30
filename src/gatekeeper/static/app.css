@@ -156,6 +156,7 @@ table.stats { border-collapse: collapse; width: 100%; max-width: 820px; font-var
 .cf-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s3); margin-bottom: var(--s4); }
 .cf-head h2 { font-size: 31px; }
 .cf-section { padding: var(--s4) 0; border-top: 1px solid var(--rule); }
+.cf-section .facts + h3 { margin-top: var(--s4); }
 .facts { display: grid; grid-template-columns: max-content 1fr; gap: var(--s2) var(--s4); margin: 0; }
 .facts dt { color: var(--muted); }
 .facts dd { margin: 0; }
