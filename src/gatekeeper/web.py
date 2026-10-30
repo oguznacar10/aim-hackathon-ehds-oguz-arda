@@ -72,7 +72,7 @@ def case_summary(case_id, case):
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Datenzugang"
+    server_version = "Gatekeeper"
 
     def log_message(self, fmt, *args):
         pass
@@ -180,5 +180,5 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(host="127.0.0.1", port=8000):
     httpd = ThreadingHTTPServer((host, port), Handler)
-    print(f"Datenzugang running at http://{host}:{port}")
+    print(f"Gatekeeper running at http://{host}:{port}")
     httpd.serve_forever()

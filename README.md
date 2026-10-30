@@ -1,6 +1,6 @@
 # AIM Hackathon EHDS - Oguz & Arda
 
-**Datenzugang**: a Health Data Access Body for the European Health Data Space (Regulation (EU) 2025/327, Chapter IV). Built at the AIM Healthcare Hackathon Vienna, 29-30 October 2026, Track 3.
+**.Gatekeeper**: a Health Data Access Body for the European Health Data Space (Regulation (EU) 2025/327, Chapter IV). Built at the AIM Healthcare Hackathon Vienna, 29-30 October 2026, Track 3.
 
 An applicant submits a health data request. The app, automatically:
 1. decides `REJECT`, `APPROVE_STATISTICAL` or `APPROVE_SPE` and cites the articles,
