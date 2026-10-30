@@ -162,6 +162,24 @@ def test_unseen_patients_by_hospital_with_age_and_condition():
         h: [smallcell.format_value("count", n)] for h, n in truth.items()}
 
 
+def test_multi_word_observation_name_is_one_term():
+    """R08 names its measurement in one word (BMI); the data also has 'Systolic blood pressure'."""
+    req = new_request("T04", "What is the mean systolic blood pressure of adults with hypertension, by region?", [
+        "Adult = aged 18 or older on 31 December 2025.",
+        "Hypertension = any condition with an ICD-10 code starting with I10.",
+        "Use the latest systolic blood pressure (LOINC 8480-6) per patient; patients without a systolic "
+        "blood pressure are left out.",
+        "Report per region: number of adults with hypertension who have a systolic blood pressure and mean "
+        "systolic blood pressure with one decimal.",
+    ])
+    terms = planner._parse(req)[0]
+    assert terms["systolic blood pressure"] == {"kind": "observation", "loinc": "8480-6", "pick": "latest"}
+    plan = planner.rule_statistics_plan(req)
+    assert [m["kind"] for m in plan["measures"]] == ["count", "mean"]
+    assert plan["measures"][1]["value"]["loinc"] == "8480-6"
+    assert isinstance(pipeline.handle(req)["answer"], dict)
+
+
 def test_rule_planner_refuses_a_measure_no_definition_explains():
     req = new_request("T03", "How many patients with type 2 diabetes are there, by hospital?", [
         "Report per hospital: patients with type 2 diabetes.",

@@ -95,9 +95,9 @@ def _parse(request):
     terms, percents, extra = {}, {}, {"report": None, "cohort": None, "bands": None, "unit": "patient",
                                        "year": (None, None), "picks": {}}
     for d in defs:
-        for m in re.finditer(r"(?:latest|last|earliest|first|any)?\s*([A-Za-z0-9][\w\-]*)\s+(?:values?\s+)?"
-                             r"\(LOINC\s+([\w\-]+)\)", d):
-            terms.setdefault(m.group(1), {"kind": "observation", "loinc": m.group(2)})
+        for m in re.finditer(r"(?:\b(?:latest|last|earliest|first|any)\s+((?:[A-Za-z0-9][\w\-]*\s+)*?[A-Za-z0-9][\w\-]*)"
+                             r"|([A-Za-z0-9][\w\-]*))\s+(?:values?\s+)?\(LOINC\s+([\w\-]+)\)", d):
+            terms.setdefault(m.group(1) or m.group(2), {"kind": "observation", "loinc": m.group(3)})
         m = re.search(r"\b(latest|last|earliest|first)\b[^.]*?\(LOINC\s+([\w\-]+)\)", d, re.I)
         if m:
             extra["picks"][m.group(2)] = "earliest" if m.group(1).lower() in ("earliest", "first") else "latest"
