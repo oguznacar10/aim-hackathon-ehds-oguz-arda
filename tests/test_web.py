@@ -1,5 +1,6 @@
 """The web layer: examples, decisions, the blocked download and staff actions over real HTTP."""
 import json
+import re
 import threading
 import urllib.error
 import urllib.request
@@ -86,3 +87,16 @@ def test_hospitals_endpoint_returns_totals_only(base):
     rows = json.loads(raw)
     assert len(rows) == 3
     assert all(set(r) == {"hospital", "patients", "opted_out_excluded", "records"} for r in rows)
+
+
+def test_new_request_gets_a_case_number_from_the_system(base):
+    req = {**example(base, "R03"), "requested_as": "health data access application"}
+    del req["id"]
+    ids = []
+    for _ in range(2):
+        status, raw = call(base, "/api/decide", req)
+        assert status == 200
+        ids.append(json.loads(raw)["id"])
+    assert all(re.fullmatch(r"C-\d{3}", i) for i in ids) and ids[0] != ids[1]
+    status, raw = call(base, "/api/cases")
+    assert set(ids) <= {c["id"] for c in json.loads(raw)}

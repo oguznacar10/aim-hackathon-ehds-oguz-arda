@@ -22,22 +22,20 @@
   <section class="intake" aria-labelledby="intake-title">
     <div class="intake-head">
       <h1 id="intake-title">Request access to health data</h1>
-      <label class="example-pick">Load an example
+      <label class="example-pick"><span class="lbl">Load an example<span class="info" tabindex="0" role="button" aria-label="About Load an example" aria-describedby="tip-example">i</span><span class="tip" role="tooltip" id="tip-example">Fills the form with one of the 10 sample requests from the challenge, so you can see how each is decided.</span></span>
         <select id="example"><option value="">Choose a sample request</option></select>
       </label>
     </div>
     <form id="request-form" novalidate>
-      <div class="row two">
-        <label>Applicant name<input name="name" required autocomplete="off"></label>
-        <label>Organisation<input name="organisation" required autocomplete="off"></label>
+      <input type="hidden" name="id">
+      <label><span class="lbl">Applicant name<span class="info" tabindex="0" role="button" aria-label="About Applicant name" aria-describedby="tip-name">i</span><span class="tip" role="tooltip" id="tip-name">The person responsible for the request. The name appears on the decision notice.</span></span><input name="name" required autocomplete="off"></label>
+      <div class="row org-country">
+        <label><span class="lbl">Organisation<span class="info" tabindex="0" role="button" aria-label="About Organisation" aria-describedby="tip-organisation">i</span><span class="tip" role="tooltip" id="tip-organisation">The university, authority or company you apply for. Companies may apply too; who you are is not a reason to refuse.</span></span><input name="organisation" required autocomplete="off"></label>
+        <label><span class="lbl">Country<span class="info" tabindex="0" role="button" aria-label="About Country" aria-describedby="tip-country">i</span><span class="tip" role="tooltip" id="tip-country">Two-letter code of the country your organisation is based in, for example AT or DE.</span></span><input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
       </div>
-      <div class="row two">
-        <label>Country<input name="country" maxlength="2" placeholder="AT" autocomplete="off"></label>
-        <label>Case number<input name="id" required placeholder="R11" autocomplete="off"></label>
-      </div>
-      <label>Purpose<textarea name="purpose" rows="3" required></textarea></label>
-      <label>Question<textarea name="question" rows="3" required></textarea></label>
-      <label>Definitions <span class="hint">one per line, for example "Adult = aged 18 or older on 31 December 2025."</span>
+      <label><span class="lbl">Purpose<span class="info" tabindex="0" role="button" aria-label="About Purpose" aria-describedby="tip-purpose">i</span><span class="tip" role="tooltip" id="tip-purpose">Why you need the data and what it will be used for. Some purposes are prohibited (Art. 54), for example setting insurance premiums, advertising, or decisions about individual people.</span></span><textarea name="purpose" rows="3" required></textarea></label>
+      <label><span class="lbl">Question<span class="info" tabindex="0" role="button" aria-label="About Question" aria-describedby="tip-question">i</span><span class="tip" role="tooltip" id="tip-question">What you want to know, in one or two sentences. If you need patient-level records rather than statistics, explain here why statistics are not enough.</span></span><textarea name="question" rows="3" required></textarea></label>
+      <label><span class="lbl">Definitions<span class="info" tabindex="0" role="button" aria-label="About Definitions" aria-describedby="tip-definitions">i</span><span class="tip" role="tooltip" id="tip-definitions">One rule per line. Define each term, for example “Adult = aged 18 or older on 31 December 2025.” End with what to report, for example “Report per hospital: adults.”</span></span>
         <textarea name="definitions" rows="4"></textarea></label>
       <p id="form-error" class="form-error" role="alert" hidden></p>
       <button type="submit" class="primary" id="submit">Submit request</button>
