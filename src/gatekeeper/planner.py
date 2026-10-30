@@ -10,7 +10,7 @@ from pathlib import Path
 
 from gatekeeper import data, llm, query, spe
 
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "4"
 CACHE_DIR = Path(__file__).resolve().parents[2] / ".cache" / "plans"
 GROUP_WORDS = [
     ("age_band", r"age band|band|age group"),
@@ -306,8 +306,34 @@ Return {"statistics": <plan>} when MODE is statistics, {"spe": <spec>} when MODE
 
 <plan> language:
 %s
+Filters (every field except "kind" is optional unless marked required; add "negate": true for
+"without" / "not"):
+  {"kind": "age", "min": int, "max": int}            inclusive, age in years
+  {"kind": "sex", "value": "female" | "male"}        required value
+  {"kind": "region", "values": [names]}              names from the vocabulary
+  {"kind": "data_holder", "values": [names]}         the hospital
+  {"kind": "condition", "icd10_prefixes": ["E11"], "onset_from": date, "onset_to": date}
+  {"kind": "medication", "atc_prefixes": ["A10B"], "active_on": date, "start_from": date, "start_to": date}
+  {"kind": "observation", "loinc": "4548-4", "pick": "latest" | "earliest" | "any",
+   "op": ">" | ">=" | "<" | "<=" | "=", "threshold": number, "date_from": date, "date_to": date}
+  {"kind": "encounter", "types": [types], "primary_icd10_prefixes": [codes], "data_holders": [names],
+   "start_from": date, "start_to": date}
+Codes are prefixes: "E11" matches E11 and every E11.x code. Dates are "YYYY-MM-DD".
+Example (not one of the requests). Definitions: "Asthma: ICD-10 starting with J45. Inhaled
+corticosteroid: ATC starting with R03BA, active on 31 Dec 2025. Report per region: women aged 40
+or older with asthma; percentage of them without an active inhaled corticosteroid." Plan:
+{"unit": "patient", "population": [{"kind": "sex", "value": "female"}, {"kind": "age", "min": 40},
+ {"kind": "condition", "icd10_prefixes": ["J45"]}], "group_by": [{"by": "region"}],
+ "measures": [{"name": "women_with_asthma", "kind": "count", "where": []},
+ {"name": "without_ics_pct", "kind": "percent", "where": [{"kind": "medication",
+ "atc_prefixes": ["R03BA"], "active_on": "2025-12-31", "negate": true}], "of": []}]}
+Measures: exactly one per item in the report definition, in its order, nothing added. A plain
+group size ("patients with X", "women with asthma") is a count with "where": []. "Without",
+"no" and "not" become "negate": true on the filter. Do not repeat population filters inside
+"where", and do not add filters or dates the definitions do not state.
 For "percent", "where" is the numerator condition and "of" the denominator condition, both
-within the population and group. Every count, percent and mean the request asks to report is
+within the population and group. "population", "where" and "of" are always JSON lists of
+filters, even for a single filter. Every count, percent and mean the request asks to report is
 one measure, in the order the request lists them. A mean is over patients in population+where
 who have the value. Group by age_band only with the bands the request gives. Use "unit":
 "encounter" only when the request counts stays/visits rather than patients; then encounter
@@ -324,6 +350,20 @@ Request:
 """
 
 
+REPAIR = """
+
+Your previous answer was rejected by the validator.
+Previous answer: %s
+Validator error: %s
+Return the corrected JSON object only."""
+
+
+def _check(out, mode):
+    if not isinstance(out, dict):
+        raise query.InvalidPlan("the answer must be a JSON object")
+    return query.validate(out.get("statistics")) if mode == "statistics" else spe.validate(out.get("spe") or {})
+
+
 def llm_plan(request, mode, provider, model=None):
     visible = {k: request[k] for k in ("question", "definitions", "requested_as")}
     model = model or llm.DEFAULT_MODELS[provider]
@@ -334,8 +374,13 @@ def llm_plan(request, mode, provider, model=None):
         out = json.loads(cached.read_text(encoding="utf-8"))
     else:
         prompt = PROMPT % (query.__doc__, json.dumps(data.catalog(), ensure_ascii=False), mode)
-        out = llm.chat_json(prompt + json.dumps(visible, ensure_ascii=False), provider, model)
-    plan = query.validate(out.get("statistics")) if mode == "statistics" else spe.validate(out.get("spe") or {})
+        prompt += json.dumps(visible, ensure_ascii=False)
+        out = llm.chat_json(prompt, provider, model)
+        try:
+            _check(out, mode)
+        except query.InvalidPlan as e:
+            out = llm.chat_json(prompt + REPAIR % (json.dumps(out, ensure_ascii=False), e), provider, model)
+    plan = _check(out, mode)
     if not cached.exists():
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         cached.write_text(json.dumps(out), encoding="utf-8")

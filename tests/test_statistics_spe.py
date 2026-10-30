@@ -114,6 +114,14 @@ def test_plan_rejects_anything_that_is_not_a_code():
         query.validate({"measures": [{"name": "n", "kind": "sql", "text": "SELECT 1"}]})
 
 
+def test_plan_rejects_a_single_filter_where_a_list_belongs():
+    one = {"kind": "sex", "value": "female"}
+    with pytest.raises(query.InvalidPlan):
+        query.validate({"measures": [{"name": "p", "kind": "percent", "where": [one], "of": one}]})
+    with pytest.raises(query.InvalidPlan):
+        query.validate({"population": one, "measures": [{"name": "n", "kind": "count"}]})
+
+
 def new_request(rid, question, definitions):
     return {"id": rid, "applicant": {"name": "Test", "organisation": "University hospital research unit"},
             "requested_as": "health data request", "purpose": "We study care quality for a research project.",

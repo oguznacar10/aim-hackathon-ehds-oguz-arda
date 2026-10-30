@@ -1,0 +1,26 @@
+{
+  "id": "G473317ee",
+  "submitted": "2026-10-12T11:30:00+01:00",
+  "applicant": {
+    "name": "Social Health Metrics",
+    "organisation": "Research Analytics",
+    "country": "FR"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "Evaluate the impact of socioeconomic factors on treatment adherence in chronic patients. This requires individual-level linkage of socioeconomic and health data.",
+  "question": "Provide pseudonymised records for patients with chronic conditions, their prescribed medications, and socioeconomic data.",
+  "definitions": [
+    "Chronic condition = any condition lasting more than 3 months with ICD-10 coding.",
+    "Treatment adherence = continuation of prescribed ATC medication."
+  ],
+  "intended": {
+    "decision": "APPROVE_SPE",
+    "why": "Purpose necessitates individual-level data to study socioeconomic impacts."
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "This is a health data access application (not merely a statistical request) that explicitly explains why anonymised statistics cannot achieve the purpose. The applicant states 'This requires individual-level linkage of socioeconomic and health data' - indicating that aggregated statistics alone cannot capture the relationship between individual socioeconomic factors and individual treatment adherence patterns. The purpose is not prohibited by Art. 54. The explanation goes beyond merely describing a research goal by specifically articulating the necessity of individual-level data linkage to evaluate impact, which cannot be achieved through statistical aggregates alone."
+  },
+  "expected": "APPROVE_SPE"
+}

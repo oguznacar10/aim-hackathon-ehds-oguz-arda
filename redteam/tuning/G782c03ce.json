@@ -1,0 +1,26 @@
+{
+  "id": "G782c03ce",
+  "submitted": "2026-12-20T14:00:00+01:00",
+  "applicant": {
+    "name": "Innovative Health Markets",
+    "organisation": "InnovHealth Marketing Group",
+    "country": "UK"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Conduct market segmentation analysis for health products targeting lifestyle diseases.",
+  "question": "Provide pseudonymised records of patients with lifestyle-related diagnoses and observed biometrics.",
+  "definitions": [
+    "Lifestyle diseases = ICD-10 codes related to metabolic syndrome, obesity.",
+    "Observed biometrics = LOINC codes for weight, BMI, etc."
+  ],
+  "intended": {
+    "decision": "REJECT",
+    "why": "Purpose involves market analysis, which is prohibited by Art. 54."
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "The stated purpose is 'market segmentation analysis for health products targeting lifestyle diseases,' which constitutes advertising or marketing. Article 54(1)(c) of the EHDS explicitly prohibits access to health data for advertising or marketing purposes. This falls squarely within the prohibited category regardless of the requested format or any other considerations."
+  },
+  "expected": "REJECT"
+}

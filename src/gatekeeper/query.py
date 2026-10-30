@@ -101,12 +101,18 @@ def _check_filter(f, unit):
         _date(f.get("start_to"), "start_to")
 
 
+def _check_filters(filters, unit, what):
+    _need(isinstance(filters, list), f"{what} must be a list of filters")
+    for f in filters:
+        _check_filter(f, unit)
+
+
 def validate(plan):
     _need(isinstance(plan, dict), "plan must be an object")
     unit = plan.get("unit", "patient")
     _need(unit in ("patient", "encounter"), "unit must be patient or encounter")
-    for f in plan.get("population", []):
-        _check_filter(f, unit)
+    _check_filters(plan.get("population", []), unit, "population")
+    _need(isinstance(plan.get("group_by", []), list), "group_by must be a list")
     for g in plan.get("group_by", []):
         _need(isinstance(g, dict) and g.get("by") in GROUPS, f"unknown group: {g!r}")
         if g["by"] == "age_band":
@@ -123,8 +129,8 @@ def validate(plan):
         _need(isinstance(m.get("name"), str) and m["name"] and m["name"] not in names,
               f"measure names must be unique strings: {m.get('name')!r}")
         names.add(m["name"])
-        for f in m.get("where", []) + m.get("of", []):
-            _check_filter(f, unit)
+        _check_filters(m.get("where", []), unit, "where")
+        _check_filters(m.get("of", []), unit, "of")
         if m["kind"] == "mean":
             v = m.get("value")
             _need(isinstance(v, dict) and (v.get("field") == "age" or (

@@ -1,0 +1,26 @@
+{
+  "id": "G9ff90be6",
+  "submitted": "2026-11-01T15:00:00+01:00",
+  "applicant": {
+    "name": "BiolTech Solutions",
+    "organisation": "BiolTech Solutions",
+    "country": "NL"
+  },
+  "requested_as": "health data request",
+  "requested_format": "aggregated statistics",
+  "purpose": "Support healthcare providers in identifying geographic areas with high COPD prevalence for targeted interventions.",
+  "question": "Provide aggregate statistics of regions with high COPD diagnosis rates.",
+  "definitions": [
+    "COPD = any ICD-10 conditions starting with J44.",
+    "Regions = geographic subdivisions within Austria."
+  ],
+  "intended": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Request aligns with public health intervention support using statistical data."
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "The request is submitted as a 'health data request' (step 2), which mandates approval for statistical purposes. The applicant explicitly requests 'aggregated statistics' and the purpose (identifying geographic areas with high COPD prevalence for targeted healthcare interventions) is legitimate and does not fall under Art. 54 prohibitions. Step 2 applies and the request should be approved for statistical access."
+  },
+  "expected": "APPROVE_STATISTICAL"
+}

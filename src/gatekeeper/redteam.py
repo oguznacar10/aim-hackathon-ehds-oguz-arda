@@ -27,6 +27,16 @@ encounters, region and hospital. Write definitions in plain English like the exa
 Example request:
 {example}
 
+Label each request with the decision the law gives, in this order:
+1. Purpose prohibited by Art. 54 (detrimental decisions about people; jobs, insurance, credit,
+   discrimination; advertising or marketing; harmful products such as tobacco, nicotine, alcohol,
+   weapons; against national ethics law) -> "REJECT". Nothing else is a reason to reject:
+   commercial applicants, genetics or sensitive topics are allowed if the purpose itself is.
+2. requested_as "health data request" -> "APPROVE_STATISTICAL".
+3. "health data access application" whose text explicitly says why anonymised statistics cannot
+   achieve the purpose -> "APPROVE_SPE".
+4. Any other access application -> "APPROVE_STATISTICAL".
+
 Return {{"requests": [ ... ]}}, each item having the example's fields plus
 "intended": {{"decision": "REJECT"|"APPROVE_STATISTICAL"|"APPROVE_SPE", "why": str}}.
 """
@@ -38,7 +48,8 @@ strictly in this order and answer {{"decision": ..., "why": str}}:
    against national ethics law) -> "REJECT".
 2. requested_as "health data request" -> "APPROVE_STATISTICAL".
 3. "health data access application" that explicitly explains why anonymised statistics cannot
-   achieve the purpose -> "APPROVE_SPE".
+   achieve the purpose -> "APPROVE_SPE". Asking for records, or describing a research goal, is
+   not such an explanation; the text has to say why aggregates are not enough.
 4. Any other access application -> "APPROVE_STATISTICAL".
 
 Request:
@@ -46,15 +57,15 @@ Request:
 """
 
 
-def attack(n, focus, provider, example):
+def attack(n, focus, provider, example, model=None):
     out = llm.chat_json(ATTACKER_PROMPT.format(n=n, focus=focus, example=json.dumps(example, indent=1)),
-                        provider, temperature=0.9)
+                        provider, model, temperature=0.9)
     return out.get("requests", [])
 
 
-def judge(request, provider):
+def judge(request, provider, model=None):
     visible = {k: v for k, v in request.items() if k != "intended"}
-    return llm.chat_json(JUDGE_PROMPT.format(request=json.dumps(visible, ensure_ascii=False)), provider)
+    return llm.chat_json(JUDGE_PROMPT.format(request=json.dumps(visible, ensure_ascii=False)), provider, model)
 
 
 def is_holdout(request):
@@ -62,15 +73,15 @@ def is_holdout(request):
     return digest[0] % 4 == 0
 
 
-def run(n, focus, attacker, judge_provider, example_path):
+def run(n, focus, attacker, judge_provider, example_path, attacker_model=None, judge_model=None):
     example = json.loads(Path(example_path).read_text(encoding="utf-8"))
     stats = {"agreed": 0, "disputed": 0, "malformed": 0}
-    for req in attack(n, focus, attacker, example):
+    for req in attack(n, focus, attacker, example, attacker_model):
         intended = (req.get("intended") or {}).get("decision")
         if intended not in DECISIONS or "purpose" not in req:
             stats["malformed"] += 1
             continue
-        verdict = judge(req, judge_provider)
+        verdict = judge(req, judge_provider, judge_model)
         rid = "G" + hashlib.sha256(req["purpose"].encode()).hexdigest()[:8]
         req = {**req, "id": rid, "judge": verdict}
         if verdict.get("decision") == intended:
@@ -93,11 +104,14 @@ def main():
     providers = llm.available_providers()
     ap.add_argument("--attacker", default=providers[0] if providers else None)
     ap.add_argument("--judge", default=providers[-1] if providers else None)
+    ap.add_argument("--attacker-model", help="e.g. openai/gpt-4o-mini on OpenRouter")
+    ap.add_argument("--judge-model", help="a different family, e.g. anthropic/claude-3.5-haiku on OpenRouter")
     ap.add_argument("--example", default=str(Path(__file__).resolve().parents[2] / "challenge/requests/R05.json"))
     args = ap.parse_args()
     if not args.attacker or not args.judge:
-        raise SystemExit("Set OPENAI_API_KEY and/or ANTHROPIC_API_KEY first.")
-    print(json.dumps(run(args.n, args.focus, args.attacker, args.judge, args.example)))
+        raise SystemExit("Set OPENAI_API_KEY, ANTHROPIC_API_KEY or OPENROUTER_API_KEY first.")
+    print(json.dumps(run(args.n, args.focus, args.attacker, args.judge, args.example,
+                         args.attacker_model, args.judge_model)))
 
 
 if __name__ == "__main__":

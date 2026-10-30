@@ -1,0 +1,26 @@
+{
+  "id": "G79320142",
+  "submitted": "2026-12-01T11:00:00+01:00",
+  "applicant": {
+    "name": "Dr. Sarah Klein",
+    "organisation": "LifeGen Medical Research",
+    "country": "CH"
+  },
+  "requested_as": "health data request",
+  "requested_format": "aggregated statistics",
+  "purpose": "Study the impact of environmental factors on asthma prevalence for policy recommendations.",
+  "question": "Provide aggregate statistics of asthma diagnoses correlated with regional environmental conditions.",
+  "definitions": [
+    "Asthma = ICD-10 codes starting with J45.",
+    "Environmental conditions = external factors affecting health outcomes."
+  ],
+  "intended": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Statistical data is suitable for assessing environmental impacts on health."
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "The request is submitted as a 'health data request' (step 2), which triggers automatic approval for statistical access. The applicant explicitly requests 'aggregated statistics' and the purpose (policy recommendations on environmental factors and asthma) is legitimate and does not fall under Art. 54 prohibitions. Step 2 criteria are met, therefore the decision is APPROVE_STATISTICAL without need to proceed to steps 3 or 4."
+  },
+  "expected": "APPROVE_STATISTICAL"
+}

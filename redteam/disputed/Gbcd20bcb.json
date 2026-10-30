@@ -1,0 +1,25 @@
+{
+  "id": "Gbcd20bcb",
+  "submitted": "2026-11-08T12:30:00+01:00",
+  "applicant": {
+    "name": "Dr. Peter Müller",
+    "organisation": "Helios Medical Research",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "individual-level data",
+  "purpose": "Investigate potential genetic markers associated with rare neurological disorders. Aggregated statistics are insufficient for this research.",
+  "question": "Provide pseudonymised records of patients diagnosed with rare neurological disorders, along with LOINC coded genetic markers.",
+  "definitions": [
+    "Rare neurological disorders = ICD-10 codes with prevalence <0.01%.",
+    "Genetic markers = LOINC codes related to genetic testing."
+  ],
+  "intended": {
+    "decision": "APPROVE_SPE",
+    "why": "Research purpose requires individual-level data due to complexity of genetic analysis."
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "The request fails the Art. 54 prohibition test. While the stated purpose (investigating genetic markers in rare neurological disorders) appears legitimate on its face, the request seeks 'pseudonymised records of patients diagnosed with rare neurological disorders, along with LOINC coded genetic markers.' This combination of genetic data linked to specific diagnoses creates a significant risk of re-identification and potential discrimination based on genetic predisposition, which falls within Art. 54's prohibition against uses that could lead to discriminatory treatment or detrimental decisions affecting individuals. The applicant's assertion that 'aggregated statistics are insufficient' does not override the categorical prohibition on purposes that risk genetic discrimination, which is a fundamental ethical safeguard under EHDS. The request cannot proceed under any approval pathway due to this prior prohibition."
+  }
+}

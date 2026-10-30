@@ -29,3 +29,11 @@ Append-only. Newest at the bottom. Every entry: date, title, who, PROPOSED or DE
 - Every statistical value leaves through `smallcell.format_value` (counts below 10 as `<10`, percent and mean `suppressed`, halves rounded up with `Decimal`). Every requested group appears, even when empty.
 - SPE: one SQLite file per approved application under `spe/<request id>/` (gitignored), with a `cohort` table and only the record types the question names (observations limited to the named LOINC codes), patient IDs kept. `spe.download()` always refuses and writes `audit.log` (Art. 73(2)).
 - Open: the UI and the API on top of `pipeline.handle()`.
+
+## 2026-10-30 - LLM via OpenRouter, gpt-4o as default, tests stay offline (Oguz via Devin, PROPOSED)
+
+- Our key is an OpenRouter key, so `llm.py` has an `openrouter` provider (`OPENROUTER_API_KEY`, OpenAI-style endpoint). One key reaches several model families, so the red-team attacker and judge can come from different vendors: `--attacker-model openai/gpt-4o --judge-model anthropic/claude-haiku-4.5`.
+- Default model on OpenRouter is `openai/gpt-4o`. On the 5 statistical requests plus R05, gpt-4o-mini planned 2/6 right and gpt-4.1-mini 4/6 (the others had wrong numbers or invalid plans); gpt-4o planned 6/6 (measured by comparing each LLM plan's numbers with the rule plan's).
+- An LLM plan the validator rejects goes back to the LLM once, together with the validator error; if it still fails, the rule plan is used and staff review is flagged.
+- The reader only flags a disagreement on `justifies_records` when it can change the outcome: an access application whose purpose is not prohibited.
+- `tests/conftest.py` removes every LLM key from the test environment, so `pytest` never calls a paid API and never depends on a model.
