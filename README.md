@@ -2,6 +2,8 @@
 
 **.Gatekeeper**: a Health Data Access Body for the European Health Data Space (Regulation (EU) 2025/327, Chapter IV). Built at the AIM Healthcare Hackathon Vienna, 29-30 October 2026, Track 3.
 
+**Live demo:** https://gatekeeper.arda03sarikaya.workers.dev
+
 An applicant submits a health data request. The app, automatically:
 1. decides `REJECT`, `APPROVE_STATISTICAL` or `APPROVE_SPE` and cites the articles,
 2. computes anonymised statistics under the small-cell rule, without opted-out patients,
@@ -102,6 +104,8 @@ pytest -q                               # regression tests, never call an LLM
 **Federated, one database per hospital.** Each hospital (`data_holder`: Klinikum Nord, Süd, West) has its own database with only its own patients. A query runs in each hospital and only totals come back: counts, numerators and denominators, value sums. The access body adds them up and applies the small-cell rule once, on the totals. Suppressing per hospital first would hide counts that are safe in total. An SPE collects its cohort from every hospital. In this prototype the three databases run in one process; in production each would sit behind its own service.
 
 ## Metric results on the 10 requests
+
+Per-request results and how each metric is measured: [METRICS.md](METRICS.md).
 
 From `python scripts/eval_metrics.py` with `OPENROUTER_API_KEY` set, run on 30 October 2026 with the LLM cache emptied first, so the first of the 3 runs made real LLM calls:
 
