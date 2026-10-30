@@ -62,3 +62,12 @@ Oguz asked that the system, not the researcher, decides between anonymised stati
 - The SPE collects the cohort and its records from every hospital into one workspace; the manifest shows how many patients came from each.
 - `data.connection()` (all hospitals in one database) stays only so tests can check that federated answers equal central ones.
 - Verified: all five metrics unchanged (10/10, 6/6, 0 leaks, 10/10), with and without the LLM.
+
+## 2026-10-30 - Decision models supply the two facts, rules still decide; LLM-alone is ablation only (Arda, PROPOSED)
+
+- The shipped path is unchanged: `pipeline.handle()` calls `reader.read()` then `rules.decide()`. No model decides in the app.
+- PR #5 adds readers that answer the same two facts (Art. 54 purpose, Art. 66(3) justification) from a decision model instead of an LLM prompt: `src/gatekeeper/decision.py` speaks one typed-question contract to Nimble (Bespoke Labs 9B, local through Ollama, no key) and Jev (TypeSafe, hosted, key). The rules in `rules.py` still make the decision. Only applicant, requested_as, purpose and question are sent.
+- `src/gatekeeper/direct.py` lets an LLM decide end to end. It is imported only by `scripts/eval_decisions.py` and its tests, never by the pipeline or the web app. It exists so the eval can put "LLM alone", "rules alone" and "LLM reads, rules decide" on the same requests.
+- Eval modes: rules (keywords + rules), hybrid (LLM reads, rules decide, the shipped path), llm (ablation only), nimble and jev (decision model reads, rules decide), vote (LLM reads, Nimble as second opinion, disagreement escalates to staff). Errors are split into dangerous (more data than the law allows) and restrictive (less), with unflagged dangerous errors, escalations and latency p95 reported.
+- Why: the 2026-10-30 "LLM reads, rules decide" entry stands. This entry records that a decision model is allowed in the reader seat, which that entry did not cover, and that a model in the decider seat is for measurement only. A trained model as decider needs its own entry, which is not proposed here.
+- Open: live numbers for every mode except rules. Those runs start from Arda's terminal; see PR #5.
