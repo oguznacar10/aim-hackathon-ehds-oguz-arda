@@ -19,3 +19,11 @@
 - Arda gives N and the seed; run `python -m gatekeeper.synth --n N --seed S --judge <other provider>` with the key fetched by the runtime (Secret Manager path in `llm.py`).
 - Human tick of `synth/holdout/` and `synth/disputed/` before any training (`scripts/redteam_review.py` reads `redteam/` only; point it at `synth/` or copy the pattern).
 - Whether a trained model may decide is still an open log entry; this generator only produces data.
+
+## Review fixes (same day, PR after the blind review)
+- The judge sees only the request fields (`synth.judge_input()` strips expected, target, answer); a test records what the judge receives.
+- `redteam.JUDGE_PROMPT` now carries the decided Art. 53(2) rule and the Art. 66(3) second limb, so the red-team loop and the generator judge with the same five rules.
+- `generate()` takes `max_attempts` (CLI `--max-attempts`, required, no default): it bounds writer calls, so a failing writer cannot spend without limit. Writer and judge errors (bad JSON, HTTP after retries) are counted as malformed or recorded in the file instead of aborting the run.
+- The gate drops a request whose every cell is `<10` or `suppressed` (2 of 155 distinct shapes over 600 seeds in the review sweep).
+- `answer()` uses `rules.report_is_table()` and `pipeline._cohort_size()`; example prompts are read once; the `submitted` offset is +02:00 before 25 October 2026.
+- Verified: `python3 -m pytest -q` 192 passed, `uvx ruff==0.17.0 check .` clean, em-dash guard clean. Still no LLM call and no generation run.

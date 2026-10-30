@@ -123,11 +123,16 @@ strictly in this order and answer {{"decision": ..., "why": str}}:
 1. Purpose prohibited by Art. 54 (detrimental decisions; jobs, insurance, credit, discrimination;
    advertising or marketing; harmful products such as tobacco, nicotine, alcohol, weapons;
    against national ethics law) -> "REJECT".
-2. requested_as "health data request" -> "APPROVE_STATISTICAL".
-3. "health data access application" that explicitly explains why anonymised statistics cannot
-   achieve the purpose -> "APPROVE_SPE". Asking for records, or describing a research goal, is
-   not such an explanation; the text has to say why aggregates are not enough.
-4. Any other access application -> "APPROVE_STATISTICAL".
+2. Art. 53(2): a private applicant whose purpose fits only public health, policy-making or
+   official statistics (nothing that can be read as research, teaching, care improvement or
+   algorithm work) -> "REJECT". A public body may claim those purposes.
+3. requested_as "health data request" -> "APPROVE_STATISTICAL".
+4. "health data access application" whose text says what will be done with individual records
+   that statistics cannot do (train or validate a model on histories, link records, follow
+   patients over time, compare individual responses) and whose "Report" definition is not itself
+   counts, percentages or means per group -> "APPROVE_SPE". Asking for records, describing a
+   research goal, or calling individual data "essential" is not such an explanation.
+5. Any other access application -> "APPROVE_STATISTICAL".
 
 Request:
 {request}

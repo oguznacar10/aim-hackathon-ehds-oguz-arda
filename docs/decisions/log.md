@@ -81,6 +81,18 @@ Arda approved both readings in his session on 2026-10-30 after the review of the
 - **Generated requests for training (approved in principle, run size still Arda's).** Definitions and question are built from the real vocabulary (13 ICD-10, 16 ATC, 4 LOINC codes, 9 regions, 3 hospitals, 31 December 2025); an LLM writes only purpose and applicant toward a target category; every request passes `redteam.validate_generated()` and is executed by the planner on the data, and one that yields no result table is dropped; labels (decision, articles, reason) come from `rules.py`, the judge LLM only routes disagreements to a human. The 12 files under `redteam/` fail the validator (12 of 12, run 2026-10-30) and seed nothing.
 - **Model role.** Unchanged from the 2026-10-30 "Decision models supply the two facts" entry: a model reads and may propose a decision, rules decide and cite, disagreement escalates to staff. A trained model in the decider seat still needs its own entry.
 
+## 2026-10-30 - The rule planner refuses a measure it cannot fully explain (Oguz via Devin, PROPOSED)
+
+- Without an LLM, the request "Report per hospital: patients with type 2 diabetes." (no definition for type 2 diabetes) returned every patient per hospital. The rule planner ignored words it did not know and counted the whole population.
+- Now every measure in the "Report per ...:" line may only use defined terms plus filler words (with, patients, how many, share, %, ...). Any other word stops planning with "'<measure>' uses words no definition explains: ...". The web app shows that as "the numbers could not be planned". With an LLM key the LLM plan is still tried first; this only changes the fallback.
+- Why: a wrong number is worse than no number for an access body. All 10 sample requests still plan the same (10/10, 6/6 offline).
+
+## 2026-10-30 - Live ablation on the 10 requests: every mode 10/10, the 10 cannot rank readers (Arda, PROPOSED)
+
+- Run today on commit `573297a`, `--runs 3 --no-cache`: rules, hybrid (gpt-4o reads), llm (gpt-4o decides, ablation only), nimble (local, no key), vote. All five: 10/10 correct, 10/10 consistent, 0 dangerous, 0 unflagged, 0 escalated. p95: rules 0.00 s, nimble 1.10 s, vote 1.48 s, llm 1.92 s, hybrid 2.21 s. Full output in `docs/handoffs/handoff-decision-ablation-2026-10-30.md`. jev not run.
+- What we may claim: the shipped path (hybrid) and the local Nimble reader both score 10/10 live on the challenge set; the local reader needs no key and no cloud call. What we may not claim: that any mode is safer than another; 30 decisions with 0 failures bound the true failure rate only to 10%.
+- Why PROPOSED: the ranking question stays open until the synthetic held-out set exists (PR 16) and the modes run on it at Arda's batch size. The shipped path does not change on these numbers.
+
 ## 2026-10-30 - Product name .Gatekeeper (Oguz via Devin, PROPOSED)
 
 The app is called Gatekeeper, shown as the wordmark ".Gatekeeper" in the header, the tab title, the server banner and the README intro, replacing Datenzugang (PR 17). Becomes DECIDED when Arda or Oguz says so here.
