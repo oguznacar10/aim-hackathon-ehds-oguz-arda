@@ -1,0 +1,50 @@
+{
+  "id": "Scdfb9531",
+  "submitted": "2026-10-12T14:45:00+02:00",
+  "applicant": {
+    "name": "Dr. Maria Zangerl",
+    "organisation": "Federal Ministry of Health, Department of Chronic Diseases (ministry)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "For the national chronic kidney disease strategy, the ministry needs to know how many older patients with chronic kidney disease receive no ACE inhibitor, by age band.",
+  "question": "Among patients with chronic kidney disease aged 65 and over, how many have no active ACE inhibitor, by age band?",
+  "definitions": [
+    "Chronic kidney disease = any condition with an ICD-10 code starting with N18.",
+    "Age bands on 31 December 2025: 65-74, 75-84, 85+.",
+    "ACE inhibitor = ATC code starting with C09AA.",
+    "A medication is active on 31 December 2025 if start_date is on or before that day and end_date is empty or on or after that day.",
+    "Report per band: patients with chronic kidney disease, how many of them have no active ACE inhibitor and that share in %, one decimal."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). A health data request is answered only with anonymised statistics; the applicant never sees the data (Art. 69)."
+  },
+  "target": "stat_public",
+  "answer": {
+    "65-74": {
+      "patients_with_chronic_kidney_disease": 100,
+      "no_active_ace_inhibitor": 78,
+      "share_pct": 78.0
+    },
+    "75-84": {
+      "patients_with_chronic_kidney_disease": 140,
+      "no_active_ace_inhibitor": 116,
+      "share_pct": 82.9
+    },
+    "85+": {
+      "patients_with_chronic_kidney_disease": 104,
+      "no_active_ace_inhibitor": 73,
+      "share_pct": 70.2
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 3: requested_as is a health data request from a ministry, which may claim a policy-making purpose."
+  }
+}

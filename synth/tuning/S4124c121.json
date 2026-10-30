@@ -1,0 +1,78 @@
+{
+  "id": "S4124c121",
+  "submitted": "2026-10-05T14:15:00+02:00",
+  "applicant": {
+    "name": "Mag. Lukas Reiter",
+    "organisation": "BreatheWell Medical GmbH (medical device manufacturer)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "To plan communication for our new home nebuliser, we want to see in which regions COPD is most common among adults, so that advertising and sales visits can be focused there.",
+  "question": "How many adults have COPD in each region and what is the prevalence?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "COPD = any condition with an ICD-10 code starting with J44.",
+    "Prevalence = adults with COPD / all adults in the region × 100, one decimal.",
+    "Report per region: adults, adults with COPD and the prevalence."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "54"
+    ],
+    "reason": "The stated purpose amounts to advertising or marketing (Art. 54(c)). Access is refused (Art. 54); a refusal is always justified to the applicant (Art. 68(9))."
+  },
+  "target": "reject_54c",
+  "answer": {
+    "Burgenland": {
+      "adults": 532,
+      "adults_with_copd": 12,
+      "prevalence": 2.3
+    },
+    "Kärnten": {
+      "adults": 885,
+      "adults_with_copd": 20,
+      "prevalence": 2.3
+    },
+    "Niederösterreich": {
+      "adults": 2740,
+      "adults_with_copd": 66,
+      "prevalence": 2.4
+    },
+    "Oberösterreich": {
+      "adults": 2473,
+      "adults_with_copd": 60,
+      "prevalence": 2.4
+    },
+    "Salzburg": {
+      "adults": 908,
+      "adults_with_copd": 20,
+      "prevalence": 2.2
+    },
+    "Steiermark": {
+      "adults": 2052,
+      "adults_with_copd": 44,
+      "prevalence": 2.1
+    },
+    "Tirol": {
+      "adults": 1240,
+      "adults_with_copd": 34,
+      "prevalence": 2.7
+    },
+    "Vorarlberg": {
+      "adults": 639,
+      "adults_with_copd": 13,
+      "prevalence": 2.0
+    },
+    "Wien": {
+      "adults": 3247,
+      "adults_with_copd": 72,
+      "prevalence": 2.2
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 1: the purpose is to focus advertising and sales visits for a product, which Art. 54 prohibits."
+  }
+}

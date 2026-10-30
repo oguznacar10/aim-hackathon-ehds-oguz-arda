@@ -1,0 +1,37 @@
+{
+  "id": "S0250a4b0",
+  "submitted": "2026-10-07T11:45:00+02:00",
+  "applicant": {
+    "name": "Prof. Dr. Martin Gruber",
+    "organisation": "Graz Neurovascular Research Group (university research group)",
+    "country": "AT"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We are developing a model that predicts recurrent ischaemic stroke from the course of systolic blood pressure and medication changes after the first event. Training it needs each patient's blood pressure readings linked over time to their treatment history, which averages per group cannot provide.",
+  "question": "Provide pseudonymised conditions, medications and systolic blood pressure values for adults with ischaemic stroke who have at least one systolic blood pressure value.",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Ischaemic stroke = any condition with an ICD-10 code starting with I63.",
+    "Cohort = adults with ischaemic stroke who have at least one systolic blood pressure value (LOINC 8480-6).",
+    "Report the size of the cohort you would make available."
+  ],
+  "expected": {
+    "decision": "APPROVE_SPE",
+    "articles": [
+      "53",
+      "66",
+      "68",
+      "73"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The applicant has shown that anonymised data cannot achieve it, so pseudonymised data is justified (Art. 66(3)). Access only under a data permit (Art. 68) inside a secure processing environment; only non-personal data may leave it (Art. 73(2))."
+  },
+  "target": "spe_mechanism",
+  "answer": {
+    "cohort_size": 67
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "Rule 4: the access application explains that model training needs each patient's blood pressure readings linked over time to their treatment history, and the report asked for is only the cohort size, not counts per group."
+  }
+}

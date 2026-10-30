@@ -75,15 +75,17 @@ def load(set_name):
         return [(json.loads((req_dir / f"{rid}.json").read_text(encoding="utf-8")),
                  expected[rid]["decision"], expected[rid]["articles"]) for rid in sorted(expected)]
     cases = []
-    for path in sorted((REPO / "redteam" / set_name).glob("*.json")):
+    folder = REPO / set_name if "/" in set_name else REPO / "redteam" / set_name
+    for path in sorted(folder.glob("*.json")):
         req = json.loads(path.read_text(encoding="utf-8"))
-        cases.append((req, req["expected"], None))
+        exp = req["expected"]
+        cases.append((req, exp["decision"], exp["articles"]) if isinstance(exp, dict) else (req, exp, None))
     return cases
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", default="challenge", help="challenge, tuning or holdout")
+    ap.add_argument("--set", default="challenge", help="challenge, a redteam set (tuning, holdout) or a path such as synth/tuning")
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--mode", default="hybrid", choices=MODES + ("all",))
     ap.add_argument("--provider", choices=sorted(llm.KEY_ENV),

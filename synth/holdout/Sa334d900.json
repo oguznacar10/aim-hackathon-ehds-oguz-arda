@@ -1,0 +1,37 @@
+{
+  "id": "Sa334d900",
+  "submitted": "2026-10-25T12:30:00+01:00",
+  "applicant": {
+    "name": "Prof. Dr. Matthias Keller",
+    "organisation": "Heidelberg Institute for Cardiovascular Epidemiology (university research institute)",
+    "country": "DE"
+  },
+  "requested_as": "health data access application",
+  "requested_format": "pseudonymised records",
+  "purpose": "We are developing a model that predicts stroke risk in atrial fibrillation from the course of systolic blood pressure and changes in anticoagulant and antihypertensive treatment. Training and validation require each patient's linked history of diagnoses, medications and repeated measurements; aggregated figures lose exactly the within-patient variation the model learns from.",
+  "question": "Provide pseudonymised conditions, medications and systolic blood pressure values for adults with atrial fibrillation who have at least one systolic blood pressure value.",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Atrial fibrillation = any condition with an ICD-10 code starting with I48.",
+    "Cohort = adults with atrial fibrillation who have at least one systolic blood pressure value (LOINC 8480-6).",
+    "Report the size of the cohort you would make available."
+  ],
+  "expected": {
+    "decision": "APPROVE_SPE",
+    "articles": [
+      "53",
+      "66",
+      "68",
+      "73"
+    ],
+    "reason": "The purpose is allowed (Art. 53). The applicant has shown that anonymised data cannot achieve it, so pseudonymised data is justified (Art. 66(3)). Access only under a data permit (Art. 68) inside a secure processing environment; only non-personal data may leave it (Art. 73(2))."
+  },
+  "target": "spe_mechanism",
+  "answer": {
+    "cohort_size": 171
+  },
+  "judge": {
+    "decision": "APPROVE_SPE",
+    "why": "Rule 4: the application trains and validates a model on each patient's linked history of diagnoses, medications and repeated measurements, which statistics cannot do, and the Report line is a cohort size, not a per-group statistic."
+  }
+}

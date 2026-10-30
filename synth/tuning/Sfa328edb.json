@@ -1,0 +1,59 @@
+{
+  "id": "Sfa328edb",
+  "submitted": "2026-10-12T17:45:00+02:00",
+  "applicant": {
+    "name": "Dr. Jan Mueller",
+    "organisation": "Medtech Strategy Partners GmbH (healthcare consultancy)",
+    "country": "DE"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We support a regional health authority in planning anticoagulation clinic capacity and need the number of adults with atrial fibrillation per region as planning input.",
+  "question": "How many adults have atrial fibrillation, by region?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Atrial fibrillation = any condition with an ICD-10 code starting with I48.",
+    "Report per region: adults with atrial fibrillation."
+  ],
+  "expected": {
+    "decision": "REJECT",
+    "articles": [
+      "53"
+    ],
+    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+  },
+  "target": "private_reserved_purpose",
+  "answer": {
+    "Burgenland": {
+      "adults_with_atrial_fibrillation": 13
+    },
+    "Kärnten": {
+      "adults_with_atrial_fibrillation": 24
+    },
+    "Niederösterreich": {
+      "adults_with_atrial_fibrillation": 60
+    },
+    "Oberösterreich": {
+      "adults_with_atrial_fibrillation": 59
+    },
+    "Salzburg": {
+      "adults_with_atrial_fibrillation": 20
+    },
+    "Steiermark": {
+      "adults_with_atrial_fibrillation": 54
+    },
+    "Tirol": {
+      "adults_with_atrial_fibrillation": 31
+    },
+    "Vorarlberg": {
+      "adults_with_atrial_fibrillation": 15
+    },
+    "Wien": {
+      "adults_with_atrial_fibrillation": 75
+    }
+  },
+  "judge": {
+    "decision": "REJECT",
+    "why": "Rule 2: a private consultancy whose stated purpose is planning input for a health authority fits only policy-making or public health, with nothing readable as research, teaching, care improvement or algorithm work."
+  }
+}

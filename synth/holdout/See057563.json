@@ -1,0 +1,79 @@
+{
+  "id": "See057563",
+  "submitted": "2026-10-27T08:00:00+01:00",
+  "applicant": {
+    "name": "Dr. Johanna Steiner",
+    "organisation": "Federal Ministry of Health, chronic disease prevention unit (ministry)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We need regional COPD prevalence to allocate funding for pulmonary rehabilitation places in the next regional structural health plans.",
+  "question": "How many adults have COPD in each region and what is the prevalence?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "COPD = any condition with an ICD-10 code starting with J44.",
+    "Prevalence = adults with COPD / all adults in the region × 100, one decimal.",
+    "Report per region: adults, adults with COPD and the prevalence."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). A health data request is answered only with anonymised statistics; the applicant never sees the data (Art. 69)."
+  },
+  "target": "stat_public",
+  "answer": {
+    "Burgenland": {
+      "adults": 532,
+      "adults_with_copd": 12,
+      "prevalence": 2.3
+    },
+    "Kärnten": {
+      "adults": 885,
+      "adults_with_copd": 20,
+      "prevalence": 2.3
+    },
+    "Niederösterreich": {
+      "adults": 2740,
+      "adults_with_copd": 66,
+      "prevalence": 2.4
+    },
+    "Oberösterreich": {
+      "adults": 2473,
+      "adults_with_copd": 60,
+      "prevalence": 2.4
+    },
+    "Salzburg": {
+      "adults": 908,
+      "adults_with_copd": 20,
+      "prevalence": 2.2
+    },
+    "Steiermark": {
+      "adults": 2052,
+      "adults_with_copd": 44,
+      "prevalence": 2.1
+    },
+    "Tirol": {
+      "adults": 1240,
+      "adults_with_copd": 34,
+      "prevalence": 2.7
+    },
+    "Vorarlberg": {
+      "adults": 639,
+      "adults_with_copd": 13,
+      "prevalence": 2.0
+    },
+    "Wien": {
+      "adults": 3247,
+      "adults_with_copd": 72,
+      "prevalence": 2.2
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 3: requested_as is a health data request from a ministry, which may claim a policy-making purpose."
+  }
+}

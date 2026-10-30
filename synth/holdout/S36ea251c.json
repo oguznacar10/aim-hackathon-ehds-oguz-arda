@@ -1,0 +1,60 @@
+{
+  "id": "S36ea251c",
+  "submitted": "2026-10-07T12:00:00+02:00",
+  "applicant": {
+    "name": "Univ.-Prof. Dr. Andrea Kainz",
+    "organisation": "Department of Gynaecology, Tyrol University Hospital (hospital department)",
+    "country": "AT"
+  },
+  "requested_as": "health data request",
+  "requested_format": "anonymised statistics",
+  "purpose": "We are investigating regional variation in the number of adults living with breast cancer to see whether our screening and follow-up clinics are located where patients actually live.",
+  "question": "How many adults have breast cancer, by region?",
+  "definitions": [
+    "Adult = aged 18 or older on 31 December 2025.",
+    "Breast cancer = any condition with an ICD-10 code starting with C50.",
+    "Report per region: adults with breast cancer."
+  ],
+  "expected": {
+    "decision": "APPROVE_STATISTICAL",
+    "articles": [
+      "53",
+      "69"
+    ],
+    "reason": "The purpose is allowed (Art. 53). A health data request is answered only with anonymised statistics; the applicant never sees the data (Art. 69)."
+  },
+  "target": "stat_research",
+  "answer": {
+    "Burgenland": {
+      "adults_with_breast_cancer": "<10"
+    },
+    "Kärnten": {
+      "adults_with_breast_cancer": 10
+    },
+    "Niederösterreich": {
+      "adults_with_breast_cancer": 23
+    },
+    "Oberösterreich": {
+      "adults_with_breast_cancer": 19
+    },
+    "Salzburg": {
+      "adults_with_breast_cancer": "<10"
+    },
+    "Steiermark": {
+      "adults_with_breast_cancer": 19
+    },
+    "Tirol": {
+      "adults_with_breast_cancer": 11
+    },
+    "Vorarlberg": {
+      "adults_with_breast_cancer": "<10"
+    },
+    "Wien": {
+      "adults_with_breast_cancer": 19
+    }
+  },
+  "judge": {
+    "decision": "APPROVE_STATISTICAL",
+    "why": "Rule 3: no Art. 54 or Art. 53(2) bar applies (a hospital department reviewing where to locate its clinics is care improvement) and the request is filed as a health data request."
+  }
+}
