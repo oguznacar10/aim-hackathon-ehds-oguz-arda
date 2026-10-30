@@ -100,6 +100,8 @@ pytest -q                               # regression tests, never call an LLM
 
 ## Metric results on the 10 requests
 
+Per-request results and how each metric is measured: [METRICS.md](METRICS.md).
+
 From `python scripts/eval_metrics.py` with `OPENROUTER_API_KEY` set, run on 30 October 2026 with the LLM cache emptied first, so the first of the 3 runs made real LLM calls:
 
 | Metric | Target | Ours |
