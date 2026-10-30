@@ -6,6 +6,7 @@ Challenge repo clone: `../../challenge/` (upstream: https://github.com/AIM-Austr
 | File | What | Source | Captured |
 |---|---|---|---|
 | `ehds-articles/art-NN.md` | Verbatim text of Regulation (EU) 2025/327 Chapter IV articles the brief cites, plus Art. 61 | eur-lex ELI page, firecrawl_scrape | 2026-10-29 |
+| `ehds-articles/art-55.md`, `art-105.md` | Verbatim Art. 55 (HDAB designation, 55(6) deadline 26 March 2027) and Art. 105 (application dates: Chapter IV from 26 March 2029) for the research files | eur-lex ELI page, built-in browser | 2026-10-30 |
 | `hackathon-notes.md` | Everything from docs.healthcare-hackathon.eu that matters for Track 3 and for us as a team | docs site print page + teams page, firecrawl_scrape | 2026-10-29 |
 
 Full page captures stay out of the repo (house rule: quotes and manifest only). Capture manifest at the bottom.
