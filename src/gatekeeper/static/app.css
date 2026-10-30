@@ -200,6 +200,13 @@ pre { background: var(--ink); color: #E8EDF1; padding: var(--s3); overflow-x: au
 .net-hub text { fill: var(--ink); font-weight: 700; }
 .net-pulse { fill: var(--statistical); opacity: 0; transform-box: fill-box; transform-origin: center;
   animation: net-pulse 2.4s var(--ease) infinite; }
+.net-staff .net-flow { animation-direction: reverse; }
+.net-staff .net-pulse { display: none; }
+.net-staff .net-db { animation: net-db 3.6s var(--ease) infinite; }
+.net-scan { fill: none; stroke: var(--statistical); stroke-width: 1; stroke-dasharray: 3 7; opacity: .6;
+  transform-box: fill-box; transform-origin: center; animation: net-spin 9s linear infinite; }
+@keyframes net-db { 0%, 30%, 100% { stroke: var(--ink); } 12% { stroke: var(--statistical); } }
+@keyframes net-spin { to { transform: rotate(360deg); } }
 @keyframes net-flow { to { stroke-dashoffset: -24; } }
 @keyframes net-pulse { 0% { opacity: .18; transform: scale(1); } 100% { opacity: 0; transform: scale(1.7); } }
 @media (max-width: 900px) {

@@ -69,6 +69,17 @@ const welcome = $("#welcome");
   const art = $("svg.net", welcome).cloneNode(true);
   art.querySelectorAll("[id]").forEach((n) => { n.id = `staff-${n.id}`; });
   art.querySelectorAll("mpath").forEach((m) => m.setAttribute("href", `#staff-${m.getAttribute("href").slice(1)}`));
+  art.classList.add("net-staff");
+  art.querySelectorAll("animateMotion").forEach((a) => {
+    a.setAttribute("keyPoints", "1;0");
+    a.setAttribute("keyTimes", "0;1");
+    a.setAttribute("calcMode", "linear");
+  });
+  art.querySelectorAll(".net-db").forEach((g, i) => { g.style.animationDelay = `${i * 1.2}s`; });
+  const scan = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  scan.setAttribute("class", "net-scan");
+  scan.setAttribute("r", "36");
+  $(".net-hub", art).prepend(scan);
   $("#staff-welcome").prepend(art);
 }
 async function loadExamples() {
