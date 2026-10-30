@@ -1,4 +1,5 @@
 """Deterministic decision rules in the brief's order (Art. 54, then request type, then Art. 66)."""
+import re
 
 REQUEST = "health data request"
 APPLICATION = "health data access application"
@@ -15,6 +16,20 @@ ART54_TEXT = {
 
 class InvalidRequest(ValueError):
     pass
+
+
+def blocked_by_53_2(reading):
+    """Art. 53(2): a purpose that fits only public health, policy-making or official statistics needs a public body."""
+    return bool(reading.get("reserved_purpose_only")) and not reading.get("public_body")
+
+
+TABLE_PATTERN = r"\bper\b|%|percent|proportion|\bshare\b|\bmean\b|average"
+
+
+def report_is_table(definitions):
+    """Art. 66(3) second limb: a 'Report ...' line that asks for counts, percentages or means per group."""
+    report = next((d for d in definitions if isinstance(d, str) and re.match(r"report\b", d, re.I)), None)
+    return bool(report and re.search(TABLE_PATTERN, report, re.I))
 
 
 def validate(request):
@@ -41,10 +56,25 @@ def decide(request, reading):
                        f"The stated purpose amounts to {what}. Access is refused (Art. 54); "
                        "a refusal is always justified to the applicant (Art. 68(9)).")
 
+    if blocked_by_53_2(reading):
+        return _result("REJECT", ["53"], 1, True, evidence,
+                       "The stated purpose fits only public health, policy-making or official statistics "
+                       "(Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public "
+                       "sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed "
+                       "purpose remains and access is refused (Art. 53). A refusal is always justified to the "
+                       "applicant (Art. 68(9)); a reframed application under another purpose may be submitted.")
+
     if request["requested_as"] == REQUEST:
         return _result("APPROVE_STATISTICAL", ["53", "69"], 2, review, evidence,
                        "The purpose is allowed (Art. 53). A health data request is answered "
                        "only with anonymised statistics; the applicant never sees the data (Art. 69).")
+
+    if reading["justifies_records"] and report_is_table(request["definitions"]):
+        return _result("APPROVE_STATISTICAL", ["53", "66", "69"], 4, review, evidence,
+                       "The purpose is allowed (Art. 53). The application explains a need for records, but "
+                       "what it asks to report is counts, percentages or means per group, which anonymised "
+                       "statistics answer, so pseudonymised records are not necessary (Art. 66(2)). It is "
+                       "answered with anonymised statistics instead (Art. 68(3), Art. 69).")
 
     if reading["justifies_records"]:
         return _result("APPROVE_SPE", ["53", "66", "68", "73"], 3, review, evidence,
