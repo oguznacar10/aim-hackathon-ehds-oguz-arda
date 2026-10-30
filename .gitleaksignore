@@ -1,3 +1,5 @@
 # gitleaks fingerprints to ignore, one per line, each with a reason comment above it
-# 2026-10-30: comment wording in the first Dockerfile commit of the closed PR 29, no secret (the rule matched "KEY, GATEKEEPER_SECOND_OPINION=jev")
+# 2026-10-30: comment wording in the first Dockerfile commit of the closed PR 29, no secret (a variable name followed by an equals sign tripped the generic rule)
 84d5712f0b296e9a31a78d8563f40c4acd5591b9:Dockerfile:generic-api-key:2
+# 2026-10-30: the previous version of this file quoted that wording in its own reason comment, no secret
+559214576e842b8d8ebc519db979040b50666154:.gitleaksignore:generic-api-key:2
