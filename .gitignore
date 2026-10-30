@@ -17,3 +17,6 @@ dist/
 # Runtime output (root only, so a source package named spe/ is still tracked)
 /spe/
 *.log
+
+# LLM reading cache (request text only, regenerated on demand)
+/.cache/

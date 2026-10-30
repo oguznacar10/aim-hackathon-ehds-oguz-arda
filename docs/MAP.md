@@ -19,7 +19,9 @@ Where everything is. Read top to bottom once, then jump.
 | CI definition | `.github/workflows/ci.yml` |
 | Em-dash guard used by CI | `scripts/em-dash-guard.sh` |
 | Fixture sanity tests | `tests/` |
-| Application code | not yet; the stack decision lands in `docs/decisions/log.md` first, then `src/` appears |
+| Decision engine (LLM reading + rules), red-team loop | `src/gatekeeper/` |
+| Decision scoring on the 10 requests or a red-team set | `scripts/eval_decisions.py` |
+| Red-team test sets (tuning, held-out exam, disputed) | `redteam/` once generated |
 
 ## Facts that must not drift
 
