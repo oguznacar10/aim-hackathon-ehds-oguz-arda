@@ -16,16 +16,17 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 
-from gatekeeper import direct, reader, rules  # noqa: E402
+from gatekeeper import direct, llm, reader, rules  # noqa: E402
 
 EXTRA_OK = {"67", "71"}
 MODES = ("rules", "hybrid", "llm")
 
 
-def decide(req, mode, cache):
+def decide(req, mode, cache, provider=None):
     if mode == "llm":
-        return direct.decide(req, cache=cache)
-    reading = reader.read(req, mode="keywords" if mode == "rules" else "auto", cache=cache)
+        return direct.decide(req, provider=provider, cache=cache)
+    reading = reader.read(req, provider=provider, mode="keywords" if mode == "rules" else "auto",
+                          cache=cache)
     return {**rules.decide(req, reading), "source": reading["source"]}
 
 
@@ -52,6 +53,8 @@ def main():
     ap.add_argument("--set", default="challenge", help="challenge, tuning or holdout")
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--mode", default="hybrid", choices=MODES + ("all",))
+    ap.add_argument("--provider", choices=sorted(llm.KEY_ENV),
+                    help="which configured key to use; default: the first one found")
     ap.add_argument("--no-cache", action="store_true",
                     help="call the LLM every run instead of reusing cached readings")
     args = ap.parse_args()
@@ -74,7 +77,7 @@ def run_mode(mode, cases, args):
         outcome = {}
         for req, exp_decision, exp_articles in cases:
             t0 = time.perf_counter()
-            result = decide(req, mode, cache=not args.no_cache)
+            result = decide(req, mode, cache=not args.no_cache, provider=args.provider)
             slowest = max(slowest, time.perf_counter() - t0)
             ok = result["decision"] == exp_decision and (
                 exp_articles is None or articles_ok(result["articles"], exp_articles))

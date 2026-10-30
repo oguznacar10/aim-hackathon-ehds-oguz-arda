@@ -45,3 +45,69 @@ def test_eval_script_rules_mode_runs_offline():
                           cwd=REPO, env=env, capture_output=True, text=True, timeout=120)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "mode=rules" in proc.stdout and "correct decisions: 10/10" in proc.stdout
+
+
+def test_openrouter_is_a_provider_with_openai_shaped_calls(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test")
+    assert llm.available_providers() == ["openrouter"]
+    seen = {}
+
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return json.dumps({"choices": [{"message": {"content": "{\"ok\": true}"}}]}).encode()
+
+    def fake_urlopen(req, timeout):
+        seen["url"] = req.full_url
+        seen["auth"] = req.get_header("Authorization")
+        return Resp()
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+    assert llm.chat_json("hi", "openrouter") == {"ok": True}
+    assert seen["url"].startswith("https://openrouter.ai/api/v1/")
+    assert seen["auth"] == "Bearer test"
+
+
+def test_key_can_come_from_secret_manager_inside_the_process(monkeypatch):
+    for env in list(llm.KEY_ENV.values()) + list(llm.KEY_SECRET_ENV.values()):
+        monkeypatch.delenv(env, raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY_SECRET", "projects/p1/secrets/s1")
+    monkeypatch.setattr(llm, "_keys", {})
+    assert llm.available_providers() == ["openrouter"]
+    seen = {}
+
+    class Proc:
+        stdout = "tok\n"
+
+    def fake_run(cmd, **kw):
+        seen["cmd"] = cmd[:2]
+        return Proc()
+
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return json.dumps({"payload": {"data": "c2VjcmV0LXZhbHVlCg=="}}).encode()
+
+    def fake_urlopen(req, timeout):
+        seen["url"] = req.full_url
+        seen["project"] = req.get_header("X-goog-user-project")
+        return Resp()
+
+    monkeypatch.setattr(llm.subprocess, "run", fake_run)
+    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+    assert llm._key("openrouter") == "secret-value"
+    assert seen["cmd"] == ["gcloud", "auth"]
+    assert seen["url"].startswith("https://secretmanager.googleapis.com/v1/projects/p1/secrets/s1/")
+    assert seen["project"] == "p1"
