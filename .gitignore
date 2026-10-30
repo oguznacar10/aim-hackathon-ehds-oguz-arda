@@ -20,3 +20,4 @@ dist/
 
 # LLM reading cache (request text only, regenerated on demand)
 /.cache/
+.wrangler/
