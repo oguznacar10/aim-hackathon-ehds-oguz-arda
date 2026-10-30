@@ -49,6 +49,7 @@ python scripts/eval_decisions.py --set tuning   # decisions on the AI-written re
 python -m gatekeeper.synth --n N --seed S --max-attempts M   # generate labelled training requests
 GATEKEEPER_SECOND_OPINION=jev python scripts/serve.py          # Jev (TypeSafe) as second opinion instead of the keyword reader
 docker build -t gatekeeper . && docker run -p 8000:8000 -e OPENROUTER_API_KEY -e TYPESAFE_API_KEY -e GATEKEEPER_SECOND_OPINION=jev gatekeeper   # hosted demo image, keys from the platform's variables
+npx -y wrangler@4.156.0 deploy   # Cloudflare Containers (Workers Paid plan); the two keys are Worker secrets set in the dashboard
 pytest -q                               # regression tests, never call an LLM
 ```
 

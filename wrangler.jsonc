@@ -1,0 +1,13 @@
+// Cloudflare Containers deploy of the demo: one Worker fronts one container running scripts/serve.py.
+// Secrets OPENROUTER_API_KEY and TYPESAFE_API_KEY are set on the Worker (dashboard or `wrangler secret put`), never here.
+{
+  "name": "gatekeeper",
+  "main": "cloudflare/worker.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "containers": [
+    { "class_name": "Gatekeeper", "image": "./Dockerfile", "max_instances": 1, "instance_type": "basic" }
+  ],
+  "durable_objects": { "bindings": [{ "name": "GATEKEEPER", "class_name": "Gatekeeper" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Gatekeeper"] }]
+}
