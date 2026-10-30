@@ -44,7 +44,41 @@
     </form>
   </section>
 
-  <section id="notice-slot" class="notice-slot" aria-live="polite"></section>
+  <section id="notice-slot" class="notice-slot" aria-live="polite">
+      <div id="welcome" class="welcome">
+        <svg class="net" viewBox="0 0 560 290" role="img" aria-label="Three hospital databases connected through Gatekeeper to researchers in Vienna, Berlin and Lisbon">
+          <path id="net-h0" class="net-line" d="M92 80 C170 80 190 160 252 160"/>
+          <path id="net-h1" class="net-line" d="M92 160 L252 160"/>
+          <path id="net-h2" class="net-line" d="M92 240 C170 240 190 160 252 160"/>
+          <path id="net-r0" class="net-line" d="M308 160 C370 160 390 80 468 80"/>
+          <path id="net-r1" class="net-line" d="M308 160 L468 160"/>
+          <path id="net-r2" class="net-line" d="M308 160 C370 160 390 240 468 240"/>
+          <path class="net-flow" d="M92 80 C170 80 190 160 252 160"/>
+          <path class="net-flow" d="M92 160 L252 160"/>
+          <path class="net-flow" d="M92 240 C170 240 190 160 252 160"/>
+          <path class="net-flow" d="M308 160 C370 160 390 80 468 80"/>
+          <path class="net-flow" d="M308 160 L468 160"/>
+          <path class="net-flow" d="M308 160 C370 160 390 240 468 240"/>
+          <g class="net-db" transform="translate(70 80)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum Nord</text></g>
+          <g class="net-db" transform="translate(70 160)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum Süd</text></g>
+          <g class="net-db" transform="translate(70 240)"><ellipse cx="0" cy="-10" rx="14" ry="5"/><path d="M-14 -10v20a14 5 0 0 0 28 0v-20M-14 0a14 5 0 0 0 28 0"/><text y="34">Klinikum West</text></g>
+          <g class="net-person" transform="translate(490 80)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Vienna</text></g>
+          <g class="net-person" transform="translate(490 160)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Berlin</text></g>
+          <g class="net-person" transform="translate(490 240)"><circle cy="-9" r="6"/><path d="M-11 12a11 10 0 0 1 22 0"/><text y="34">Lisbon</text></g>
+          <g class="net-hub" transform="translate(280 160)"><circle class="net-pulse" r="28"/><circle class="net-ring" r="28"/><circle class="net-core" r="5"/><text y="50">.Gatekeeper</text></g>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#net-h0"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-1.2s" repeatCount="indefinite"><mpath href="#net-r0"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-0.8s" repeatCount="indefinite"><mpath href="#net-h1"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-2.0s" repeatCount="indefinite"><mpath href="#net-r1"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-1.6s" repeatCount="indefinite"><mpath href="#net-h2"/></animateMotion></circle>
+          <circle class="net-dot" r="3"><animateMotion dur="2.4s" begin="-2.8s" repeatCount="indefinite"><mpath href="#net-r2"/></animateMotion></circle>
+          <text class="net-cap" x="70" y="28">Hospitals</text><text class="net-cap" x="490" y="28">Researchers</text>
+        </svg>
+        <p class="welcome-lead">Gatekeeper connects hospitals with researchers all over Europe.</p>
+        <p>Each hospital keeps its own patients. Questions travel to the data, and only anonymised totals come back.</p>
+        <p class="welcome-hint">Submit a request or load an example to see the decision here.</p>
+      </div>
+    </section>
 </main>
 
 <main id="staff" class="view" hidden>

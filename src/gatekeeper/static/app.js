@@ -59,6 +59,7 @@ document.querySelectorAll(".view-btn").forEach((btn) => btn.addEventListener("cl
 }));
 
 /* intake */
+const welcome = $("#welcome");
 async function loadExamples() {
   const res = await api("/api/examples");
   examples = res.body || [];
@@ -115,7 +116,7 @@ $("#request-form").addEventListener("submit", async (e) => {
   btn.disabled = false;
   btn.textContent = "Submit request";
   if (!res.ok) {
-    slot.replaceChildren();
+    slot.replaceChildren(welcome);
     error.textContent = res.body.error || `The server answered ${res.status}.`;
     error.hidden = false;
     return;
