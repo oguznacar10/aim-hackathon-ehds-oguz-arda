@@ -8,7 +8,7 @@
 - `prefers-reduced-motion`: the CSS animations stop and the travelling dots (SMIL `animateMotion`) are hidden.
 
 ## Verified
-- `pytest -q`: 191 passed (re-run 2026-10-30 on this branch after the id fix). `ruff check .`: clean.
+- `pytest -q`: 201 passed (re-run 2026-10-30 on this branch after the id fix and the merge of main). `ruff check .`: clean.
 - Playwright at 1280 px and 390 px: welcome renders, no page errors, and it is gone after R01 is decided.
 - Browser test by the testing agent: R01/R05/R02 decisions, Staff navigation, validation and HTTP errors, server outage recovery and retry, reduced motion (dots hidden, frames identical), 390 px without overflow.
 
