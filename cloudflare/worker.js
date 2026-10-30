@@ -16,8 +16,9 @@ export class Gatekeeper {
           HOST: "0.0.0.0",
           PORT: String(PORT),
           GATEKEEPER_SECOND_OPINION: "jev",
-          OPENROUTER_API_KEY: this.env.OPENROUTER_API_KEY ?? "",
-          TYPESAFE_API_KEY: this.env.TYPESAFE_API_KEY ?? "",
+          // only keys the Worker has, so an empty string never masks a container-level variable
+          ...(this.env.OPENROUTER_API_KEY ? { OPENROUTER_API_KEY: this.env.OPENROUTER_API_KEY } : {}),
+          ...(this.env.TYPESAFE_API_KEY ? { TYPESAFE_API_KEY: this.env.TYPESAFE_API_KEY } : {}),
         },
       });
     }
