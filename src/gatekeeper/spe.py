@@ -6,6 +6,7 @@ pseudonymised patient IDs. Nothing personal leaves: download() always refuses (A
 import json
 import re
 import sqlite3
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -55,33 +56,32 @@ def create(request_id, spec):
     cohort_sql = f"SELECT p.patient_id FROM patients p WHERE {where}"
     ids = [r[0] for r in data.connection().execute(cohort_sql, params)]
 
-    out = sqlite3.connect(db_path)
-    out.execute("CREATE TABLE cohort (patient_id TEXT PRIMARY KEY)")
-    out.executemany("INSERT INTO cohort VALUES (?)", [(i,) for i in ids])
-    src = data.connection()
-    src.execute("DROP TABLE IF EXISTS temp.spe_cohort")
-    src.execute("CREATE TEMP TABLE spe_cohort (patient_id TEXT PRIMARY KEY)")
-    src.executemany("INSERT INTO temp.spe_cohort VALUES (?)", [(i,) for i in ids])
-    tables = {}
-    for rec in spec["records"]:
-        table = rec["table"]
-        cols = list(data.SCHEMA[table])
-        cond, p = ["t.patient_id IN (SELECT patient_id FROM temp.spe_cohort)"], []
-        if rec.get("loinc") and table == "observations":
-            cond.append(f"t.loinc IN ({','.join('?' * len(rec['loinc']))})")
-            p.extend(rec["loinc"])
-        if rec.get("icd10_prefixes") and table == "conditions":
-            cond.append(query.like_any("t.icd10", rec["icd10_prefixes"], p))
-        if rec.get("atc_prefixes") and table == "medications":
-            cond.append(query.like_any("t.atc", rec["atc_prefixes"], p))
-        rows = src.execute(f"SELECT {', '.join('t.' + c for c in cols)} FROM {table} t "
-                           f"WHERE {' AND '.join(cond)}", p).fetchall()
-        out.execute(f"CREATE TABLE {table} ({', '.join(cols)})")
-        out.executemany(f"INSERT INTO {table} VALUES ({','.join('?' * len(cols))})", rows)
-        tables[table] = len(rows)
-    src.execute("DROP TABLE temp.spe_cohort")
-    out.commit()
-    out.close()
+    with closing(sqlite3.connect(db_path)) as out:
+        out.execute("CREATE TABLE cohort (patient_id TEXT PRIMARY KEY)")
+        out.executemany("INSERT INTO cohort VALUES (?)", [(i,) for i in ids])
+        src = data.connection()
+        src.execute("DROP TABLE IF EXISTS temp.spe_cohort")
+        src.execute("CREATE TEMP TABLE spe_cohort (patient_id TEXT PRIMARY KEY)")
+        src.executemany("INSERT INTO temp.spe_cohort VALUES (?)", [(i,) for i in ids])
+        tables = {}
+        for rec in spec["records"]:
+            table = rec["table"]
+            cols = list(data.SCHEMA[table])
+            cond, p = ["t.patient_id IN (SELECT patient_id FROM temp.spe_cohort)"], []
+            if rec.get("loinc") and table == "observations":
+                cond.append(f"t.loinc IN ({','.join('?' * len(rec['loinc']))})")
+                p.extend(rec["loinc"])
+            if rec.get("icd10_prefixes") and table == "conditions":
+                cond.append(query.like_any("t.icd10", rec["icd10_prefixes"], p))
+            if rec.get("atc_prefixes") and table == "medications":
+                cond.append(query.like_any("t.atc", rec["atc_prefixes"], p))
+            rows = src.execute(f"SELECT {', '.join('t.' + c for c in cols)} FROM {table} t "
+                               f"WHERE {' AND '.join(cond)}", p).fetchall()
+            out.execute(f"CREATE TABLE {table} ({', '.join(cols)})")
+            out.executemany(f"INSERT INTO {table} VALUES ({','.join('?' * len(cols))})", rows)
+            tables[table] = len(rows)
+        src.execute("DROP TABLE temp.spe_cohort")
+        out.commit()
     manifest = {
         "request_id": request_id,
         "cohort_size": len(ids),

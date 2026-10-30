@@ -5,6 +5,7 @@ Assertions compare plain ints and formatted values only, so no patient row reach
 import csv
 import json
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -50,17 +51,17 @@ def test_spe_cohort_size_and_contents():
     assert out["answer"] == {"cohort_size": EXPECTED["R05"]["answer"]["cohort_size"]}
     manifest = out["staff"]["spe"]
     assert set(manifest["tables"]) == {"conditions", "medications", "observations"}
-    db = sqlite3.connect(Path(__file__).resolve().parent.parent / manifest["workspace"])
-    opted_out = {r["patient_id"] for r in csv_rows("patients") if r["opted_out"] == "true"}
-    ids = {r[0] for r in db.execute("SELECT patient_id FROM cohort")}
-    assert len(ids) == manifest["cohort_size"]
-    assert len(ids & opted_out) == 0
-    for table in manifest["tables"]:
-        outside = db.execute(f"SELECT COUNT(*) FROM {table} WHERE patient_id NOT IN "
-                             "(SELECT patient_id FROM cohort)").fetchone()[0]
-        assert outside == 0, table
-    loincs = [r[0] for r in db.execute("SELECT DISTINCT loinc FROM observations")]
-    assert loincs == ["4548-4"]
+    with closing(sqlite3.connect(Path(__file__).resolve().parent.parent / manifest["workspace"])) as db:
+        opted_out = {r["patient_id"] for r in csv_rows("patients") if r["opted_out"] == "true"}
+        ids = {r[0] for r in db.execute("SELECT patient_id FROM cohort")}
+        assert len(ids) == manifest["cohort_size"]
+        assert len(ids & opted_out) == 0
+        for table in manifest["tables"]:
+            outside = db.execute(f"SELECT COUNT(*) FROM {table} WHERE patient_id NOT IN "
+                                 "(SELECT patient_id FROM cohort)").fetchone()[0]
+            assert outside == 0, table
+        loincs = [r[0] for r in db.execute("SELECT DISTINCT loinc FROM observations")]
+        assert loincs == ["4548-4"]
 
 
 def test_spe_download_is_blocked():
