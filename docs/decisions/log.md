@@ -53,3 +53,12 @@ Oguz asked that the system, not the researcher, decides between anonymised stati
 ## 2026-10-30 - An LLM outage never stops a request (Oguz via Devin, PROPOSED)
 
 - A fresh run without the cache hit HTTP 429 from OpenRouter and crashed the pipeline. Now `llm.chat_json` retries 429 and 5xx up to 3 times (1 s, 2 s, 4 s), and if the reader still gets no answer the keyword reader decides and the case is flagged `needs_staff_review` with the error text. The planner already fell back to the rule plan.
+
+
+## 2026-10-30 - Federated: one database per hospital, totals added centrally (Oguz via Devin, PROPOSED)
+
+- `data.py` loads one in-memory SQLite database per data holder (Klinikum Nord, Süd, West), each with only that hospital's patients and their records. Every encounter in the data belongs to its patient's hospital, so the split is clean. Opted-out patients are still dropped while loading.
+- A query plan runs in each hospital database. Only raw totals come back (counts, numerator/denominator, value sum and n for means); the access body adds them up and applies the small-cell rule once, on the totals. Suppressing per hospital first would hide counts that are safe in total.
+- The SPE collects the cohort and its records from every hospital into one workspace; the manifest shows how many patients came from each.
+- `data.connection()` (all hospitals in one database) stays only so tests can check that federated answers equal central ones.
+- Verified: all five metrics unchanged (10/10, 6/6, 0 leaks, 10/10), with and without the LLM.

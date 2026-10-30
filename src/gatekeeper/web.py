@@ -10,7 +10,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from gatekeeper import pipeline, planner, query, rules, spe
+from gatekeeper import data, pipeline, planner, query, rules, spe
 
 STATIC = Path(__file__).resolve().parent / "static"
 REQUESTS = Path(__file__).resolve().parents[2] / "challenge" / "requests"
@@ -103,6 +103,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(HTTPStatus.OK, (STATIC / name).read_bytes(), ctype)
         if path == "/api/examples":
             return self._send(HTTPStatus.OK, examples())
+        if path == "/api/hospitals":
+            return self._send(HTTPStatus.OK, data.summary())
         if path == "/api/cases":
             with _lock:
                 items = [case_summary(k, v) for k, v in _cases.items()]

@@ -77,3 +77,11 @@ def test_staff_confirm_and_overrule(base):
     assert status == 200 and json.loads(raw)["staff_action"]["action"] == "overruled"
     assert call(base, "/api/cases/R09/confirm", {})[0] == 200
     assert call(base, "/api/cases/NOPE/confirm", {})[0] == 404
+
+
+def test_hospitals_endpoint_returns_totals_only(base):
+    status, raw = call(base, "/api/hospitals")
+    assert status == 200
+    rows = json.loads(raw)
+    assert len(rows) == 3
+    assert all(set(r) == {"hospital", "patients", "opted_out_excluded", "records"} for r in rows)

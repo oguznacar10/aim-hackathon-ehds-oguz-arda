@@ -299,25 +299,31 @@ def compile_plan(plan):
 def run(plan):
     """Executes a plan. Returns the formatted answer plus the audit trail for staff."""
     sql, params, layout = compile_plan(plan)
-    db = data.connection()
     groups = plan.get("group_by", [])
+    sums = {}
+    hospitals = data.nodes()
+    for db in hospitals.values():
+        for row in db.execute(sql, params):
+            key = tuple(row[:len(groups)])
+            if None in key:
+                continue
+            acc, i = sums.setdefault(key, {}), len(groups)
+            for name, kind in layout:
+                width = 1 if kind == "count" else 2
+                part = [int(v or 0) for v in row[i:i + width]]
+                acc[name] = [a + b for a, b in zip(acc.get(name, [0] * width), part, strict=True)]
+                i += width
     raw = {}
-    for row in db.execute(sql, params):
-        key = tuple(row[:len(groups)])
-        if None in key:
-            continue
-        vals, i = {}, len(groups)
+    for key, acc in sums.items():
+        vals = {}
         for name, kind in layout:
             if kind == "count":
-                vals[name] = (kind, row[i] or 0)
-                i += 1
+                vals[name] = (kind, acc[name][0])
             elif kind == "percent":
-                vals[name] = (kind, (row[i] or 0, row[i + 1] or 0))
-                i += 2
+                vals[name] = (kind, tuple(acc[name]))
             else:
-                n, total = row[i] or 0, row[i + 1] or 0
-                vals[name] = (kind, (Decimal(int(total)) / SCALE, n))
-                i += 2
+                n, total = acc[name]
+                vals[name] = (kind, (Decimal(total) / SCALE, n))
         raw[key] = vals
     empty = {name: (kind, 0 if kind == "count" else (0, 0)) for name, kind in layout}
     answer = {}
@@ -330,7 +336,7 @@ def run(plan):
             node[key[-1]] = cell
         else:
             answer = cell
-    return {"answer": answer, "sql": render_sql(sql, params)}
+    return {"answer": answer, "sql": render_sql(sql, params), "hospitals": list(hospitals)}
 
 
 def render_sql(sql, params):

@@ -141,6 +141,11 @@ table.stats { border-collapse: collapse; width: 100%; max-width: 820px; font-var
 #staff { display: grid; grid-template-columns: 340px minmax(0, 1fr); min-height: calc(100vh - 62px); }
 .queue { background: var(--paper); border-right: 1px solid var(--rule); }
 .queue-head { padding: var(--s4) var(--s4) var(--s3); display: flex; flex-direction: column; gap: var(--s3); }
+.hospitals { border-top: 1px solid var(--rule); padding-bottom: var(--s3); }
+.hosp { display: flex; flex-direction: column; gap: 2px; padding: var(--s2) var(--s4); }
+.hosp-name { font-weight: 600; }
+.hosp-fig { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.hosp-note { font-size: 14px; color: var(--muted); margin: var(--s2) var(--s4) 0; }
 .group-title { font-size: 14px; font-weight: 700; padding: var(--s3) var(--s4) var(--s2); margin: 0; color: var(--muted); }
 .group-title.review { color: var(--review); }
 .case-row { display: grid; grid-template-columns: 52px 1fr; gap: 2px var(--s2); width: 100%; text-align: left;
