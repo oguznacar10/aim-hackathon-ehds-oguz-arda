@@ -7,7 +7,7 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Inches, Pt
 
 HERE = Path(__file__).parent
 STILLS = HERE / "stills"
