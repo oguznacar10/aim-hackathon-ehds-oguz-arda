@@ -59,7 +59,7 @@ document.querySelectorAll(".view-btn").forEach((btn) => btn.addEventListener("cl
 }));
 
 /* intake */
-const DEMO_APPLICANT = { name: "Demo Researcher", organisation: "Demo University", country: "AT" };
+const DEMO_APPLICANT = { name: "Dr. Lena Berger", organisation: "Vienna Institute for Population Health", country: "AT" };
 async function loadExamples() {
   const res = await api("/api/examples");
   examples = res.body || [];
@@ -76,6 +76,7 @@ $("#example").addEventListener("change", (e) => {
   f.organisation.value = who.organisation || "";
   f.country.value = who.country || "";
   $("#who").textContent = [who.name, who.organisation].filter(Boolean).join(", ");
+  $("#demo-tag").hidden = Boolean(ex);
   if (!ex) { f.id.value = ""; return; }
   f.id.value = ex.id;
   f.purpose.value = ex.purpose;
