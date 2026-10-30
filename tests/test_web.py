@@ -100,3 +100,9 @@ def test_new_request_gets_a_case_number_from_the_system(base):
     assert all(re.fullmatch(r"C-\d{3}", i) for i in ids) and ids[0] != ids[1]
     status, raw = call(base, "/api/cases")
     assert set(ids) <= {c["id"] for c in json.loads(raw)}
+
+
+def test_edited_sample_drops_its_id_so_the_server_assigns_a_case_number(base):
+    _, js = call(base, "/app.js")
+    assert b'["purpose", "question", "definitions"]' in js
+    assert b'addEventListener("input", () => { $("#request-form").id.value = ""; })' in js

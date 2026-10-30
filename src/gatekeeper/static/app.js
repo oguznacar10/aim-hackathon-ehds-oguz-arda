@@ -85,6 +85,9 @@ $("#example").addEventListener("change", (e) => {
   f.question.value = ex.question;
   f.definitions.value = (ex.definitions || []).join("\n");
 });
+for (const name of ["purpose", "question", "definitions"]) {
+  $("#request-form")[name].addEventListener("input", () => { $("#request-form").id.value = ""; });
+}
 
 function readForm() {
   const f = $("#request-form");
