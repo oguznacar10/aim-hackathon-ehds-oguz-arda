@@ -25,6 +25,7 @@ Where everything is. Read top to bottom once, then jump.
 | Definitions to query plan (rules and LLM) | `src/gatekeeper/planner.py` |
 | Decision scoring on the 10 requests or a red-team set | `scripts/eval_decisions.py` |
 | All five challenge metrics on the 10 requests | `scripts/eval_metrics.py` |
+| Web app: applicant notice, staff case file, blocked download (`python scripts/serve.py`) | `src/gatekeeper/web.py`, `src/gatekeeper/static/` |
 | Red-team test sets (tuning, held-out exam, disputed) and the human review sheet | `redteam/`, `redteam/REVIEW.md` (rebuild with `scripts/redteam_review.py`) |
 
 ## Facts that must not drift

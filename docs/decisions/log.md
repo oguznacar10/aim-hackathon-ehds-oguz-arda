@@ -37,3 +37,6 @@ Append-only. Newest at the bottom. Every entry: date, title, who, PROPOSED or DE
 - An LLM plan the validator rejects goes back to the LLM once, together with the validator error; if it still fails, the rule plan is used and staff review is flagged.
 - The reader only flags a disagreement on `justifies_records` when it can change the outcome: an access application whose purpose is not prohibited.
 - `tests/conftest.py` removes every LLM key from the test environment, so `pytest` never calls a paid API and never depends on a model.
+
+## 2026-10-30 - Applicants no longer choose statistics or records - PROPOSED
+Oguz asked that the system, not the researcher, decides between anonymised statistics and pseudonymised records. The web form no longer shows the "requested form" choice. A loaded sample request keeps the form from its JSON file, so R01-R10 still get the exact articles the brief expects. A new request typed into the form is sent as a health data access application, so rule 3 or 4 decides: records in an SPE only if the text explains why statistics are not enough, otherwise statistics.
