@@ -1,0 +1,6 @@
+*
+!src
+!scripts/serve.py
+!challenge/requests
+!challenge/data
+!challenge/README.md

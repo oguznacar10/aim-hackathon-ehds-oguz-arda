@@ -46,6 +46,7 @@ python scripts/eval_metrics.py          # the five challenge metrics on the 10 r
 python scripts/eval_decisions.py --set tuning   # decisions on the AI-written red-team requests
 python -m gatekeeper.synth --n N --seed S --max-attempts M   # generate labelled training requests
 GATEKEEPER_SECOND_OPINION=jev python scripts/serve.py          # Jev (TypeSafe) as second opinion instead of the keyword reader
+docker build -t gatekeeper . && docker run -p 8000:8000 -e OPENROUTER_API_KEY -e TYPESAFE_API_KEY -e GATEKEEPER_SECOND_OPINION=jev gatekeeper   # hosted demo image, keys from the platform's variables
 pytest -q                               # regression tests, never call an LLM
 ```
 
