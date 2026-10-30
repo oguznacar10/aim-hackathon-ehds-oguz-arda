@@ -347,7 +347,7 @@ async function openCase(id) {
     staff.review_note ? el("p", { class: "review-flag", text: staff.review_note }) : null);
 
   const readerName = result.reader === "keywords" ? "Keyword reader only (no AI key set)" : `AI reader (${result.reader})`;
-  const rows = [["Prohibited purpose (Art. 54)", "prohibited"], ["Applicant is a public body (Art. 53(2))", "public_body"], ["Purpose fits only public health, policy or statistics", "reserved_purpose_only"], ["Explains why records are needed", "justifies_records"]];
+  const rows = [["Prohibited purpose (Art. 54)", "prohibited"], ["Applicant is a public body (Art. 53(2))", "public_body"], ["Applicant acts on behalf of a public body (Art. 53(2))", "acts_for_public_body"], ["Purpose fits only public health, policy or statistics", "reserved_purpose_only"], ["Explains why records are needed", "justifies_records"]];
   const readers = el("section", { class: "cf-section" }, el("h3", { text: "Who read the request" }),
     el("table", { class: "readers" },
       el("thead", {}, el("tr", {}, el("th", { scope: "col", text: "Question" }), el("th", { scope: "col", text: readerName }), second ? el("th", { scope: "col", text: "Keyword reader (second opinion)" }) : null)),

@@ -19,8 +19,10 @@ class InvalidRequest(ValueError):
 
 
 def blocked_by_53_2(reading):
-    """Art. 53(2): a purpose that fits only public health, policy-making or official statistics needs a public body."""
-    return bool(reading.get("reserved_purpose_only")) and not reading.get("public_body")
+    """Art. 53(2): a purpose that fits only public health, policy-making or official statistics needs a public
+    body, or a third party processing on its behalf."""
+    return (bool(reading.get("reserved_purpose_only")) and not reading.get("public_body")
+            and not reading.get("acts_for_public_body"))
 
 
 TABLE_PATTERN = r"\bper\b|%|percent|proportion|\bshare\b|\bmean\b|average"
@@ -64,6 +66,15 @@ def decide(request, reading):
                        "purpose remains and access is refused (Art. 53). A refusal is always justified to the "
                        "applicant (Art. 68(9)); a reframed application under another purpose may be submitted.")
 
+    result = _allowed(request, reading, review, evidence)
+    if reading.get("acts_for_public_body") and reading.get("reserved_purpose_only") and not reading.get("public_body"):
+        result["needs_staff_review"] = True
+        result["reason"] += (" The applicant states it acts on behalf of a public sector body (Art. 53(2)); "
+                             "staff must verify the mandate before release.")
+    return result
+
+
+def _allowed(request, reading, review, evidence):
     if request["requested_as"] == REQUEST:
         return _result("APPROVE_STATISTICAL", ["53", "69"], 2, review, evidence,
                        "The purpose is allowed (Art. 53). A health data request is answered "

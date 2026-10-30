@@ -125,7 +125,10 @@ strictly in this order and answer {{"decision": ..., "why": str}}:
    against national ethics law) -> "REJECT".
 2. Art. 53(2): a private applicant whose purpose fits only public health, policy-making or
    official statistics (nothing that can be read as research, teaching, care improvement or
-   algorithm work) -> "REJECT". A public body may claim those purposes.
+   algorithm work) -> "REJECT". A public body may claim those purposes, and so may a private
+   applicant that states it processes the data on behalf of a named public body for that body's
+   task (Art. 53(2) third-party clause); that request goes on to rule 3, 4 or 5 and staff verify
+   the mandate.
 3. requested_as "health data request" -> "APPROVE_STATISTICAL".
 4. "health data access application" whose text says what will be done with individual records
    that statistics cannot do (train or validate a model on histories, link records, follow

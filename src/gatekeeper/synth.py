@@ -89,7 +89,8 @@ TARGETS = [
                  "public_body": False, "reserved_purpose_only": True},
      "brief": "The applicant is a private company (insurer, consultancy, manufacturer) and states a purpose "
               "that is only public health planning, policy-making or official statistics, nothing that "
-              "could be read as research or care improvement."},
+              "could be read as research or care improvement. The applicant claims the purpose for "
+              "itself, not on behalf of a public body: no contract, commission or mandate from one."},
     {"name": "spe_mechanism", "requested_as": rules.APPLICATION, "shape": "records", "decision": "APPROVE_SPE",
      "reading": {"prohibited": False, "art54_point": None, "justifies_records": True},
      "brief": "The applicant does scientific research or trains and validates a prediction model and says "

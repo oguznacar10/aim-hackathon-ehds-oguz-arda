@@ -17,11 +17,12 @@
     "Report per region: adults, adults with chronic kidney disease and the prevalence."
   ],
   "expected": {
-    "decision": "REJECT",
+    "decision": "APPROVE_STATISTICAL",
     "articles": [
-      "53"
+      "53",
+      "69"
     ],
-    "reason": "The stated purpose fits only public health, policy-making or official statistics (Art. 53(1), points (a) to (c)). Access for those purposes is reserved for public sector bodies and Union bodies (Art. 53(2)); the applicant is not one, so no allowed purpose remains and access is refused (Art. 53). A refusal is always justified to the applicant (Art. 68(9)); a reframed application under another purpose may be submitted."
+    "reason": "The purpose is allowed (Art. 53). A health data request is answered only with anonymised statistics; the applicant never sees the data (Art. 69). The applicant states it acts on behalf of a public sector body (Art. 53(2)); staff must verify the mandate before release."
   },
   "target": "private_reserved_purpose",
   "answer": {
@@ -75,5 +76,5 @@
     "decision": "REJECT",
     "why": "Rule 2: a private management consultancy whose purpose is only a public health planning report for a government client fits public health and policy-making alone, so Art. 53(2) bars it."
   },
-  "review": "Blind review 2026-10-30: the applicant processes on behalf of a public body, which Art. 53(2) covers ('including where processing ... is done by a third party on behalf of those public sector bodies'); REJECT [53] is contestable, human call needed"
+  "review": "Blind review 2026-10-30: the applicant processes on behalf of a public body, which Art. 53(2) covers ('including where processing ... is done by a third party on behalf of those public sector bodies'); REJECT [53] is contestable, human call needed; settled 2026-10-30 by the Art. 53(2) third-party clause decision: approved as statistics, flagged for staff to verify the mandate"
 }

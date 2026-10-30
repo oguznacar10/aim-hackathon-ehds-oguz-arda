@@ -10,7 +10,7 @@ from pathlib import Path
 
 from gatekeeper import llm, rules
 
-PROMPT_VERSION = "2"
+PROMPT_VERSION = "3"
 CACHE_DIR = Path(__file__).resolve().parents[2] / ".cache" / "readings"
 
 ART54_PATTERNS = [
@@ -24,6 +24,8 @@ MECHANISM_PATTERN = (r"train|validat|\blink|follow(?:-| )?up|over time|longitudi
                      r"|variation|individual responses|between (?:individual )?patients")
 PUBLIC_BODY_PATTERN = (r"ministry|ministerium|federal|national |statistics office|statistik|agency|authority"
                        r"|government|municipal|public health (?:institute|office|service)")
+ACTS_FOR_PATTERN = (r"on behalf of|under (?:a )?contract with|commissioned by"
+                    r"|for (?:a|the) (?:federal|regional|provincial|state) (?:government|state|health authority|ministry)")
 RESERVED_PATTERN = (r"official statistics|policy-?making|annual health report|regulatory"
                     r"|public health (?:strateg|surveillance|programme|program|planning|policy)")
 ALLOWED_PATTERN = (r"research|stud(?:y|ies)|train|validat|model|algorithm|teach|education"
@@ -32,7 +34,7 @@ ALLOWED_PATTERN = (r"research|stud(?:y|ies)|train|validat|model|algorithm|teach|
 PROMPT = """You assist an EHDS Health Data Access Body (Regulation (EU) 2025/327, Chapter IV).
 Read the request below and answer with one JSON object:
 {"prohibited": bool, "art54_point": "a"|"b"|"c"|"d"|"e"|null, "public_body": bool,
- "reserved_purpose_only": bool, "justifies_records": bool, "evidence": str}
+ "acts_for_public_body": bool, "reserved_purpose_only": bool, "justifies_records": bool, "evidence": str}
 
 prohibited = true only if the purpose falls under Art. 54:
 (a) decisions detrimental to persons with legal, social or economic effect;
@@ -47,8 +49,10 @@ companies included (Art. 53(1)(d), (e), (f)). Public health, policy-making and o
 (Art. 53(1)(a), (b), (c)) are allowed only for public sector bodies and Union bodies, or a third party
 acting on their behalf (Art. 53(2)).
 
-public_body = true if the applicant is a public sector body (a ministry, agency, authority, national
-statistics office, public health institute) or acts on behalf of one.
+public_body = true only if the applicant itself is a public sector body (a ministry, agency, authority,
+national statistics office, public health institute).
+acts_for_public_body = true if the applicant is not a public body but states that it processes the data
+on behalf of a named public sector body, for that body's task (under a contract, a commission or a mandate).
 reserved_purpose_only = true if the stated purpose fits only public health, policy-making or official
 statistics and cannot reasonably be read as research, teaching, improving care or algorithm work.
 
@@ -70,6 +74,8 @@ Worked examples:
 - "individual-level records are essential to create effective care plans" -> not justified (a claim only)
 - insurer, "improve public health strategies in the region" -> reserved_purpose_only, not public_body
 - "National statistics office", "Official statistics on hospital use" -> public_body, reserved_purpose_only
+- wholesaler, "under a contract with a federal state, we prepare its medicines supply planning"
+  -> acts_for_public_body, not public_body, reserved_purpose_only
 - "university research group", "study regional differences ... prevention programme" -> not reserved_purpose_only
 
 Request:
@@ -86,6 +92,7 @@ def keyword_reading(request):
         "prohibited": point is not None,
         "art54_point": point,
         "public_body": bool(re.search(PUBLIC_BODY_PATTERN, applicant)),
+        "acts_for_public_body": bool(re.search(ACTS_FOR_PATTERN, text)),
         "reserved_purpose_only": bool(reserved and not re.search(ALLOWED_PATTERN, text)),
         "justifies_records": bool(just and re.search(MECHANISM_PATTERN, text)),
         "evidence": just.group(0) if just else "",
@@ -108,6 +115,7 @@ def llm_reading(request, provider, model=None, cache=True):
         "prohibited": bool(out.get("prohibited")),
         "art54_point": out.get("art54_point"),
         "public_body": bool(out.get("public_body")),
+        "acts_for_public_body": bool(out.get("acts_for_public_body")),
         "reserved_purpose_only": bool(out.get("reserved_purpose_only")),
         "justifies_records": bool(out.get("justifies_records")),
         "evidence": str(out.get("evidence") or ""),
