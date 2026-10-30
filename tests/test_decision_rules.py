@@ -120,6 +120,25 @@ def test_private_applicant_with_reserved_purpose_is_refused_under_53():
     assert "53(2)" in out["reason"]
 
 
+def contractor_request(purpose):
+    return {**private_reserved_request(), "purpose": purpose,
+            "applicant": {"name": "Dr. Eva Lang", "organisation": "Lang Health Consulting GmbH (consultancy)",
+                          "country": "AT"}}
+
+
+def test_contractor_for_a_public_body_gets_statistics_and_a_mandate_check():
+    req = contractor_request("Under a contract with a federal state, we prepare its official statistics on hospital use.")
+    out = rules.decide(req, reader.read(req))
+    assert (out["decision"], out["articles"], out["needs_staff_review"]) == ("APPROVE_STATISTICAL", ["53", "69"], True)
+    assert "verify the mandate" in out["reason"]
+
+
+def test_contractor_claiming_the_reserved_purpose_for_itself_is_refused_under_53():
+    req = contractor_request("We prepare official statistics on hospital use for our own planning reports.")
+    out = rules.decide(req, reader.read(req))
+    assert (out["decision"], out["articles"], out["needs_staff_review"]) == ("REJECT", ["53"], True)
+
+
 def test_public_body_keeps_the_reserved_purpose():
     out = rules.decide(load("R07"), reader.read(load("R07")))
     assert (out["decision"], out["articles"]) == ("APPROVE_STATISTICAL", ["53", "69"])
