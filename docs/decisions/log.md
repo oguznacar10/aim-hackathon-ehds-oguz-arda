@@ -86,3 +86,9 @@ Arda approved both readings in his session on 2026-10-30 after the review of the
 - Without an LLM, the request "Report per hospital: patients with type 2 diabetes." (no definition for type 2 diabetes) returned every patient per hospital. The rule planner ignored words it did not know and counted the whole population.
 - Now every measure in the "Report per ...:" line may only use defined terms plus filler words (with, patients, how many, share, %, ...). Any other word stops planning with "'<measure>' uses words no definition explains: ...". The web app shows that as "the numbers could not be planned". With an LLM key the LLM plan is still tried first; this only changes the fallback.
 - Why: a wrong number is worse than no number for an access body. All 10 sample requests still plan the same (10/10, 6/6 offline).
+
+## 2026-10-30 - Live ablation on the 10 requests: every mode 10/10, the 10 cannot rank readers (Arda, PROPOSED)
+
+- Run today on commit `573297a`, `--runs 3 --no-cache`: rules, hybrid (gpt-4o reads), llm (gpt-4o decides, ablation only), nimble (local, no key), vote. All five: 10/10 correct, 10/10 consistent, 0 dangerous, 0 unflagged, 0 escalated. p95: rules 0.00 s, nimble 1.10 s, vote 1.48 s, llm 1.92 s, hybrid 2.21 s. Full output in `docs/handoffs/handoff-decision-ablation-2026-10-30.md`. jev not run.
+- What we may claim: the shipped path (hybrid) and the local Nimble reader both score 10/10 live on the challenge set; the local reader needs no key and no cloud call. What we may not claim: that any mode is safer than another; 30 decisions with 0 failures bound the true failure rate only to 10%.
+- Why PROPOSED: the ranking question stays open until the synthetic held-out set exists (PR 16) and the modes run on it at Arda's batch size. The shipped path does not change on these numbers.
