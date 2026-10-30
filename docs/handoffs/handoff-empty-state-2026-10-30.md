@@ -4,7 +4,7 @@
 - Before the first decision, the right-hand notice area shows `#welcome`: an inline SVG of the three hospital databases linked through .Gatekeeper to researchers (Vienna, Berlin, Lisbon), with dashed lines flowing and small dots travelling along them, plus three short lines of text.
 - It is replaced by the pending notice on submit, and restored if the request fails.
 - `api()` in app.js now turns a fetch rejection (server unreachable) into an error result, so Submit no longer stays stuck on "Deciding...".
-- Staff view: the empty case-file area shows the same drawing (`#staff-welcome`, SVG cloned from `#welcome` in app.js with `staff-` id prefixes so the `mpath` links stay unique) and three lines for staff. Opening a case replaces it. Same symbols, different motion (`.net-staff`): dots run researchers to hospitals, the databases light up in turn, and a dashed ring turns around the hub instead of the pulse.
+- Staff view: the empty case-file area shows its own drawing (`#staff-welcome`): a case file at the top sends a query dot down to each of the three hospital databases, a scan line runs through each database in turn, and a hollow dot (the total) travels back up. No researchers on purpose: staff look at the databases. Opening a case replaces it.
 - `prefers-reduced-motion`: the CSS animations stop and the travelling dots (SMIL `animateMotion`) are hidden.
 
 ## Verified

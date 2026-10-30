@@ -96,8 +96,23 @@
   </aside>
   <section id="casefile" class="casefile" aria-live="polite">
     <div id="staff-welcome" class="welcome">
+      <svg class="net net-staff" viewBox="0 0 560 270" role="img" aria-label="A case file sends a query to each of the three hospital databases; only totals come back">
+        <path id="staff-q0" class="net-line" d="M280 66 C280 104 120 96 120 132"/>
+        <path id="staff-q1" class="net-line" d="M280 66 L280 132"/>
+        <path id="staff-q2" class="net-line" d="M280 66 C280 104 440 96 440 132"/>
+        <g class="net-file" transform="translate(280 42)"><path d="M-13 -20h18l8 8v32h-26z M5 -20v8h8"/><path class="net-file-rows" d="M-7 -2h14M-7 5h14M-7 12h9"/><text x="22" y="4">Case file</text></g>
+        <g class="net-db net-db-big" transform="translate(120 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><line class="net-scan-line" x1="-28" x2="28" y1="12" y2="12" style="animation-delay:0.0s"/><text y="96">Klinikum Nord</text></g>
+        <g class="net-db net-db-big" transform="translate(280 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><line class="net-scan-line" x1="-28" x2="28" y1="12" y2="12" style="animation-delay:0.9s"/><text y="96">Klinikum Süd</text></g>
+        <g class="net-db net-db-big" transform="translate(440 150)"><ellipse cx="0" cy="0" rx="36" ry="9"/><path d="M-36 0v62a36 9 0 0 0 72 0v-62M-36 21a36 9 0 0 0 72 0M-36 41a36 9 0 0 0 72 0"/><line class="net-scan-line" x1="-28" x2="28" y1="12" y2="12" style="animation-delay:1.8s"/><text y="96">Klinikum West</text></g>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-0.0s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q0"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-0.0s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q0"/></animateMotion></circle>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-0.9s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q1"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-0.9s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q1"/></animateMotion></circle>
+        <circle class="net-dot" r="3"><animateMotion dur="2.7s" begin="-1.8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.45;1" calcMode="linear"><mpath href="#staff-q2"/></animateMotion></circle>
+        <circle class="net-dot net-dot-up" r="3.5"><animateMotion dur="2.7s" begin="-1.8s" repeatCount="indefinite" keyPoints="1;1;0" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#staff-q2"/></animateMotion></circle>
+      </svg>
       <p class="welcome-lead">Every request becomes a case file here.</p>
-      <p>Open a case to see the decision, the cited articles and the totals each hospital database returned.</p>
+      <p>Each hospital database answers on its own. Only totals reach the case file, never patient rows.</p>
       <p class="welcome-hint">Cases marked for review wait for you to confirm or overrule. Select a case on the left to start.</p>
     </div>
   </section>
