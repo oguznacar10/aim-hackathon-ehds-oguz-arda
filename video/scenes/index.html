@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gatekeeper video scenes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  --ink: #16202A; --paper: #FFFFFF; --desk: #EDF0F2; --muted: #55626E; --rule: #C9D0D6;
+  --reject: #9B2226; --statistical: #1D4E89; --spe: #2D6A4F; --review: #8A5200; --review-wash: #FBF1E2;
+  --ui: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --doc: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --r: 3px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--desk); color: var(--ink); font: 28px/1.4 var(--ui); }
+.scene { position: absolute; inset: 0; display: none; }
+.scene.active { display: block; }
+.el { position: absolute; opacity: 0; will-change: opacity, transform; }
+.center { left: 0; right: 0; text-align: center; }
+.card { position: absolute; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r); padding: 28px 32px; opacity: 0; }
+.card h3 { margin: 0 0 18px; font-size: 30px; font-weight: 700; line-height: 1.2; }
+.card .sub { color: var(--muted); font-size: 22px; }
+.wordmark { font-weight: 700; font-size: 150px; letter-spacing: -0.01em; line-height: 1; }
+.wordmark .dot { color: var(--statistical); display: inline-block; }
+.mono { font-family: var(--mono); }
+.bar { height: 14px; border-radius: 7px; background: var(--rule); margin: 16px 0; opacity: 0; }
+.row { display: flex; align-items: center; gap: 14px; font-size: 24px; margin: 14px 0; opacity: 0; }
+.row .k { font-family: var(--mono); color: var(--muted); font-size: 20px; }
+.row::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--rule); flex: none; }
+.chip { position: absolute; top: 760px; width: 420px; height: 76px; border: 2px solid var(--rule); border-radius: var(--r);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 500; font-size: 30px; color: var(--muted); background: var(--paper); }
+.pill { position: absolute; padding: 4px 14px; border-radius: 999px; background: var(--statistical); color: var(--paper); font-family: var(--mono); font-size: 18px; opacity: 0; transform: translate(-50%, -50%); }
+.tag { position: absolute; top: 800px; padding: 14px 26px; border: 1px solid var(--rule); border-radius: 999px; background: var(--paper); font-size: 26px; opacity: 0; }
+.tile { position: absolute; top: 360px; width: 320px; height: 280px; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r); padding: 28px; opacity: 0; }
+.tile .lbl { font-size: 24px; color: var(--muted); line-height: 1.25; height: 60px; }
+.tile .val { font-family: var(--mono); font-size: 72px; font-weight: 500; margin-top: 44px; line-height: 1; letter-spacing: -0.02em; }
+.tile .val small { font-size: 28px; color: var(--muted); margin-left: 6px; letter-spacing: 0; }
+svg.wire { position: absolute; inset: 0; width: 1920px; height: 1080px; pointer-events: none; }
+svg.wire path, svg.wire line { fill: none; stroke: var(--muted); stroke-width: 3; stroke-linecap: round; }
+svg.wire .head { fill: var(--muted); stroke: none; }
+.db { display: inline-block; width: 26px; height: 32px; vertical-align: -6px; margin-right: 12px; }
+.db ellipse, .db path { fill: none; stroke: var(--statistical); stroke-width: 2.5; }
+</style>
+</head>
+<body>
+
+<section class="scene" id="s-01-intro">
+  <div class="el center" id="i-head" style="top:430px;font-family:var(--doc);font-size:76px;font-weight:600;line-height:1.2;">Medical research depends on reliable health data.</div>
+  <div class="el center mono" id="i-fee" style="top:360px;font-size:170px;font-weight:500;letter-spacing:-0.02em;line-height:1;">EUR 0</div>
+  <div class="el center" id="i-rule" style="top:570px;left:810px;right:auto;width:300px;height:2px;background:var(--rule);transform-origin:left;"></div>
+  <div class="el center" id="i-feelbl" style="top:600px;color:var(--muted);font-size:32px;">standard processing fee for a single application in Germany</div>
+  <div class="el center wordmark" id="i-mark" style="top:400px;"><span class="dot" id="i-dot">.</span>Gatekeeper</div>
+  <div class="el center" id="i-tag" style="top:590px;color:var(--muted);font-size:38px;">Decision support for the European Health Data Space</div>
+</section>
+
+<section class="scene" id="s-03-engine">
+  <div class="el center" id="e-title" style="top:300px;font-size:84px;font-weight:700;letter-spacing:-0.01em;">AI Decision Engine</div>
+  <div class="el center" id="e-sub" style="top:420px;color:var(--muted);font-size:32px;max-width:1300px;left:310px;width:1300px;">Each request is analyzed, the relevant requirements are checked,<br>and the recommendation is explainable.</div>
+  <div class="el center" id="e-lead" style="top:660px;color:var(--muted);font-size:24px;">Three possible recommendations</div>
+  <div class="chip el" id="e-c1" style="left:270px;">REJECT</div>
+  <div class="chip el" id="e-c2" style="left:750px;">APPROVE_STATISTICAL</div>
+  <div class="chip el" id="e-c3" style="left:1230px;">APPROVE_SPE</div>
+  <div class="el center" id="e-expl" style="top:856px;color:var(--muted);font-size:24px;">rejection, statistical access, or a secure processing environment</div>
+</section>
+
+<section class="scene" id="s-05-federated">
+  <svg class="wire" viewBox="0 0 1920 1080">
+    <path id="f-l1" d="M560 300 C 900 300, 1000 510, 1300 510"/>
+    <path id="f-l2" d="M560 510 L 1300 510"/>
+    <path id="f-l3" d="M560 720 C 900 720, 1000 510, 1300 510"/>
+  </svg>
+  <div class="card" id="f-h1" style="left:180px;top:230px;width:380px;height:140px;"><h3><svg class="db" viewBox="0 0 26 32"><ellipse cx="13" cy="6" rx="11" ry="4.5"/><path d="M2 6v20c0 2.5 5 4.5 11 4.5s11-2 11-4.5V6M2 16c0 2.5 5 4.5 11 4.5s11-2 11-4.5"/></svg>Klinikum Nord</h3><div class="sub">query runs locally</div></div>
+  <div class="card" id="f-h2" style="left:180px;top:440px;width:380px;height:140px;"><h3><svg class="db" viewBox="0 0 26 32"><ellipse cx="13" cy="6" rx="11" ry="4.5"/><path d="M2 6v20c0 2.5 5 4.5 11 4.5s11-2 11-4.5V6M2 16c0 2.5 5 4.5 11 4.5s11-2 11-4.5"/></svg>Klinikum Süd</h3><div class="sub">query runs locally</div></div>
+  <div class="card" id="f-h3" style="left:180px;top:650px;width:380px;height:140px;"><h3><svg class="db" viewBox="0 0 26 32"><ellipse cx="13" cy="6" rx="11" ry="4.5"/><path d="M2 6v20c0 2.5 5 4.5 11 4.5s11-2 11-4.5V6M2 16c0 2.5 5 4.5 11 4.5s11-2 11-4.5"/></svg>Klinikum West</h3><div class="sub">query runs locally</div></div>
+  <div class="card" id="f-hdab" style="left:1300px;top:400px;width:440px;height:220px;"><h3>Health Data Access Body</h3><div class="sub">receives totals only</div></div>
+  <div class="pill" id="f-p1">totals</div><div class="pill" id="f-p2">totals</div><div class="pill" id="f-p3">totals</div>
+  <div class="tag" id="f-t1" style="left:560px;">opted-out patients excluded</div>
+  <div class="tag" id="f-t2" style="left:1010px;">counts under 10 shown as &lt;10</div>
+</section>
+
+<section class="scene" id="s-06-results">
+  <div class="tile" id="r-1" style="left:112px;"><div class="lbl">Decision accuracy</div><div class="val"><span class="n">0</span>/10</div></div>
+  <div class="tile" id="r-2" style="left:456px;"><div class="lbl">Statistical correctness</div><div class="val"><span class="n">0</span>/6</div></div>
+  <div class="tile" id="r-3" style="left:800px;"><div class="lbl">Privacy leaks</div><div class="val"><span class="n">0</span></div></div>
+  <div class="tile" id="r-4" style="left:1144px;"><div class="lbl">Consistency</div><div class="val"><span class="n">0</span>/10</div><div class="lbl" style="height:auto;margin-top:12px;font-size:22px;">over 3 runs</div></div>
+  <div class="tile" id="r-5" style="left:1488px;"><div class="lbl">Slowest request</div><div class="val"><span class="n">0.0</span><small>s</small></div></div>
+  <div class="el center" id="r-note" style="top:720px;color:var(--muted);font-size:30px;">measured on the 10 sample requests, synthetic data</div>
+</section>
+
+<section class="scene" id="s-07-vision">
+  <div class="el center" id="v-l1" style="top:340px;font-size:60px;font-weight:600;">Synthetic hospital data today</div>
+  <div class="el center" id="v-l2" style="top:470px;font-size:60px;font-weight:600;">Real European infrastructure: future work</div>
+  <div class="el center" id="v-l3" style="top:600px;font-size:60px;font-weight:600;">Reliable, affordable, secure access</div>
+  <div class="el center wordmark" id="v-mark" style="top:360px;"><span class="dot">.</span>Gatekeeper</div>
+  <div class="el center" id="v-tag" style="top:560px;font-family:var(--doc);font-size:42px;">Making European health research safer, smarter, and more accessible.</div>
+  <div class="el center" id="v-foot" style="top:660px;color:var(--muted);font-size:26px;">AIM Healthcare Hackathon Vienna 2026, Track 3, European Health Data Space</div>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const ease = p => 1 - Math.pow(1 - p, 3);
+const prog = (t, start, dur) => ease(clamp((t - start) / dur, 0, 1));
+const SLIDE = 20;
+// fade+slide in at `start`, optional fade out at `out`
+function show(el, t, start, out = Infinity, dur = 0.7) {
+  const pin = prog(t, start, dur);
+  const pout = prog(t, out, dur);
+  el.style.opacity = pin * (1 - pout);
+  el.style.transform = `translateY(${(1 - pin) * SLIDE}px)`;
+}
+function draw(path, t, start, dur = 1.2) {
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len * (1 - prog(t, start, dur));
+}
+function alongPath(pill, path, t, start, dur) {
+  const p = clamp((t - start) / dur, 0, 1);
+  const pt = path.getPointAtLength(path.getTotalLength() * ease(p));
+  pill.style.left = pt.x + 'px'; pill.style.top = pt.y + 'px';
+  pill.style.opacity = (t >= start && p < 1) ? Math.min(1, p * 8, (1 - p) * 8) : 0;
+}
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+const scenes = {
+  '01-intro'(t) {
+    show($('i-head'), t, 0.3, 3.2);
+    show($('i-fee'), t, 4.0, 8.3);
+    $('i-fee').textContent = 'EUR ' + fmt(4000 * prog(t, 4.3, 3.0));
+    show($('i-feelbl'), t, 4.6, 8.3);
+    const r = $('i-rule'); show(r, t, 4.4, 8.3);
+    r.style.transform = `scaleX(${prog(t, 4.4, 1.2)})`;
+    show($('i-mark'), t, 9.0);
+    show($('i-tag'), t, 9.6);
+    const pulse = Math.sin(Math.PI * clamp((t - 10.6) / 0.9, 0, 1));
+    $('i-dot').style.transform = `scale(${1 + 0.22 * pulse})`;
+  },
+  '03-engine'(t) {
+    show($('e-title'), t, 0.4);
+    show($('e-sub'), t, 2.0);
+    show($('e-lead'), t, 9.0);
+    [['e-c1', 'var(--reject)', 12.0], ['e-c2', 'var(--statistical)', 15.0], ['e-c3', 'var(--spe)', 18.0]].forEach(([id, c, at]) => {
+      const el = $(id); show(el, t, at - 0.6);
+      const lit = prog(t, at, 0.6);
+      el.style.borderColor = lit > 0.5 ? c : 'var(--rule)';
+      el.style.background = lit > 0.5 ? c : 'var(--paper)';
+      el.style.color = lit > 0.5 ? 'var(--paper)' : 'var(--muted)';
+    });
+    show($('e-expl'), t, 20.0);
+  },
+  '05-federated'(t) {
+    ['f-h1', 'f-h2', 'f-h3'].forEach((id, i) => show($(id), t, 0.3 + i * 0.3));
+    show($('f-hdab'), t, 1.2);
+    ['f-l1', 'f-l2', 'f-l3'].forEach((id, i) => draw($(id), t, 1.8 + i * 0.2, 1.4));
+    ['f-p1', 'f-p2', 'f-p3'].forEach((id, i) => alongPath($(id), $('f-l' + (i + 1)), t, 3.4 + i * 0.4, 2.2));
+    show($('f-t1'), t, 6.6);
+    show($('f-t2'), t, 7.4);
+  },
+  '06-results'(t) {
+    const tiles = [['r-1', 10, 0], ['r-2', 6, 0], ['r-3', 0, 0], ['r-4', 10, 0], ['r-5', 12.7, 1]];
+    tiles.forEach(([id, v, dec], i) => {
+      const at = 0.3 + i * 1.2; const el = $(id); show(el, t, at);
+      el.querySelector('.n').textContent = (v * prog(t, at + 0.2, 1.4)).toFixed(dec);
+    });
+    show($('r-note'), t, 7.0);
+  },
+  '07-vision'(t) {
+    show($('v-l1'), t, 0.5, 6.2);
+    show($('v-l2'), t, 2.4, 6.2);
+    show($('v-l3'), t, 4.3, 6.2);
+    show($('v-mark'), t, 7.0);
+    show($('v-tag'), t, 7.7);
+    show($('v-foot'), t, 8.4);
+  },
+};
+
+const name = new URLSearchParams(location.search).get('scene') || '01-intro';
+if (!scenes[name]) throw new Error('unknown scene ' + name);
+$('s-' + name).classList.add('active');
+window.render = t => scenes[name](t);
+window.render(0);
+</script>
+</body>
+</html>
