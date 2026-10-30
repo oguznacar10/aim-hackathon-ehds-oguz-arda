@@ -22,7 +22,7 @@ body { margin: 0; }
 h1, h2, h3 { margin: 0; line-height: 1.2; }
 h1 { font-size: 25px; font-weight: 700; letter-spacing: -0.005em; }
 h3 { font-size: 16px; font-weight: 700; margin-bottom: var(--s3); }
-button, input, select, textarea { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; accent-color: var(--ink); }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .code { font-family: var(--mono); font-size: 14px; }
 [hidden] { display: none !important; }
